@@ -1,0 +1,1810 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SportiveX - Football Tasks Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    body { box-sizing: border-box; }
+    
+    :root {
+      --bg-primary: #0a0f1a;
+      --bg-secondary: #111827;
+      --text-primary: #ffffff;
+      --accent-green: #10b981;
+      --accent-gold: #f59e0b;
+    }
+    
+    .light-mode {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --text-primary: #1e293b;
+    }
+    
+    * { font-family: 'Inter', sans-serif; }
+    .font-display { font-family: 'Bebas Neue', sans-serif; }
+    
+    .bg-primary { background-color: var(--bg-primary); }
+    .bg-secondary { background-color: var(--bg-secondary); }
+    .text-primary { color: var(--text-primary); }
+    
+    .gradient-border {
+      background: linear-gradient(135deg, #10b981, #f59e0b, #ef4444);
+      padding: 2px;
+      border-radius: 16px;
+    }
+    
+    .card-inner {
+      background: var(--bg-secondary);
+      border-radius: 14px;
+      height: 100%;
+    }
+    
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .light-mode .glass-effect {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .video-border {
+      position: fixed;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    
+    .video-border-top {
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 8px;
+    }
+    
+    .video-border-bottom {
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 8px;
+    }
+    
+    .video-border-left {
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 8px;
+    }
+    
+    .video-border-right {
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 8px;
+    }
+    
+    .video-border video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .hamburger-menu {
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+    
+    .hamburger-menu.open {
+      transform: translateX(0);
+    }
+    
+    .menu-overlay {
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .menu-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .task-card {
+      transition: all 0.3s ease;
+    }
+    
+    .task-card:hover {
+      transform: translateY(-4px);
+    }
+    
+    .card-emerald { border-left: 4px solid #10b981; }
+    .card-amber { border-left: 4px solid #f59e0b; }
+    .card-rose { border-left: 4px solid #f43f5e; }
+    .card-violet { border-left: 4px solid #8b5cf6; }
+    .card-cyan { border-left: 4px solid #06b6d4; }
+    .card-orange { border-left: 4px solid #f97316; }
+    
+    .pulse-dot {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .slide-up {
+      animation: slideUp 0.5s ease forwards;
+    }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+    
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    .toast {
+      animation: slideIn 0.3s ease forwards;
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(400px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full bg-primary text-primary"><!-- Video Borders -->
+  <div class="video-border video-border-top">
+   <video autoplay muted loop playsinline><source src="video.mp4" type="video/mp4">
+   </video>
+  </div>
+  <div class="video-border video-border-bottom">
+   <video autoplay muted loop playsinline><source src="video.mp4" type="video/mp4">
+   </video>
+  </div>
+  <div class="video-border video-border-left">
+   <video autoplay muted loop playsinline><source src="video.mp4" type="video/mp4">
+   </video>
+  </div>
+  <div class="video-border video-border-right">
+   <video autoplay muted loop playsinline><source src="video.mp4" type="video/mp4">
+   </video>
+  </div><!-- Main Container -->
+  <div id="app" class="h-full w-full overflow-auto"><!-- Landing Page -->
+   <div id="landing-page" class="w-full"><!-- Navigation -->
+    <nav class="fixed top-2 left-2 right-2 z-50 glass-effect rounded-2xl px-4 py-3 md:px-6 mx-auto max-w-7xl">
+     <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3"><img src="logo.png" alt="SportiveX" class="w-10 h-10 rounded-lg" onerror="this.style.background='linear-gradient(135deg, #10b981, #f59e0b)'; this.alt='SX';"> <span class="font-display text-2xl tracking-wide text-emerald-400">SPORTIVEX</span>
+      </div>
+      <div class="flex items-center gap-3"><button id="theme-toggle" class="p-2 rounded-lg hover:bg-white/10 transition">
+        <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg></button> <button onclick="showAuthModal('login')" class="px-4 py-2 text-sm font-medium hover:text-emerald-400 transition hidden md:block">Login</button> <button onclick="showAuthModal('register')" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 rounded-lg text-sm font-semibold transition">Get Started</button>
+      </div>
+     </div>
+    </nav><!-- Hero Section -->
+    <section class="pt-28 pb-16 px-4 md:px-8">
+     <div class="max-w-6xl mx-auto text-center">
+      <div class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/20 rounded-full mb-6"><span class="w-2 h-2 bg-emerald-400 rounded-full pulse-dot"></span> <span class="text-emerald-400 text-sm font-medium">Live Football Challenges</span>
+      </div>
+      <h1 id="hero-title" class="font-display text-5xl md:text-7xl leading-tight mb-6">Test Your Football Knowledge.<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-400">Analyze the Game.</span><br>
+        Earn Recognition.</h1>
+      <p id="hero-subtitle" class="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto mb-10">Complete trivia challenges, write compelling sports articles, and analyze real football video clips. Build your reputation as a football expert and earn rewards.</p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4"><button onclick="showAuthModal('register')" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 rounded-xl font-semibold text-lg transition"> Start Earning Now </button> <button onclick="showAuthModal('login')" class="w-full sm:w-auto px-8 py-4 glass-effect rounded-xl font-semibold text-lg hover:bg-white/10 transition"> Already a Member </button>
+      </div>
+      <div class="flex flex-wrap items-center justify-center gap-8 mt-12">
+       <div class="text-center">
+        <div class="text-3xl font-bold text-emerald-400">
+         10K+
+        </div>
+        <div class="text-sm text-gray-500">
+         Active Users
+        </div>
+       </div>
+       <div class="w-px h-12 bg-gray-700"></div>
+       <div class="text-center">
+        <div class="text-3xl font-bold text-amber-400">
+         50K+
+        </div>
+        <div class="text-sm text-gray-500">
+         Tasks Completed
+        </div>
+       </div>
+       <div class="w-px h-12 bg-gray-700"></div>
+       <div class="text-center">
+        <div class="text-3xl font-bold text-rose-400">
+         $100K+
+        </div>
+        <div class="text-sm text-gray-500">
+         Rewards Paid
+        </div>
+       </div>
+      </div>
+     </div>
+    </section><!-- How It Works -->
+    <section class="py-16 px-4 md:px-8">
+     <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+       <h2 class="font-display text-4xl md:text-5xl mb-4">HOW IT WORKS</h2>
+       <p class="text-gray-400">Three simple steps to start earning</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+       <div class="gradient-border slide-up" style="animation-delay: 0.1s">
+        <div class="card-inner p-6 text-center">
+         <div class="w-16 h-16 mx-auto mb-4 bg-emerald-500/20 rounded-2xl flex items-center justify-center">
+          <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+         </div>
+         <div class="text-5xl font-display text-emerald-400 mb-2">
+          01
+         </div>
+         <h3 class="text-xl font-semibold mb-2">Create Account</h3>
+         <p class="text-gray-400 text-sm">Sign up in seconds and set up your football expert profile</p>
+        </div>
+       </div>
+       <div class="gradient-border slide-up" style="animation-delay: 0.2s">
+        <div class="card-inner p-6 text-center">
+         <div class="w-16 h-16 mx-auto mb-4 bg-amber-500/20 rounded-2xl flex items-center justify-center">
+          <svg class="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+          </svg>
+         </div>
+         <div class="text-5xl font-display text-amber-400 mb-2">
+          02
+         </div>
+         <h3 class="text-xl font-semibold mb-2">Complete Tasks</h3>
+         <p class="text-gray-400 text-sm">Choose from trivia, article writing, or video analysis tasks</p>
+        </div>
+       </div>
+       <div class="gradient-border slide-up" style="animation-delay: 0.3s">
+        <div class="card-inner p-6 text-center">
+         <div class="w-16 h-16 mx-auto mb-4 bg-rose-500/20 rounded-2xl flex items-center justify-center">
+          <svg class="w-8 h-8 text-rose-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+         </div>
+         <div class="text-5xl font-display text-rose-400 mb-2">
+          03
+         </div>
+         <h3 class="text-xl font-semibold mb-2">Earn Rewards</h3>
+         <p class="text-gray-400 text-sm">Get points, badges, and cash rewards for quality work</p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </section><!-- Task Categories -->
+    <section class="py-16 px-4 md:px-8 bg-secondary">
+     <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+       <h2 class="font-display text-4xl md:text-5xl mb-4">TASK CATEGORIES</h2>
+       <p class="text-gray-400">Choose your expertise area</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+       <div class="task-card glass-effect rounded-2xl p-6 card-emerald">
+        <div class="flex items-center gap-4 mb-4">
+         <div class="w-14 h-14 bg-emerald-500/20 rounded-xl flex items-center justify-center">
+          <svg class="w-7 h-7 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+         </div>
+         <div>
+          <h3 class="text-xl font-semibold">Trivia Tasks</h3>
+          <p class="text-emerald-400 text-sm">20+ Questions</p>
+         </div>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">Test your football knowledge with timed multiple-choice questions covering players, teams, history, and more.</p>
+        <div class="flex items-center justify-between"><span class="text-xs px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full">+50 pts/task</span> <span class="text-xs text-gray-500">5 min avg</span>
+        </div>
+       </div>
+       <div class="task-card glass-effect rounded-2xl p-6 card-amber">
+        <div class="flex items-center gap-4 mb-4">
+         <div class="w-14 h-14 bg-amber-500/20 rounded-xl flex items-center justify-center">
+          <svg class="w-7 h-7 text-amber-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+         </div>
+         <div>
+          <h3 class="text-xl font-semibold">Article Writing</h3>
+          <p class="text-amber-400 text-sm">20+ Topics</p>
+         </div>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">Write match previews, player analyses, and tactical breakdowns. Showcase your sports journalism skills.</p>
+        <div class="flex items-center justify-between"><span class="text-xs px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full">+100 pts/task</span> <span class="text-xs text-gray-500">30 min avg</span>
+        </div>
+       </div>
+       <div class="task-card glass-effect rounded-2xl p-6 card-rose">
+        <div class="flex items-center gap-4 mb-4">
+         <div class="w-14 h-14 bg-rose-500/20 rounded-xl flex items-center justify-center">
+          <svg class="w-7 h-7 text-rose-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+         </div>
+         <div>
+          <h3 class="text-xl font-semibold">Video Analysis</h3>
+          <p class="text-rose-400 text-sm">20+ Clips</p>
+         </div>
+        </div>
+        <p class="text-gray-400 text-sm mb-4">Watch football clips and provide tactical insights, player performance analysis, and strategic observations.</p>
+        <div class="flex items-center justify-between"><span class="text-xs px-3 py-1 bg-rose-500/20 text-rose-400 rounded-full">+150 pts/task</span> <span class="text-xs text-gray-500">15 min avg</span>
+        </div>
+       </div>
+      </div>
+     </div>
+    </section><!-- Featured Challenges -->
+    <section class="py-16 px-4 md:px-8">
+     <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+       <h2 class="font-display text-4xl md:text-5xl mb-4">FEATURED CHALLENGES</h2>
+       <p class="text-gray-400">Limited time bonus tasks</p>
+      </div>
+      <div class="grid md:grid-cols-2 gap-6">
+       <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-900/50 to-emerald-700/30 p-6 border border-emerald-500/30">
+        <div class="absolute top-0 right-0 px-4 py-2 bg-emerald-500 text-xs font-bold rounded-bl-xl">
+         2X POINTS
+        </div>
+        <h3 class="text-2xl font-semibold mb-2 mt-4">Champions League Special</h3>
+        <p class="text-gray-400 mb-4">Complete 5 UCL-themed trivia tasks this week</p>
+        <div class="flex items-center gap-4"><span class="text-emerald-400 font-semibold">+500 bonus pts</span> <span class="text-xs text-gray-500">Ends in 3 days</span>
+        </div>
+       </div>
+       <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-900/50 to-amber-700/30 p-6 border border-amber-500/30">
+        <div class="absolute top-0 right-0 px-4 py-2 bg-amber-500 text-xs font-bold text-black rounded-bl-xl">
+         HOT
+        </div>
+        <h3 class="text-2xl font-semibold mb-2 mt-4">Transfer Window Analysis</h3>
+        <p class="text-gray-400 mb-4">Write analysis on top 3 January transfers</p>
+        <div class="flex items-center gap-4"><span class="text-amber-400 font-semibold">+300 bonus pts</span> <span class="text-xs text-gray-500">Ends in 5 days</span>
+        </div>
+       </div>
+      </div>
+     </div>
+    </section><!-- Testimonials -->
+    <section class="py-16 px-4 md:px-8 bg-secondary">
+     <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+       <h2 class="font-display text-4xl md:text-5xl mb-4">WHAT USERS SAY</h2>
+       <p class="text-gray-400">Join thousands of football enthusiasts</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+       <div class="glass-effect rounded-2xl p-6">
+        <div class="flex items-center gap-1 mb-4">
+         <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewbox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+         </svg>
+         <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewbox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+         </svg>
+         <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewbox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+         </svg>
+         <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewbox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+         </svg>
+         <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewbox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+         </svg>
+        </div>
+        <p class="text-gray-300 mb-4">"Finally a platform that rewards my football knowledge! The trivia challenges are addictive and the payouts are real."</p>
+        <div class="flex items-center gap-3">
+         <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-400"></div>
+         <div>
+          <div class="font-semibold">
+           Marcus J.
+          </div>
+          <div class="text-xs text-gray-500">
+           Pro Member • 15,000 pts
+          </div>
+         </div>
+        </div>
+       </div>
+       <div class="glass-effect rounded-2xl p-6">
+        <div class="flex items-center gap-1 mb-4">
+         <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewbox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+         </svg>
+         <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewbox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+         </svg>
+         <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewbox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+         </svg>
+         <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewbox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+         </svg>
+         <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewbox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+         </svg>
+        </div>
+        <p class="text-gray-300 mb-4">"The article writing tasks helped me improve my sports journalism skills. Great community and fair reviews!"</p>
+        <div class="flex items-center gap-3">
+         <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-400"></div>
+         <div>
+          <div class="font-semibold">
+           Sarah K.
+          </div>
+          <div class="text-xs text-gray-500">
+           Elite Writer • 28,000 pts
+          </div>
+         </div>
+        </div>
+       </div>
+       <div class="glass-effect rounded-2xl p-6">
+        <div class="flex items-center gap-1 mb-4">
+         <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewbox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+         </svg>
+         <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewbox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+         </svg>
+         <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewbox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+         </svg>
+         <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewbox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+         </svg>
+         <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewbox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+         </svg>
+        </div>
+        <p class="text-gray-300 mb-4">"Video analysis tasks are my favorite. Love breaking down tactics and getting paid for it. Highly recommend!"</p>
+        <div class="flex items-center gap-3">
+         <div class="w-10 h-10 rounded-full bg-gradient-to-br from-rose-400 to-pink-400"></div>
+         <div>
+          <div class="font-semibold">
+           Ahmed R.
+          </div>
+          <div class="text-xs text-gray-500">
+           Tactical Analyst • 42,000 pts
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </section><!-- Footer -->
+    <footer class="py-12 px-4 md:px-8 border-t border-gray-800">
+     <div class="max-w-6xl mx-auto">
+      <div class="grid md:grid-cols-4 gap-8 mb-8">
+       <div>
+        <div class="flex items-center gap-3 mb-4"><img src="logo.png" alt="SportiveX" class="w-8 h-8 rounded-lg" onerror="this.style.background='linear-gradient(135deg, #10b981, #f59e0b)'; this.alt='SX';"> <span class="font-display text-xl text-emerald-400">SPORTIVEX</span>
+        </div>
+        <p class="text-gray-400 text-sm">The ultimate platform for football enthusiasts to earn while showcasing their knowledge.</p>
+       </div>
+       <div>
+        <h4 class="font-semibold mb-4">Platform</h4>
+        <ul class="space-y-2 text-sm text-gray-400">
+         <li><a href="#" class="hover:text-emerald-400 transition">Trivia Tasks</a></li>
+         <li><a href="#" class="hover:text-emerald-400 transition">Article Writing</a></li>
+         <li><a href="#" class="hover:text-emerald-400 transition">Video Analysis</a></li>
+         <li><a href="#" class="hover:text-emerald-400 transition">Leaderboard</a></li>
+        </ul>
+       </div>
+       <div>
+        <h4 class="font-semibold mb-4">Support</h4>
+        <ul class="space-y-2 text-sm text-gray-400">
+         <li><a href="#" class="hover:text-emerald-400 transition">Help Center</a></li>
+         <li><a href="#" class="hover:text-emerald-400 transition">Rules &amp; Guidelines</a></li>
+         <li><a href="#" class="hover:text-emerald-400 transition">Contact Us</a></li>
+         <li><a href="#" class="hover:text-emerald-400 transition">FAQ</a></li>
+        </ul>
+       </div>
+       <div>
+        <h4 class="font-semibold mb-4">Legal</h4>
+        <ul class="space-y-2 text-sm text-gray-400">
+         <li><a href="#" class="hover:text-emerald-400 transition">Terms of Service</a></li>
+         <li><a href="#" class="hover:text-emerald-400 transition">Privacy Policy</a></li>
+         <li><a href="#" class="hover:text-emerald-400 transition">Cookie Policy</a></li>
+         <li><a href="#" class="hover:text-emerald-400 transition">About Us</a></li>
+        </ul>
+       </div>
+      </div>
+      <div class="pt-8 border-t border-gray-800 text-center text-sm text-gray-500">
+       <p>© 2024 SportiveX. All rights reserved. Made with ⚽ for football fans.</p>
+      </div>
+     </div>
+    </footer>
+   </div><!-- Auth Modal -->
+   <div id="auth-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80">
+    <div class="w-full max-w-md glass-effect rounded-2xl p-6 relative"><button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg></button>
+     <div class="text-center mb-6"><img src="logo.png" alt="SportiveX" class="w-12 h-12 mx-auto rounded-xl mb-3" onerror="this.style.background='linear-gradient(135deg, #10b981, #f59e0b)'; this.alt='SX';">
+      <h2 id="auth-title" class="font-display text-3xl">JOIN SPORTIVEX</h2>
+      <p id="auth-subtitle" class="text-gray-400 text-sm mt-1">Create your account to start earning</p>
+     </div>
+     <form id="auth-form" onsubmit="handleAuth(event)">
+      <div id="register-fields" class="space-y-4">
+       <div><label for="username" class="block text-sm font-medium mb-2">Username</label> <input type="text" id="username" name="username" class="w-full px-4 py-3 bg-white/5 border border-gray-700 rounded-xl focus:border-emerald-500 transition" placeholder="Choose a username">
+       </div>
+      </div>
+      <div class="space-y-4 mt-4">
+       <div><label for="email" class="block text-sm font-medium mb-2">Email</label> <input type="email" id="email" name="email" required class="w-full px-4 py-3 bg-white/5 border border-gray-700 rounded-xl focus:border-emerald-500 transition" placeholder="Enter your email">
+       </div>
+       <div><label for="password" class="block text-sm font-medium mb-2">Password</label> <input type="password" id="password" name="password" required class="w-full px-4 py-3 bg-white/5 border border-gray-700 rounded-xl focus:border-emerald-500 transition" placeholder="Create a password">
+       </div>
+      </div><button type="submit" id="auth-submit" class="w-full mt-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 rounded-xl font-semibold transition"> Create Account </button>
+     </form>
+     <div class="mt-6 text-center">
+      <p class="text-gray-400 text-sm"><span id="auth-toggle-text">Already have an account?</span> <button id="auth-toggle-btn" onclick="toggleAuthMode()" class="text-emerald-400 hover:underline ml-1">Login</button></p>
+     </div>
+    </div>
+   </div><!-- Dashboard -->
+   <div id="dashboard" class="hidden w-full"><!-- Menu Overlay -->
+    <div id="menu-overlay" class="menu-overlay fixed inset-0 bg-black/60 z-40" onclick="toggleMenu()"></div><!-- Hamburger Menu -->
+    <div id="hamburger-menu" class="hamburger-menu fixed top-0 left-0 h-full w-72 bg-secondary z-50 shadow-2xl overflow-y-auto scrollbar-hide">
+     <div class="p-6">
+      <div class="flex items-center gap-3 mb-8"><img src="logo.png" alt="SportiveX" class="w-10 h-10 rounded-lg" onerror="this.style.background='linear-gradient(135deg, #10b981, #f59e0b)'; this.alt='SX';"> <span class="font-display text-xl text-emerald-400">SPORTIVEX</span>
+      </div>
+      <nav class="space-y-2"><button onclick="navigateTo('dashboard-home')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-left" data-page="dashboard-home">
+        <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg><span>Dashboard Home</span> </button>
+       <div class="pt-4 pb-2"><span class="text-xs text-gray-500 uppercase tracking-wider px-4">Today's Tasks</span>
+       </div><button onclick="navigateTo('trivia-tasks')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-left" data-page="trivia-tasks">
+        <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg><span>Trivia Tasks</span> <span class="ml-auto text-xs px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded-full">20+</span> </button> <button onclick="navigateTo('article-tasks')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-left" data-page="article-tasks">
+        <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg><span>Article Writing</span> <span class="ml-auto text-xs px-2 py-1 bg-amber-500/20 text-amber-400 rounded-full">20+</span> </button> <button onclick="navigateTo('video-tasks')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-left" data-page="video-tasks">
+        <svg class="w-5 h-5 text-rose-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        </svg><span>Video Analysis</span> <span class="ml-auto text-xs px-2 py-1 bg-rose-500/20 text-rose-400 rounded-full">20+</span> </button>
+       <div class="pt-4 pb-2"><span class="text-xs text-gray-500 uppercase tracking-wider px-4">Account</span>
+       </div><button onclick="navigateTo('submissions')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-left" data-page="submissions">
+        <svg class="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+        </svg><span>My Submissions</span> </button> <button onclick="navigateTo('notifications')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-left" data-page="notifications">
+        <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg><span>Notifications</span> <span class="ml-auto w-2 h-2 bg-rose-500 rounded-full"></span> </button> <button onclick="navigateTo('wallet')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-left" data-page="wallet">
+        <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg><span>Wallet</span> </button> <button onclick="navigateTo('withdraw')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-left" data-page="withdraw">
+        <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg><span>Withdraw</span> </button> <button onclick="navigateTo('subscribe')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-left" data-page="subscribe">
+        <svg class="w-5 h-5 text-rose-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+        </svg><span>Subscribe</span> </button> <button onclick="navigateTo('profile')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-left" data-page="profile">
+        <svg class="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg><span>Profile</span> </button> <button onclick="navigateTo('help')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-left" data-page="help">
+        <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg><span>Help / Rules</span> </button>
+       <div class="pt-4"><button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-rose-500/20 text-rose-400 transition text-left">
+         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+         </svg><span>Logout</span> </button>
+       </div>
+      </nav>
+     </div>
+    </div><!-- Dashboard Header -->
+    <header class="fixed top-2 left-2 right-2 z-30 glass-effect rounded-2xl px-4 py-3 mx-auto max-w-7xl">
+     <div class="flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-white/10 transition">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+       </svg></button>
+      <div class="flex items-center gap-3"><img src="logo.png" alt="SportiveX" class="w-8 h-8 rounded-lg" onerror="this.style.background='linear-gradient(135deg, #10b981, #f59e0b)'; this.alt='SX';"> <span class="font-display text-xl text-emerald-400 hidden sm:block">SPORTIVEX</span>
+      </div>
+      <div class="flex items-center gap-2"><button id="dashboard-theme-toggle" class="p-2 rounded-lg hover:bg-white/10 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg></button> <button onclick="navigateTo('notifications')" class="p-2 rounded-lg hover:bg-white/10 transition relative">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg><span class="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full"></span> </button>
+      </div>
+     </div>
+    </header><!-- Dashboard Content -->
+    <main class="pt-20 pb-8 px-4 md:px-6"><!-- Dashboard Home Page -->
+     <div id="page-dashboard-home" class="dashboard-page max-w-6xl mx-auto">
+      <div class="mb-8">
+       <h1 class="text-2xl md:text-3xl font-bold mb-2">Welcome back, <span id="welcome-username" class="text-emerald-400">User</span>! 👋</h1>
+       <p class="text-gray-400">Ready to tackle today's challenges?</p>
+      </div><!-- Stats Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+       <div class="glass-effect rounded-xl p-4 card-emerald">
+        <div class="flex items-center gap-3 mb-2">
+         <div class="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+         </div>
+        </div>
+        <div id="stat-completed" class="text-2xl font-bold">
+         0
+        </div>
+        <div class="text-xs text-gray-400">
+         Tasks Completed
+        </div>
+       </div>
+       <div class="glass-effect rounded-xl p-4 card-amber">
+        <div class="flex items-center gap-3 mb-2">
+         <div class="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+         </div>
+        </div>
+        <div id="stat-pending" class="text-2xl font-bold">
+         0
+        </div>
+        <div class="text-xs text-gray-400">
+         Pending Reviews
+        </div>
+       </div>
+       <div class="glass-effect rounded-xl p-4 card-rose">
+        <div class="flex items-center gap-3 mb-2">
+         <div class="w-10 h-10 bg-rose-500/20 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-rose-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+         </div>
+        </div>
+        <div id="stat-points" class="text-2xl font-bold">
+         0
+        </div>
+        <div class="text-xs text-gray-400">
+         Total Points
+        </div>
+       </div>
+       <div class="glass-effect rounded-xl p-4 card-violet">
+        <div class="flex items-center gap-3 mb-2">
+         <div class="w-10 h-10 bg-violet-500/20 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+         </div>
+        </div>
+        <div id="stat-wallet" class="text-2xl font-bold">
+         $0
+        </div>
+        <div class="text-xs text-gray-400">
+         Wallet Balance
+        </div>
+       </div>
+      </div><!-- Quick Start -->
+      <div class="mb-8">
+       <h2 class="text-lg font-semibold mb-4">Quick Start</h2>
+       <div class="grid md:grid-cols-3 gap-4"><button onclick="navigateTo('trivia-tasks')" class="task-card glass-effect rounded-xl p-6 text-left card-emerald hover:scale-105 transition">
+         <div class="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+         </div><h3 class="font-semibold mb-1">Start Trivia</h3><p class="text-sm text-gray-400">20+ questions available</p></button> <button onclick="navigateTo('article-tasks')" class="task-card glass-effect rounded-xl p-6 text-left card-amber hover:scale-105 transition">
+         <div class="w-12 h-12 bg-amber-500/20 rounded-xl flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+         </div><h3 class="font-semibold mb-1">Write Article</h3><p class="text-sm text-gray-400">20+ topics to choose</p></button> <button onclick="navigateTo('video-tasks')" class="task-card glass-effect rounded-xl p-6 text-left card-rose hover:scale-105 transition">
+         <div class="w-12 h-12 bg-rose-500/20 rounded-xl flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 text-rose-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+         </div><h3 class="font-semibold mb-1">Analyze Video</h3><p class="text-sm text-gray-400">20+ clips to review</p></button>
+       </div>
+      </div><!-- Recent Activity -->
+      <div>
+       <h2 class="text-lg font-semibold mb-4">Recent Activity</h2>
+       <div id="recent-activity" class="glass-effect rounded-xl overflow-hidden">
+        <div class="p-8 text-center text-gray-400">
+         <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+         </svg>
+         <p>No tasks completed yet</p>
+         <p class="text-sm mt-1">Start your first task to see activity here!</p>
+        </div>
+       </div>
+      </div>
+     </div><!-- Trivia Tasks Page -->
+     <div id="page-trivia-tasks" class="dashboard-page hidden max-w-4xl mx-auto">
+      <div class="mb-6"><button onclick="navigateTo('dashboard-home')" class="flex items-center gap-2 text-gray-400 hover:text-white transition mb-4">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg> Back to Dashboard </button>
+       <h1 class="text-2xl md:text-3xl font-bold mb-2">Football Trivia 🧠</h1>
+       <p class="text-gray-400">Test your football knowledge with timed questions</p>
+      </div>
+      <div id="trivia-list" class="space-y-4"></div>
+      <div id="trivia-game" class="hidden">
+       <div class="glass-effect rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-6"><span id="trivia-progress" class="text-sm text-gray-400">Question 1 of 10</span>
+         <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg><span id="trivia-timer" class="font-mono text-amber-400 font-bold">30</span>
+         </div>
+        </div>
+        <div id="trivia-difficulty" class="inline-block px-3 py-1 rounded-full text-xs font-medium mb-4 bg-emerald-500/20 text-emerald-400">
+         Easy
+        </div>
+        <h2 id="trivia-question" class="text-xl font-semibold mb-6">Loading question...</h2>
+        <div id="trivia-options" class="space-y-3"></div>
+        <div id="trivia-feedback" class="hidden mt-6 p-4 rounded-xl">
+         <p id="trivia-feedback-text" class="font-medium"></p>
+        </div>
+       </div>
+      </div>
+      <div id="trivia-results" class="hidden">
+       <div class="glass-effect rounded-2xl p-8 text-center">
+        <div class="w-20 h-20 mx-auto mb-6 bg-emerald-500/20 rounded-full flex items-center justify-center">
+         <svg class="w-10 h-10 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+         </svg>
+        </div>
+        <h2 class="text-2xl font-bold mb-2">Quiz Complete! 🎉</h2>
+        <p id="trivia-final-score" class="text-4xl font-bold text-emerald-400 mb-4">0/10</p>
+        <p id="trivia-points-earned" class="text-gray-400 mb-6">You earned 0 points</p><button onclick="resetTrivia()" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 rounded-xl font-semibold transition"> Play Again </button>
+       </div>
+      </div>
+     </div><!-- Article Writing Tasks Page -->
+     <div id="page-article-tasks" class="dashboard-page hidden max-w-4xl mx-auto">
+      <div class="mb-6"><button onclick="navigateTo('dashboard-home')" class="flex items-center gap-2 text-gray-400 hover:text-white transition mb-4">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg> Back to Dashboard </button>
+       <h1 class="text-2xl md:text-3xl font-bold mb-2">Article Writing ✍️</h1>
+       <p class="text-gray-400">Write compelling sports articles and earn rewards</p>
+      </div>
+      <div id="article-list" class="space-y-4"></div>
+      <div id="article-editor" class="hidden">
+       <div class="glass-effect rounded-2xl p-6">
+        <div class="mb-6">
+         <h2 id="article-title" class="text-xl font-semibold mb-2">Article Title</h2>
+         <div class="flex flex-wrap items-center gap-4 text-sm text-gray-400"><span id="article-word-req">Word count: 300-500 words</span> <span id="article-deadline">Deadline: 2 hours</span> <span id="article-reward" class="text-amber-400">+100 pts</span>
+         </div>
+        </div>
+        <div id="article-instructions" class="mb-6 p-4 bg-white/5 rounded-xl">
+         <h3 class="font-semibold mb-2">Instructions:</h3>
+         <p class="text-gray-400 text-sm">Write a detailed analysis...</p>
+        </div>
+        <div class="mb-4"><label for="article-content" class="block text-sm font-medium mb-2">Your Article</label> <textarea id="article-content" rows="12" class="w-full px-4 py-3 bg-white/5 border border-gray-700 rounded-xl focus:border-emerald-500 transition resize-none" placeholder="Start writing your article here..."></textarea>
+        </div>
+        <div class="flex items-center justify-between"><span id="word-count" class="text-sm text-gray-400">0 words</span>
+         <div class="flex gap-3"><button onclick="cancelArticle()" class="px-6 py-3 glass-effect rounded-xl font-semibold hover:bg-white/10 transition">Cancel</button> <button onclick="submitArticle()" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 rounded-xl font-semibold transition">Submit Article</button>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div><!-- Video Analysis Tasks Page -->
+     <div id="page-video-tasks" class="dashboard-page hidden max-w-4xl mx-auto">
+      <div class="mb-6"><button onclick="navigateTo('dashboard-home')" class="flex items-center gap-2 text-gray-400 hover:text-white transition mb-4">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg> Back to Dashboard </button>
+       <h1 class="text-2xl md:text-3xl font-bold mb-2">Video Analysis 🎬</h1>
+       <p class="text-gray-400">Watch clips and provide tactical insights</p>
+      </div>
+      <div id="video-list" class="space-y-4"></div>
+      <div id="video-analysis" class="hidden">
+       <div class="glass-effect rounded-2xl p-6">
+        <div class="mb-6">
+         <h2 id="video-title" class="text-xl font-semibold mb-2">Video Title</h2>
+         <div class="flex flex-wrap items-center gap-4 text-sm text-gray-400"><span id="video-duration">Duration: 2:30</span> <span id="video-reward" class="text-rose-400">+150 pts</span>
+         </div>
+        </div>
+        <div class="mb-6 aspect-video bg-black rounded-xl overflow-hidden flex items-center justify-center">
+         <video id="video-player" class="w-full h-full" controls><source src="video.mp4" type="video/mp4">
+         </video>
+        </div>
+        <div id="video-instructions" class="mb-6 p-4 bg-white/5 rounded-xl">
+         <h3 class="font-semibold mb-2">Analysis Instructions:</h3>
+         <p class="text-gray-400 text-sm">Watch the clip carefully and answer the questions...</p>
+        </div>
+        <div id="video-questions" class="space-y-4 mb-6"></div>
+        <div class="flex justify-end gap-3"><button onclick="cancelVideo()" class="px-6 py-3 glass-effect rounded-xl font-semibold hover:bg-white/10 transition">Cancel</button> <button onclick="submitVideoAnalysis()" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 rounded-xl font-semibold transition">Submit Analysis</button>
+        </div>
+       </div>
+      </div>
+     </div><!-- My Submissions Page -->
+     <div id="page-submissions" class="dashboard-page hidden max-w-4xl mx-auto">
+      <div class="mb-6"><button onclick="navigateTo('dashboard-home')" class="flex items-center gap-2 text-gray-400 hover:text-white transition mb-4">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg> Back to Dashboard </button>
+       <h1 class="text-2xl md:text-3xl font-bold mb-2">My Submissions 📋</h1>
+       <p class="text-gray-400">Track your submitted tasks and their status</p>
+      </div>
+      <div id="submissions-list" class="glass-effect rounded-xl p-8 text-center text-gray-400">
+       <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+       </svg>
+       <p>No submissions yet</p>
+       <p class="text-sm mt-1">Complete tasks to see them here!</p>
+      </div>
+     </div><!-- Notifications Page -->
+     <div id="page-notifications" class="dashboard-page hidden max-w-4xl mx-auto">
+      <div class="mb-6"><button onclick="navigateTo('dashboard-home')" class="flex items-center gap-2 text-gray-400 hover:text-white transition mb-4">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg> Back to Dashboard </button>
+       <h1 class="text-2xl md:text-3xl font-bold mb-2">Notifications 🔔</h1>
+       <p class="text-gray-400">Stay updated with your activity</p>
+      </div>
+      <div class="glass-effect rounded-xl p-4 border-l-4 border-emerald-500">
+       <div class="flex items-start gap-3">
+        <div class="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+         <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+         </svg>
+        </div>
+        <div>
+         <p class="font-medium">Welcome to SportiveX! 🎉</p>
+         <p class="text-sm text-gray-400 mt-1">Start completing tasks to earn points and rewards.</p><span class="text-xs text-gray-500 mt-2 block">Just now</span>
+        </div>
+       </div>
+      </div>
+     </div><!-- Wallet Page -->
+     <div id="page-wallet" class="dashboard-page hidden max-w-4xl mx-auto">
+      <div class="mb-6"><button onclick="navigateTo('dashboard-home')" class="flex items-center gap-2 text-gray-400 hover:text-white transition mb-4">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg> Back to Dashboard </button>
+       <h1 class="text-2xl md:text-3xl font-bold mb-2">Wallet 💰</h1>
+       <p class="text-gray-400">Manage your earnings</p>
+      </div>
+      <div class="grid md:grid-cols-2 gap-6 mb-8">
+       <div class="gradient-border">
+        <div class="card-inner p-6">
+         <p class="text-gray-400 text-sm mb-2">Available Balance</p>
+         <p id="wallet-balance" class="text-4xl font-bold text-emerald-400">$0.00</p>
+         <div class="mt-4 flex gap-3"><button onclick="navigateTo('withdraw')" class="flex-1 py-2 bg-emerald-500 hover:bg-emerald-600 rounded-lg font-medium transition text-sm">Withdraw</button>
+         </div>
+        </div>
+       </div>
+       <div class="glass-effect rounded-xl p-6">
+        <p class="text-gray-400 text-sm mb-2">Total Points</p>
+        <p id="wallet-points" class="text-4xl font-bold text-amber-400">0</p>
+        <p class="text-sm text-gray-500 mt-2">10 points = $1.00</p>
+       </div>
+      </div>
+      <div class="mb-8 glass-effect rounded-xl p-4 bg-blue-500/20 border border-blue-500/50">
+       <div class="flex items-start gap-3">
+        <svg class="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div class="text-sm">
+         <p class="font-medium text-blue-300 mb-1">Withdrawal Info</p>
+         <ul class="text-blue-200 space-y-1 text-xs">
+          <li>• Minimum withdrawal: 100 points ($10)</li>
+          <li>• Platform fee: 1% | Transaction fee: 10%</li>
+          <li>• Processed every 12 hours</li>
+          <li>• Takes up to 72 hours to reflect</li>
+         </ul>
+        </div>
+       </div>
+      </div>
+      <div>
+       <h2 class="text-lg font-semibold mb-4">Withdrawal History</h2>
+       <div id="transaction-history" class="glass-effect rounded-xl p-8 text-center text-gray-400">
+        <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+        <p>No withdrawals yet</p>
+       </div>
+      </div>
+     </div><!-- Withdraw Page -->
+     <div id="page-withdraw" class="dashboard-page hidden max-w-4xl mx-auto">
+      <div class="mb-6"><button onclick="navigateTo('wallet')" class="flex items-center gap-2 text-gray-400 hover:text-white transition mb-4">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg> Back to Wallet </button>
+       <h1 class="text-2xl md:text-3xl font-bold mb-2">Withdraw Funds 💸</h1>
+       <p class="text-gray-400">Request a withdrawal to your preferred method</p>
+      </div>
+      <div class="glass-effect rounded-2xl p-6">
+       <form id="withdraw-form" onsubmit="handleWithdraw(event)">
+        <div class="mb-6"><label class="block text-sm font-medium mb-2">Available Points</label>
+         <p class="text-3xl font-bold text-amber-400"><span id="withdraw-available-points">0</span> points</p>
+         <p class="text-sm text-gray-500 mt-1">= $<span id="withdraw-available-dollars">0.00</span></p>
+        </div>
+        <div class="mb-6"><label for="withdraw-points" class="block text-sm font-medium mb-2">Points to Withdraw</label> <input type="number" id="withdraw-points" name="points" min="100" step="1" required class="w-full px-4 py-3 bg-white/5 border border-gray-700 rounded-xl focus:border-emerald-500 transition" placeholder="0" oninput="updateWithdrawCalculation()">
+         <p class="text-xs text-gray-500 mt-2">Minimum withdrawal: 100 points ($10)</p>
+        </div>
+        <div class="mb-6 glass-effect rounded-xl p-4 bg-white/5">
+         <h3 class="text-sm font-medium mb-3">Withdrawal Breakdown</h3>
+         <div class="space-y-2 text-sm">
+          <div class="flex items-center justify-between"><span class="text-gray-400">Points to withdraw:</span> <span id="calc-points" class="font-medium">0</span>
+          </div>
+          <div class="flex items-center justify-between"><span class="text-gray-400">Base amount (÷10):</span> <span id="calc-base" class="font-medium text-amber-400">$0.00</span>
+          </div>
+          <div class="flex items-center justify-between border-t border-gray-700 pt-2"><span class="text-gray-400">Platform fee (1%):</span> <span id="calc-platform" class="font-medium text-rose-400">-$0.00</span>
+          </div>
+          <div class="flex items-center justify-between"><span class="text-gray-400">Transaction fee (10%):</span> <span id="calc-transaction" class="font-medium text-rose-400">-$0.00</span>
+          </div>
+          <div class="flex items-center justify-between border-t border-gray-700 pt-2 text-base font-semibold"><span>You'll receive:</span> <span id="calc-final" class="text-emerald-400">$0.00</span>
+          </div>
+         </div>
+        </div>
+        <div class="mb-6 glass-effect rounded-xl p-3 bg-blue-500/20 border border-blue-500/50 text-xs text-blue-200">
+         ⏱️ Next batch processing in <span id="next-batch">calculating...</span>. Takes up to 72 hours to reflect.
+        </div><button type="submit" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 rounded-xl font-semibold transition"> Request Withdrawal </button>
+       </form>
+      </div>
+     </div><!-- Subscribe Page -->
+     <div id="page-subscribe" class="dashboard-page hidden max-w-4xl mx-auto">
+      <div class="mb-6"><button onclick="navigateTo('dashboard-home')" class="flex items-center gap-2 text-gray-400 hover:text-white transition mb-4">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg> Back to Dashboard </button>
+       <h1 class="text-2xl md:text-3xl font-bold mb-2">Subscribe ⭐</h1>
+       <p class="text-gray-400">Unlock premium features and earn more</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+       <div class="glass-effect rounded-2xl p-6 border border-gray-700">
+        <div class="text-center mb-6">
+         <h3 class="font-display text-2xl text-gray-400 mb-2">FREE</h3>
+         <p class="text-4xl font-bold">$0</p>
+         <p class="text-sm text-gray-500">Forever free</p>
+        </div>
+        <ul class="space-y-3 mb-6 text-sm">
+         <li class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg> 10 tasks/day</li>
+         <li class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg> Basic trivia</li>
+        </ul><button class="w-full py-3 glass-effect rounded-xl font-semibold hover:bg-white/10 transition">Current Plan</button>
+       </div>
+       <div class="gradient-border relative">
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-emerald-500 rounded-full text-xs font-bold">
+         POPULAR
+        </div>
+        <div class="card-inner p-6">
+         <div class="text-center mb-6">
+          <h3 class="font-display text-2xl text-emerald-400 mb-2">PRO</h3>
+          <p class="text-4xl font-bold">$9.99</p>
+          <p class="text-sm text-gray-500">per month</p>
+         </div>
+         <ul class="space-y-3 mb-6 text-sm">
+          <li class="flex items-center gap-2">
+           <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+           </svg> Unlimited tasks</li>
+          <li class="flex items-center gap-2">
+           <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+           </svg> All task types</li>
+          <li class="flex items-center gap-2">
+           <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+           </svg> 2x points bonus</li>
+         </ul><button class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 rounded-xl font-semibold transition">Upgrade to Pro</button>
+        </div>
+       </div>
+       <div class="glass-effect rounded-2xl p-6 border border-amber-500/50">
+        <div class="text-center mb-6">
+         <h3 class="font-display text-2xl text-amber-400 mb-2">ELITE</h3>
+         <p class="text-4xl font-bold">$24.99</p>
+         <p class="text-sm text-gray-500">per month</p>
+        </div>
+        <ul class="space-y-3 mb-6 text-sm">
+         <li class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg> Everything in Pro</li>
+         <li class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg> 3x points bonus</li>
+         <li class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg> Exclusive badges</li>
+        </ul><button class="w-full py-3 bg-amber-500 hover:bg-amber-600 rounded-xl font-semibold text-black transition">Go Elite</button>
+       </div>
+      </div>
+     </div><!-- Profile Page -->
+     <div id="page-profile" class="dashboard-page hidden max-w-4xl mx-auto">
+      <div class="mb-6"><button onclick="navigateTo('dashboard-home')" class="flex items-center gap-2 text-gray-400 hover:text-white transition mb-4">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg> Back to Dashboard </button>
+       <h1 class="text-2xl md:text-3xl font-bold mb-2">Profile 👤</h1>
+       <p class="text-gray-400">Manage your account settings</p>
+      </div>
+      <div class="glass-effect rounded-2xl p-6 mb-6">
+       <div class="flex flex-col md:flex-row items-center gap-6 mb-8">
+        <div class="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-400 flex items-center justify-center text-4xl font-bold"><span id="profile-avatar">U</span>
+        </div>
+        <div class="text-center md:text-left">
+         <h2 id="profile-name" class="text-2xl font-bold">Username</h2>
+         <p id="profile-email" class="text-gray-400">email@example.com</p>
+         <div class="flex items-center gap-2 mt-2"><span id="profile-level" class="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-medium">Beginner</span>
+         </div>
+        </div>
+       </div>
+       <form id="profile-form" onsubmit="handleProfileUpdate(event)">
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+         <div><label for="profile-username" class="block text-sm font-medium mb-2">Username</label> <input type="text" id="profile-username" name="username" class="w-full px-4 py-3 bg-white/5 border border-gray-700 rounded-xl focus:border-emerald-500 transition" placeholder="Your username">
+         </div>
+         <div><label for="profile-skill" class="block text-sm font-medium mb-2">Skill Level</label> <select id="profile-skill" name="skill_level" class="w-full px-4 py-3 bg-white/5 border border-gray-700 rounded-xl focus:border-emerald-500 transition"> <option value="beginner">Beginner</option> <option value="intermediate">Intermediate</option> <option value="advanced">Advanced</option> <option value="expert">Expert</option> </select>
+         </div>
+        </div>
+        <div class="mb-6"><label for="profile-bio" class="block text-sm font-medium mb-2">Bio</label> <textarea id="profile-bio" name="bio" rows="4" class="w-full px-4 py-3 bg-white/5 border border-gray-700 rounded-xl focus:border-emerald-500 transition resize-none" placeholder="Tell us about yourself..."></textarea>
+        </div><button type="submit" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 rounded-xl font-semibold transition"> Save Changes </button>
+       </form>
+      </div>
+     </div><!-- Help Page -->
+     <div id="page-help" class="dashboard-page hidden max-w-4xl mx-auto">
+      <div class="mb-6"><button onclick="navigateTo('dashboard-home')" class="flex items-center gap-2 text-gray-400 hover:text-white transition mb-4">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg> Back to Dashboard </button>
+       <h1 class="text-2xl md:text-3xl font-bold mb-2">Help &amp; Rules 📖</h1>
+       <p class="text-gray-400">Learn how to use SportiveX effectively</p>
+      </div>
+      <div class="space-y-4">
+       <details class="glass-effect rounded-xl overflow-hidden group"><summary class="p-4 cursor-pointer hover:bg-white/5 transition font-medium">How do I earn points?</summary>
+        <div class="px-4 pb-4 text-gray-400 text-sm">
+         <p>You earn points by completing tasks:</p>
+         <ul class="list-disc list-inside mt-2 space-y-1">
+          <li>Trivia Tasks: 50 points per completed quiz</li>
+          <li>Article Writing: 100 points per approved article</li>
+          <li>Video Analysis: 150 points per approved analysis</li>
+         </ul>
+        </div>
+       </details>
+       <details class="glass-effect rounded-xl overflow-hidden"><summary class="p-4 cursor-pointer hover:bg-white/5 transition font-medium">How do withdrawals work?</summary>
+        <div class="px-4 pb-4 text-gray-400 text-sm">
+         <p>You can withdraw your earnings once you reach $10 minimum. Points convert at a rate of 1,000 points = $1.00. Withdrawals are processed within 3-5 business days.</p>
+        </div>
+       </details>
+       <details class="glass-effect rounded-xl overflow-hidden"><summary class="p-4 cursor-pointer hover:bg-white/5 transition font-medium">What are the article writing guidelines?</summary>
+        <div class="px-4 pb-4 text-gray-400 text-sm">
+         <ul class="list-disc list-inside space-y-1">
+          <li>Original content only - no plagiarism</li>
+          <li>Meet the word count requirements</li>
+          <li>Stay on topic and relevant</li>
+          <li>Use proper grammar and spelling</li>
+          <li>Include facts and analysis</li>
+         </ul>
+        </div>
+       </details>
+       <details class="glass-effect rounded-xl overflow-hidden"><summary class="p-4 cursor-pointer hover:bg-white/5 transition font-medium">How are submissions reviewed?</summary>
+        <div class="px-4 pb-4 text-gray-400 text-sm">
+         <p>Our team reviews all article and video analysis submissions within 24-48 hours. Trivia results are instant. You'll receive a notification once your submission is reviewed.</p>
+        </div>
+       </details>
+      </div>
+     </div>
+    </main>
+   </div>
+  </div><!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+  <script>
+    // Application State
+    let currentUser = null;
+    let submissions = [];
+    let isLightMode = false;
+    let currentTriviaQuiz = null;
+    let currentArticleTask = null;
+    let currentVideoTask = null;
+    let triviaTimer = null;
+
+    // Default config for Elements SDK
+    const defaultConfig = {
+      hero_title: "Test Your Football Knowledge. Analyze the Game. Earn Recognition.",
+      hero_subtitle: "Complete trivia challenges, write compelling sports articles, and analyze real football video clips. Build your reputation as a football expert and earn rewards."
+    };
+
+    // Trivia Questions
+    const triviaQuestions = [
+      { id: 1, question: "Who won the FIFA World Cup 2022?", options: ["France", "Argentina", "Brazil", "Germany"], correct: 1, difficulty: "Easy" },
+      { id: 2, question: "Which player has won the most Ballon d'Or awards?", options: ["Cristiano Ronaldo", "Lionel Messi", "Johan Cruyff", "Michel Platini"], correct: 1, difficulty: "Easy" },
+      { id: 3, question: "In what year was the first FIFA World Cup held?", options: ["1926", "1930", "1934", "1938"], correct: 1, difficulty: "Medium" },
+      { id: 4, question: "Which club has won the most UEFA Champions League titles?", options: ["AC Milan", "Barcelona", "Real Madrid", "Bayern Munich"], correct: 2, difficulty: "Easy" },
+      { id: 5, question: "Who is the all-time top scorer in Premier League history?", options: ["Wayne Rooney", "Alan Shearer", "Thierry Henry", "Harry Kane"], correct: 1, difficulty: "Medium" },
+      { id: 6, question: "Which country has won the most World Cup titles?", options: ["Germany", "Italy", "Argentina", "Brazil"], correct: 3, difficulty: "Easy" },
+      { id: 7, question: "What is the maximum number of substitutions in a match?", options: ["3", "4", "5", "6"], correct: 2, difficulty: "Medium" },
+      { id: 8, question: "Who scored the 'Hand of God' goal?", options: ["Pelé", "Diego Maradona", "Zinedine Zidane", "Ronaldinho"], correct: 1, difficulty: "Easy" },
+      { id: 9, question: "Which stadium is known as 'The Theatre of Dreams'?", options: ["Anfield", "Old Trafford", "Emirates Stadium", "Stamford Bridge"], correct: 1, difficulty: "Easy" },
+      { id: 10, question: "How many players are on a team on the field?", options: ["9", "10", "11", "12"], correct: 2, difficulty: "Easy" },
+      { id: 11, question: "Which player is known as 'CR7'?", options: ["Cristiano Ronaldo", "Carlos Ruiz", "Clarence Robins", "Christian Rodriguez"], correct: 0, difficulty: "Easy" },
+      { id: 12, question: "What is the official circumference of a football?", options: ["58-60cm", "68-70cm", "78-80cm", "88-90cm"], correct: 1, difficulty: "Hard" },
+      { id: 13, question: "Which team won the first Premier League title in 1992-93?", options: ["Arsenal", "Liverpool", "Manchester United", "Blackburn Rovers"], correct: 2, difficulty: "Medium" },
+      { id: 14, question: "How long is a standard football match?", options: ["60 minutes", "80 minutes", "90 minutes", "100 minutes"], correct: 2, difficulty: "Easy" },
+      { id: 15, question: "Which country hosted the 2018 FIFA World Cup?", options: ["Brazil", "South Africa", "Russia", "Qatar"], correct: 2, difficulty: "Easy" },
+      { id: 16, question: "Who is known as 'The Egyptian King'?", options: ["Ahmed Hassan", "Mohamed Salah", "Mohamed Aboutrika", "Mahmoud Trezeguet"], correct: 1, difficulty: "Easy" },
+      { id: 17, question: "What year did Manchester City win their first Premier League?", options: ["2010", "2011", "2012", "2013"], correct: 2, difficulty: "Medium" },
+      { id: 18, question: "Which club is nicknamed 'The Gunners'?", options: ["Chelsea", "Arsenal", "Tottenham", "West Ham"], correct: 1, difficulty: "Easy" },
+      { id: 19, question: "How many UEFA Champions League titles has Liverpool won?", options: ["4", "5", "6", "7"], correct: 2, difficulty: "Medium" },
+      { id: 20, question: "Who was the top scorer in the 2022 World Cup?", options: ["Lionel Messi", "Kylian Mbappé", "Olivier Giroud", "Cody Gakpo"], correct: 1, difficulty: "Medium" }
+    ];
+
+    // Article Tasks
+    const articleTasks = [
+      { id: 1, title: "Champions League Preview: Quarter-Finals Analysis", wordCount: "400-600", deadline: "3 hours", reward: 100, instructions: "Write a comprehensive preview of the upcoming Champions League quarter-final matches.", category: "Match Preview", color: "emerald" },
+      { id: 2, title: "Rising Star Analysis: Young Players to Watch", wordCount: "300-500", deadline: "2 hours", reward: 80, instructions: "Identify and analyze 3 young football players who will become superstars.", category: "Player Analysis", color: "amber" },
+      { id: 3, title: "Tactical Breakdown: High Press Systems", wordCount: "500-700", deadline: "4 hours", reward: 120, instructions: "Explain the tactical principles of high-pressing football.", category: "Tactical Analysis", color: "rose" },
+      { id: 4, title: "Transfer Window: Best Signings of the Season", wordCount: "400-600", deadline: "3 hours", reward: 100, instructions: "Analyze the top 5 transfer signings this season.", category: "Transfer Analysis", color: "violet" },
+      { id: 5, title: "Classic Match Review: A Historic Final", wordCount: "350-500", deadline: "2 hours", reward: 90, instructions: "Choose a historic cup final and provide a detailed review.", category: "Match Review", color: "cyan" }
+    ];
+
+    // Video Tasks
+    const videoTasks = [
+      { id: 1, title: "Goal Analysis: Counter-Attack Breakdown", duration: "2:30", reward: 150, instructions: "Watch this counter-attacking goal and analyze the key elements.", questions: ["Describe the key phases of this counter-attack", "Which player's movement was most crucial?", "What defensive errors led to this goal?"], color: "rose" },
+      { id: 2, title: "Defensive Shape Analysis", duration: "3:00", reward: 160, instructions: "Analyze this team's defensive organization and pressing triggers.", questions: ["How would you describe the team's defensive approach?", "Identify any weaknesses in their defensive structure", "What adjustments would you recommend?"], color: "emerald" },
+      { id: 3, title: "Build-Up Play Analysis", duration: "2:45", reward: 155, instructions: "Study this team's build-up from the back.", questions: ["Describe the team's build-up philosophy", "How do they create passing lanes?", "What risks are involved in this approach?"], color: "amber" },
+      { id: 4, title: "Set Piece Routine Analysis", duration: "1:45", reward: 130, instructions: "Analyze this set piece routine and its execution.", questions: ["What type of routine is being used?", "Identify the key movements that created the chance", "How could the defense have prevented this?"], color: "violet" },
+      { id: 5, title: "Individual Skill Breakdown", duration: "2:15", reward: 145, instructions: "Watch this individual piece of skill and break down the technique.", questions: ["Describe the technique used in detail", "What made this skill effective in this situation?", "Rate this skill out of 10 and justify"], color: "cyan" }
+    ];
+
+    // Initialize Elements SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          const titleEl = document.getElementById('hero-title');
+          const subtitleEl = document.getElementById('hero-subtitle');
+          if (titleEl && config.hero_title) {
+            titleEl.innerHTML = config.hero_title;
+          }
+          if (subtitleEl && config.hero_subtitle) {
+            subtitleEl.textContent = config.hero_subtitle;
+          }
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ["hero_title", config.hero_title || defaultConfig.hero_title],
+          ["hero_subtitle", config.hero_subtitle || defaultConfig.hero_subtitle]
+        ])
+      });
+    }
+
+    // Initialize Data SDK
+    const dataHandler = {
+      onDataChanged(data) {
+        submissions = data.filter(d => d.task_type);
+        updateDashboardStats();
+        updateSubmissionsList();
+      }
+    };
+
+    if (window.dataSdk) {
+      window.dataSdk.init(dataHandler);
+    }
+
+    // LocalStorage Management
+    function saveUserToStorage(user) {
+      localStorage.setItem('sportivex_user', JSON.stringify(user));
+    }
+
+    function getUserFromStorage() {
+      const stored = localStorage.getItem('sportivex_user');
+      return stored ? JSON.parse(stored) : null;
+    }
+
+    function clearUserFromStorage() {
+      localStorage.removeItem('sportivex_user');
+    }
+
+    // Theme Toggle
+    function toggleTheme() {
+      isLightMode = !isLightMode;
+      document.body.classList.toggle('light-mode', isLightMode);
+      localStorage.setItem('sportivex_theme', isLightMode ? 'light' : 'dark');
+    }
+
+    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+    document.getElementById('dashboard-theme-toggle').addEventListener('click', toggleTheme);
+
+    if (localStorage.getItem('sportivex_theme') === 'light') {
+      isLightMode = true;
+      document.body.classList.add('light-mode');
+    }
+
+    // Auth Modal
+    let authMode = 'register';
+
+    function showAuthModal(mode) {
+      authMode = mode;
+      const modal = document.getElementById('auth-modal');
+      const title = document.getElementById('auth-title');
+      const subtitle = document.getElementById('auth-subtitle');
+      const registerFields = document.getElementById('register-fields');
+      const submitBtn = document.getElementById('auth-submit');
+      const toggleText = document.getElementById('auth-toggle-text');
+      const toggleBtn = document.getElementById('auth-toggle-btn');
+
+      if (mode === 'login') {
+        title.textContent = 'WELCOME BACK';
+        subtitle.textContent = 'Login to continue earning';
+        registerFields.classList.add('hidden');
+        submitBtn.textContent = 'Login';
+        toggleText.textContent = "Don't have an account?";
+        toggleBtn.textContent = 'Register';
+      } else {
+        title.textContent = 'JOIN SPORTIVEX';
+        subtitle.textContent = 'Create your account to start earning';
+        registerFields.classList.remove('hidden');
+        submitBtn.textContent = 'Create Account';
+        toggleText.textContent = 'Already have an account?';
+        toggleBtn.textContent = 'Login';
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.add('hidden');
+      document.getElementById('auth-modal').classList.remove('flex');
+      document.getElementById('auth-form').reset();
+    }
+
+    function toggleAuthMode() {
+      showAuthModal(authMode === 'login' ? 'register' : 'login');
+    }
+
+    // Handle Authentication
+    async function handleAuth(e) {
+      e.preventDefault();
+      const form = e.target;
+      const email = form.email.value;
+      const password = form.password.value;
+      const username = authMode === 'register' ? form.username.value : email.split('@')[0];
+
+      if (authMode === 'register' && !username) {
+        showToast('Please enter a username', 'error');
+        return;
+      }
+
+      currentUser = {
+        user_id: 'user_' + Date.now(),
+        username,
+        email,
+        password,
+        bio: '',
+        skill_level: 'beginner',
+        points: 0,
+        tasks_completed: 0,
+        pending_reviews: 0,
+        wallet_balance: 0,
+        created_at: new Date().toISOString()
+      };
+
+      saveUserToStorage(currentUser);
+      closeAuthModal();
+      showDashboard();
+      showToast(`Welcome${authMode === 'register' ? '' : ' back'}, ${currentUser.username}!`, 'success');
+    }
+
+    document.getElementById('auth-form').addEventListener('submit', handleAuth);
+
+    // Show Dashboard
+    function showDashboard() {
+      document.getElementById('landing-page').classList.add('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+      updateDashboardStats();
+      generateTriviaList();
+      generateArticleList();
+      generateVideoList();
+      navigateTo('dashboard-home');
+    }
+
+    // Show Landing
+    function showLanding() {
+      document.getElementById('landing-page').classList.remove('hidden');
+      document.getElementById('dashboard').classList.add('hidden');
+    }
+
+    // Logout
+    function logout() {
+      currentUser = null;
+      clearUserFromStorage();
+      toggleMenu();
+      showLanding();
+      showToast('Logged out successfully', 'success');
+    }
+
+    // Menu Toggle
+    function toggleMenu() {
+      const menu = document.getElementById('hamburger-menu');
+      const overlay = document.getElementById('menu-overlay');
+      menu.classList.toggle('open');
+      overlay.classList.toggle('open');
+    }
+
+    // Navigation
+    function navigateTo(page) {
+      const pages = document.querySelectorAll('.dashboard-page');
+      pages.forEach(p => p.classList.add('hidden'));
+      
+      const targetPage = document.getElementById('page-' + page);
+      if (targetPage) {
+        targetPage.classList.remove('hidden');
+      }
+
+      const menuItems = document.querySelectorAll('.menu-item');
+      menuItems.forEach(item => {
+        item.classList.remove('bg-white/10');
+        if (item.dataset.page === page) {
+          item.classList.add('bg-white/10');
+        }
+      });
+
+      toggleMenu();
+    }
+
+    // Update Dashboard Stats
+    function updateDashboardStats() {
+      if (!currentUser) return;
+      
+      document.getElementById('welcome-username').textContent = currentUser.username;
+      document.getElementById('stat-completed').textContent = currentUser.tasks_completed || 0;
+      document.getElementById('stat-pending').textContent = currentUser.pending_reviews || 0;
+      document.getElementById('stat-points').textContent = currentUser.points || 0;
+      document.getElementById('stat-wallet').textContent = '$' + ((currentUser.points || 0) / 10).toFixed(2);
+      
+      document.getElementById('wallet-balance').textContent = ((currentUser.points || 0) / 10).toFixed(2);
+      document.getElementById('wallet-points').textContent = currentUser.points || 0;
+      document.getElementById('withdraw-available-points').textContent = currentUser.points || 0;
+      document.getElementById('withdraw-available-dollars').textContent = ((currentUser.points || 0) / 10).toFixed(2);
+      
+      document.getElementById('profile-avatar').textContent = (currentUser.username || 'U')[0].toUpperCase();
+      document.getElementById('profile-name').textContent = currentUser.username;
+      document.getElementById('profile-email').textContent = currentUser.email;
+      document.getElementById('profile-username').value = currentUser.username;
+      document.getElementById('profile-bio').value = currentUser.bio || '';
+      document.getElementById('profile-skill').value = currentUser.skill_level || 'beginner';
+      
+      updateNextBatchTime();
+    }
+
+    // Calculate withdrawal and update display
+    function updateWithdrawCalculation() {
+      const points = parseInt(document.getElementById('withdraw-points').value) || 0;
+      const baseAmount = points / 10;
+      const platformFee = baseAmount * 0.01;
+      const transactionFee = (baseAmount - platformFee) * 0.10;
+      const finalAmount = baseAmount - platformFee - transactionFee;
+      
+      document.getElementById('calc-points').textContent = points;
+      document.getElementById('calc-base').textContent = '$' + baseAmount.toFixed(2);
+      document.getElementById('calc-platform').textContent = '-$' + platformFee.toFixed(2);
+      document.getElementById('calc-transaction').textContent = '-$' + transactionFee.toFixed(2);
+      document.getElementById('calc-final').textContent = '$' + finalAmount.toFixed(2);
+    }
+
+    // Update next batch processing time
+    function updateNextBatchTime() {
+      if (!currentUser) return;
+      
+      const lastTime = currentUser.last_withdrawal_time ? new Date(currentUser.last_withdrawal_time) : null;
+      const now = new Date();
+      
+      let nextBatch;
+      if (!lastTime) {
+        nextBatch = new Date(now.getTime() + 12 * 60 * 60 * 1000);
+      } else {
+        nextBatch = new Date(lastTime.getTime() + 12 * 60 * 60 * 1000);
+      }
+      
+      const timeDiff = nextBatch - now;
+      
+      if (timeDiff <= 0) {
+        document.getElementById('next-batch').textContent = 'now!';
+      } else {
+        const hours = Math.floor(timeDiff / (60 * 60 * 1000));
+        const minutes = Math.floor((timeDiff % (60 * 60 * 1000)) / (60 * 1000));
+        document.getElementById('next-batch').textContent = `${hours}h ${minutes}m`;
+      }
+    }
+
+    // Generate Trivia List
+    function generateTriviaList() {
+      const container = document.getElementById('trivia-list');
+      const colors = ['emerald', 'amber', 'rose', 'violet', 'cyan'];
+      
+      let html = '';
+      for (let i = 0; i < 5; i++) {
+        const color = colors[i % colors.length];
+        html += `
+          <div class="task-card glass-effect rounded-xl p-4 card-${color} cursor-pointer" onclick="startTrivia(${i + 1})">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-${color}-500/20 rounded-xl flex items-center justify-center">
+                  <svg class="w-6 h-6 text-${color}-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="font-semibold">Football Quiz ${i + 1}</h3>
+                  <p class="text-sm text-gray-400">10 questions • Mixed difficulty</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="text-${color}-400 font-semibold">+50 pts</span>
+                <p class="text-xs text-gray-500">5 min</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      container.innerHTML = html;
+    }
+
+    // Generate Article List
+    function generateArticleList() {
+      const container = document.getElementById('article-list');
+      let html = '';
+      
+      articleTasks.forEach((task, index) => {
+        const colors = ['emerald', 'amber', 'rose', 'violet', 'cyan'];
+        const color = colors[index % colors.length];
+        html += `
+          <div class="task-card glass-effect rounded-xl p-4 card-${color} cursor-pointer" onclick="startArticle(${index})">
+            <div class="flex items-center justify-between">
+              <div class="flex-1">
+                <h3 class="font-semibold">${task.title}</h3>
+                <p class="text-sm text-gray-400 mt-1">${task.wordCount} words</p>
+              </div>
+              <div class="text-right ml-4">
+                <span class="text-${color}-400 font-semibold">+${task.reward} pts</span>
+                <p class="text-xs text-gray-500">${task.deadline}</p>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html;
+    }
+
+    // Generate Video List
+    function generateVideoList() {
+      const container = document.getElementById('video-list');
+      let html = '';
+      
+      videoTasks.forEach((task, index) => {
+        const colors = ['rose', 'emerald', 'amber', 'violet', 'cyan'];
+        const color = colors[index % colors.length];
+        html += `
+          <div class="task-card glass-effect rounded-xl p-4 card-${color} cursor-pointer" onclick="startVideo(${index})">
+            <div class="flex items-center justify-between">
+              <div class="flex-1">
+                <h3 class="font-semibold">${task.title}</h3>
+                <p class="text-sm text-gray-400 mt-1">${task.duration}</p>
+              </div>
+              <div class="text-right ml-4">
+                <span class="text-${color}-400 font-semibold">+${task.reward} pts</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html;
+    }
+
+    // Trivia Functions
+    function startTrivia(quizId) {
+      document.getElementById('trivia-list').classList.add('hidden');
+      document.getElementById('trivia-game').classList.remove('hidden');
+      document.getElementById('trivia-results').classList.add('hidden');
+      
+      currentTriviaQuiz = {
+        id: quizId,
+        questions: shuffleArray([...triviaQuestions]).slice(0, 10),
+        currentIndex: 0,
+        score: 0,
+        timeLeft: 30
+      };
+      
+      showTriviaQuestion();
+      startTriviaTimer();
+    }
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function showTriviaQuestion() {
+      if (!currentTriviaQuiz) return;
+      const quiz = currentTriviaQuiz;
+      if (quiz.currentIndex >= quiz.questions.length) {
+        finishTrivia();
+        return;
+      }
+      
+      const question = quiz.questions[quiz.currentIndex];
+      
+      document.getElementById('trivia-progress').textContent = `Question ${quiz.currentIndex + 1} of ${quiz.questions.length}`;
+      document.getElementById('trivia-question').textContent = question.question;
+      
+      const diffClass = question.difficulty === 'Easy' ? 'bg-emerald-500/20 text-emerald-400' :
+                        question.difficulty === 'Medium' ? 'bg-amber-500/20 text-amber-400' :
+                        'bg-rose-500/20 text-rose-400';
+      document.getElementById('trivia-difficulty').textContent = question.difficulty;
+      document.getElementById('trivia-difficulty').className = `inline-block px-3 py-1 rounded-full text-xs font-medium mb-4 ${diffClass}`;
+      
+      const optionsHtml = question.options.map((option, index) => `
+        <button onclick="selectTriviaAnswer(${index})" class="w-full text-left px-4 py-3 glass-effect rounded-xl hover:bg-white/10 transition">
+          <span class="font-medium">${String.fromCharCode(65 + index)}.</span> ${option}
+        </button>
+      `).join('');
+      
+      document.getElementById('trivia-options').innerHTML = optionsHtml;
+      document.getElementById('trivia-feedback').classList.add('hidden');
+      
+      quiz.timeLeft = 30;
+      document.getElementById('trivia-timer').textContent = quiz.timeLeft;
+    }
+
+    function startTriviaTimer() {
+      if (triviaTimer) clearInterval(triviaTimer);
+      
+      triviaTimer = setInterval(() => {
+        if (!currentTriviaQuiz) return;
+        currentTriviaQuiz.timeLeft--;
+        document.getElementById('trivia-timer').textContent = currentTriviaQuiz.timeLeft;
+        
+        if (currentTriviaQuiz.timeLeft <= 0) {
+          clearInterval(triviaTimer);
+          selectTriviaAnswer(-1);
+        }
+      }, 1000);
+    }
+
+    function selectTriviaAnswer(index) {
+      if (!currentTriviaQuiz) return;
+      clearInterval(triviaTimer);
+      
+      const quiz = currentTriviaQuiz;
+      const question = quiz.questions[quiz.currentIndex];
+      const isCorrect = index === question.correct;
+      
+      if (isCorrect) {
+        quiz.score++;
+      }
+      
+      const feedback = document.getElementById('trivia-feedback');
+      const feedbackText = document.getElementById('trivia-feedback-text');
+      feedback.classList.remove('hidden');
+      
+      if (index === -1) {
+        feedback.className = 'mt-6 p-4 rounded-xl bg-amber-500/20';
+        feedbackText.textContent = `⏰ Time's up! The correct answer was: ${question.options[question.correct]}`;
+      } else if (isCorrect) {
+        feedback.className = 'mt-6 p-4 rounded-xl bg-emerald-500/20';
+        feedbackText.textContent = `✅ Correct! ${question.options[question.correct]}`;
+      } else {
+        feedback.className = 'mt-6 p-4 rounded-xl bg-rose-500/20';
+        feedbackText.textContent = `❌ Incorrect. The correct answer was: ${question.options[question.correct]}`;
+      }
+      
+      setTimeout(() => {
+        quiz.currentIndex++;
+        showTriviaQuestion();
+        startTriviaTimer();
+      }, 2000);
+    }
+
+    function finishTrivia() {
+      if (!currentTriviaQuiz) return;
+      const quiz = currentTriviaQuiz;
+      const points = quiz.score * 50;
+      
+      currentUser.points = (currentUser.points || 0) + points;
+      currentUser.tasks_completed = (currentUser.tasks_completed || 0) + 1;
+      saveUserToStorage(currentUser);
+      updateDashboardStats();
+      
+      document.getElementById('trivia-game').classList.add('hidden');
+      document.getElementById('trivia-results').classList.remove('hidden');
+      document.getElementById('trivia-final-score').textContent = `${quiz.score}/10`;
+      document.getElementById('trivia-points-earned').textContent = `You earned ${points} points`;
+      
+      showToast(`Quiz completed! You earned ${points} points!`, 'success');
+    }
+
+    function resetTrivia() {
+      document.getElementById('trivia-results').classList.add('hidden');
+      document.getElementById('trivia-list').classList.remove('hidden');
+      currentTriviaQuiz = null;
+    }
+
+    // Article Functions
+    function startArticle(index) {
+      currentArticleTask = articleTasks[index];
+      document.getElementById('article-list').classList.add('hidden');
+      document.getElementById('article-editor').classList.remove('hidden');
+      
+      document.getElementById('article-title').textContent = currentArticleTask.title;
+      document.getElementById('article-word-req').textContent = `Word count: ${currentArticleTask.wordCount} words`;
+      document.getElementById('article-deadline').textContent = `Deadline: ${currentArticleTask.deadline}`;
+      document.getElementById('article-reward').textContent = `+${currentArticleTask.reward} pts`;
+      document.getElementById('article-instructions').querySelector('p').textContent = currentArticleTask.instructions;
+      document.getElementById('article-content').value = '';
+      document.getElementById('word-count').textContent = '0 words';
+      
+      document.getElementById('article-content').addEventListener('input', updateWordCount);
+    }
+
+    function updateWordCount() {
+      const content = document.getElementById('article-content').value;
+      const words = content.trim().split(/\s+/).filter(w => w.length > 0).length;
+      document.getElementById('word-count').textContent = `${words} words`;
+    }
+
+    function submitArticle() {
+      if (!currentArticleTask) return;
+      const content = document.getElementById('article-content').value;
+      
+      if (content.trim().length < 50) {
+        showToast('Article is too short. Please write more.', 'error');
+        return;
+      }
+      
+      currentUser.pending_reviews = (currentUser.pending_reviews || 0) + 1;
+      currentUser.points = (currentUser.points || 0) + currentArticleTask.reward;
+      saveUserToStorage(currentUser);
+      updateDashboardStats();
+      
+      document.getElementById('article-editor').classList.add('hidden');
+      document.getElementById('article-list').classList.remove('hidden');
+      currentArticleTask = null;
+      
+      showToast(`Article submitted! +${currentArticleTask.reward} points pending approval`, 'success');
+    }
+
+    function cancelArticle() {
+      document.getElementById('article-editor').classList.add('hidden');
+      document.getElementById('article-list').classList.remove('hidden');
+      currentArticleTask = null;
+    }
+
+    // Video Functions
+    function startVideo(index) {
+      currentVideoTask = videoTasks[index];
+      document.getElementById('video-list').classList.add('hidden');
+      document.getElementById('video-analysis').classList.remove('hidden');
+      
+      document.getElementById('video-title').textContent = currentVideoTask.title;
+      document.getElementById('video-duration').textContent = `Duration: ${currentVideoTask.duration}`;
+      document.getElementById('video-reward').textContent = `+${currentVideoTask.reward} pts`;
+      document.getElementById('video-instructions').querySelector('p').textContent = currentVideoTask.instructions;
+      
+      let questionsHtml = '';
+      currentVideoTask.questions.forEach((q, i) => {
+        questionsHtml += `
+          <div>
+            <label class="block text-sm font-medium mb-2">Question ${i + 1}: ${q}</label>
+            <textarea class="video-answer-${i} w-full px-4 py-3 bg-white/5 border border-gray-700 rounded-xl focus:border-emerald-500 transition resize-none" rows="3" placeholder="Your answer..."></textarea>
+          </div>
+        `;
+      });
+      document.getElementById('video-questions').innerHTML = questionsHtml;
+    }
+
+    function submitVideoAnalysis() {
+      if (!currentVideoTask) return;
+      
+      const answers = [];
+      for (let i = 0; i < currentVideoTask.questions.length; i++) {
+        const answer = document.querySelector(`.video-answer-${i}`).value;
+        if (!answer.trim()) {
+          showToast('Please answer all questions', 'error');
+          return;
+        }
+        answers.push(answer);
+      }
+      
+      currentUser.pending_reviews = (currentUser.pending_reviews || 0) + 1;
+      currentUser.points = (currentUser.points || 0) + currentVideoTask.reward;
+      saveUserToStorage(currentUser);
+      updateDashboardStats();
+      
+      document.getElementById('video-analysis').classList.add('hidden');
+      document.getElementById('video-list').classList.remove('hidden');
+      currentVideoTask = null;
+      
+      showToast(`Video analysis submitted! +${currentVideoTask.reward} points pending approval`, 'success');
+    }
+
+    function cancelVideo() {
+      document.getElementById('video-analysis').classList.add('hidden');
+      document.getElementById('video-list').classList.remove('hidden');
+      currentVideoTask = null;
+    }
+
+    // Submissions Management
+    function updateSubmissionsList() {
+      const container = document.getElementById('submissions-list');
+      if (submissions.length === 0) {
+        container.innerHTML = `
+          <div class="glass-effect rounded-xl p-8 text-center text-gray-400">
+            <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            <p>No submissions yet</p>
+          </div>
+        `;
+      }
+    }
+
+    // Form Handlers
+    function handleProfileUpdate(e) {
+      e.preventDefault();
+      currentUser.username = document.getElementById('profile-username').value;
+      currentUser.bio = document.getElementById('profile-bio').value;
+      currentUser.skill_level = document.getElementById('profile-skill').value;
+      saveUserToStorage(currentUser);
+      updateDashboardStats();
+      showToast('Profile updated successfully!', 'success');
+    }
+
+    function handleWithdraw(e) {
+      e.preventDefault();
+      const points = parseInt(document.getElementById('withdraw-points').value);
+      
+      if (points < 100) {
+        showToast('Minimum withdrawal is 100 points ($10)', 'error');
+        return;
+      }
+      
+      if (points > (currentUser.points || 0)) {
+        showToast('Insufficient points', 'error');
+        return;
+      }
+      
+      // Calculate fees
+      const baseAmount = points / 10;
+      const platformFee = baseAmount * 0.01;
+      const transactionFee = (baseAmount - platformFee) * 0.10;
+      const finalAmount = baseAmount - platformFee - transactionFee;
+      
+      // Deduct points immediately
+      currentUser.points = (currentUser.points || 0) - points;
+      
+      // Create withdrawal request
+      if (!currentUser.withdrawal_requests) {
+        currentUser.withdrawal_requests = JSON.stringify([]);
+      }
+      
+      const requests = JSON.parse(currentUser.withdrawal_requests);
+      requests.push({
+        id: 'wr_' + Date.now(),
+        points,
+        baseAmount,
+        platformFee,
+        transactionFee,
+        finalAmount,
+        status: 'pending',
+        requested_at: new Date().toISOString(),
+        processed_at: null,
+        completed_at: null
+      });
+      
+      currentUser.withdrawal_requests = JSON.stringify(requests);
+      currentUser.last_withdrawal_time = new Date().toISOString();
+      saveUserToStorage(currentUser);
+      updateDashboardStats();
+      
+      document.getElementById('withdraw-form').reset();
+      
+      showToast(`Withdrawal request for ${points} points submitted! You'll receive $${finalAmount.toFixed(2)} after fees.`, 'success');
+      navigateTo('wallet');
+    }
+
+    document.getElementById('profile-form').addEventListener('submit', handleProfileUpdate);
+    document.getElementById('withdraw-form').addEventListener('submit', handleWithdraw);
+
+    // Toast Notifications
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast glass-effect rounded-lg px-4 py-3 text-sm font-medium border-l-4 ${
+        type === 'success' ? 'border-emerald-500 bg-emerald-500/20 text-emerald-400' :
+        type === 'error' ? 'border-rose-500 bg-rose-500/20 text-rose-400' :
+        'border-blue-500 bg-blue-500/20 text-blue-400'
+      }`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+    // Check for saved user on load
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedUser = getUserFromStorage();
+      if (savedUser) {
+        currentUser = savedUser;
+        showDashboard();
+      }
+    });
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c8b4804226a9c03',t:'MTc3MDIxOTc4Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
