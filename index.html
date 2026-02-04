@@ -772,9 +772,7 @@
          <div class="flex flex-wrap items-center gap-4 text-sm text-gray-400"><span id="video-duration">Duration: 2:30</span> <span id="video-reward" class="text-rose-400">+150 pts</span>
          </div>
         </div>
-        <div class="mb-6 aspect-video bg-black rounded-xl overflow-hidden flex items-center justify-center">
-         <video id="video-player" class="w-full h-full" controls><source src="video.mp4" type="video/mp4">
-         </video>
+        <div class="mb-6 aspect-video bg-black rounded-xl overflow-hidden"><iframe id="youtube-player" class="w-full h-full" src="" title="Football Analysis Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
         <div id="video-instructions" class="mb-6 p-4 bg-white/5 rounded-xl">
          <h3 class="font-semibold mb-2">Analysis Instructions:</h3>
@@ -910,7 +908,7 @@
        <h1 class="text-2xl md:text-3xl font-bold mb-2">Subscribe ⭐</h1>
        <p class="text-gray-400">Unlock premium features and earn more</p>
       </div>
-      <div class="grid md:grid-cols-3 gap-6">
+      <div id="subscription-plans" class="grid md:grid-cols-3 gap-6">
        <div class="glass-effect rounded-2xl p-6 border border-gray-700">
         <div class="text-center mb-6">
          <h3 class="font-display text-2xl text-gray-400 mb-2">FREE</h3>
@@ -934,9 +932,9 @@
         </div>
         <div class="card-inner p-6">
          <div class="text-center mb-6">
-          <h3 class="font-display text-2xl text-emerald-400 mb-2">PRO</h3>
-          <p class="text-4xl font-bold">$9.99</p>
-          <p class="text-sm text-gray-500">per month</p>
+          <h3 class="font-display text-2xl text-emerald-400 mb-2">BASIC</h3>
+          <p class="text-4xl font-bold">$2.60</p>
+          <p class="text-sm text-gray-500">one-time payment</p>
          </div>
          <ul class="space-y-3 mb-6 text-sm">
           <li class="flex items-center gap-2">
@@ -950,21 +948,21 @@
           <li class="flex items-center gap-2">
            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-           </svg> 2x points bonus</li>
-         </ul><button class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 rounded-xl font-semibold transition">Upgrade to Pro</button>
+           </svg> 1.5x points bonus</li>
+         </ul><button onclick="handleSubscribe('basic', 2.60)" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 rounded-xl font-semibold transition">Upgrade to Basic</button>
         </div>
        </div>
        <div class="glass-effect rounded-2xl p-6 border border-amber-500/50">
         <div class="text-center mb-6">
          <h3 class="font-display text-2xl text-amber-400 mb-2">ELITE</h3>
-         <p class="text-4xl font-bold">$24.99</p>
-         <p class="text-sm text-gray-500">per month</p>
+         <p class="text-4xl font-bold">$3.60</p>
+         <p class="text-sm text-gray-500">one-time payment</p>
         </div>
         <ul class="space-y-3 mb-6 text-sm">
          <li class="flex items-center gap-2">
           <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg> Everything in Pro</li>
+          </svg> Everything in Basic</li>
          <li class="flex items-center gap-2">
           <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -973,7 +971,20 @@
           <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg> Exclusive badges</li>
-        </ul><button class="w-full py-3 bg-amber-500 hover:bg-amber-600 rounded-xl font-semibold text-black transition">Go Elite</button>
+        </ul><button onclick="handleSubscribe('elite', 3.60)" class="w-full py-3 bg-amber-500 hover:bg-amber-600 rounded-xl font-semibold text-black transition">Go Elite</button>
+       </div>
+      </div>
+      <div id="payment-success-message" class="hidden mt-8">
+       <div class="glass-effect rounded-2xl p-8 bg-emerald-500/20 border border-emerald-500/50">
+        <div class="text-center">
+         <div class="w-16 h-16 mx-auto mb-4 bg-emerald-500/30 rounded-full flex items-center justify-center">
+          <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+         </div>
+         <h2 class="text-2xl font-bold text-emerald-400 mb-2">✅ Already Paid</h2>
+         <p class="text-gray-300 mb-4">Thank you for your subscription! Your account has been upgraded with premium features.</p>
+         <p id="subscription-plan-display" class="text-lg font-semibold text-emerald-400 mb-6">Plan: BASIC</p><button onclick="resetSubscriptionPage()" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 rounded-xl font-semibold transition"> Back to Dashboard </button>
+        </div>
        </div>
       </div>
      </div><!-- Profile Page -->
@@ -1051,7 +1062,34 @@
     </main>
    </div>
   </div><!-- Toast Container -->
-  <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div><!-- Music Player -->
+  <audio id="bg-music" src="song.mp3" preload="auto"></audio>
+  <div id="music-player" class="fixed bottom-4 left-4 z-50 glass-effect rounded-2xl p-4 w-80 shadow-2xl">
+   <div class="space-y-3"><!-- Now Playing Title -->
+    <div class="text-center">
+     <p class="text-xs text-gray-400 uppercase tracking-wider">Now Playing</p>
+     <p class="text-sm font-semibold text-emerald-400 truncate">SportiveX Background</p>
+    </div><!-- Progress Bar -->
+    <div class="space-y-1"><input type="range" id="progress-bar" class="w-full h-1 bg-gray-700 rounded-lg cursor-pointer appearance-none" style="background: linear-gradient(to right, #10b981 0%, #10b981 0%, #374151 0%, #374151 100%);" min="0" max="100" value="0">
+     <div class="flex items-center justify-between text-xs text-gray-500"><span id="current-time">0:00</span> <span id="duration-time">0:00</span>
+     </div>
+    </div><!-- Controls -->
+    <div class="flex items-center justify-between gap-2"><!-- Play/Pause Button --> <button id="play-pause-btn" onclick="togglePlayPause()" class="flex-1 flex items-center justify-center gap-2 py-2 bg-emerald-500 hover:bg-emerald-600 rounded-lg font-semibold transition">
+      <svg id="play-icon" class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24"><path d="M8 5v14l11-7z" />
+      </svg>
+      <svg id="pause-icon" class="w-5 h-5 hidden" fill="currentColor" viewbox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+      </svg><span id="play-pause-text">Play</span> </button> <!-- Volume Control -->
+     <div class="flex items-center gap-2 flex-1">
+      <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="currentColor" viewbox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.26 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+      </svg><input type="range" id="volume-slider" min="0" max="100" value="70" class="w-full h-1 bg-gray-700 rounded-lg cursor-pointer appearance-none" onchange="setVolume(this.value)">
+     </div><!-- Close Button --> <button onclick="toggleMusicPlayer()" class="p-2 hover:bg-white/10 rounded-lg transition flex-shrink-0">
+      <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg></button>
+    </div>
+   </div>
+  </div><!-- Minimized Music Player Button --> <button id="music-player-minimized" onclick="toggleMusicPlayer()" class="fixed bottom-4 left-4 z-50 hidden w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 rounded-full flex items-center justify-center shadow-lg transition transform hover:scale-110">
+   <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24"><path d="M12 3v9.28c-.47-.46-.97-.88-1.5-1.28C7.55 9.05 5.5 7 5.5 5.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5c0 .5-.21.95-.54 1.27C9.29 4.38 10.56 3.6 12 3zm0 0c1.44.6 2.71 1.38 3.54 2.27-.33-.32-.54-.77-.54-1.27 0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5c0 1.5-2.05 3.55-4.5 5.5.53.4 1.03.82 1.5 1.28V3z" />
+   </svg></button>
   <script>
     // Application State
     let currentUser = null;
@@ -1101,13 +1139,148 @@
       { id: 5, title: "Classic Match Review: A Historic Final", wordCount: "350-500", deadline: "2 hours", reward: 90, instructions: "Choose a historic cup final and provide a detailed review.", category: "Match Review", color: "cyan" }
     ];
 
-    // Video Tasks
+    // Video Tasks with YouTube Embeds and Answer Keys
     const videoTasks = [
-      { id: 1, title: "Goal Analysis: Counter-Attack Breakdown", duration: "2:30", reward: 150, instructions: "Watch this counter-attacking goal and analyze the key elements.", questions: ["Describe the key phases of this counter-attack", "Which player's movement was most crucial?", "What defensive errors led to this goal?"], color: "rose" },
-      { id: 2, title: "Defensive Shape Analysis", duration: "3:00", reward: 160, instructions: "Analyze this team's defensive organization and pressing triggers.", questions: ["How would you describe the team's defensive approach?", "Identify any weaknesses in their defensive structure", "What adjustments would you recommend?"], color: "emerald" },
-      { id: 3, title: "Build-Up Play Analysis", duration: "2:45", reward: 155, instructions: "Study this team's build-up from the back.", questions: ["Describe the team's build-up philosophy", "How do they create passing lanes?", "What risks are involved in this approach?"], color: "amber" },
-      { id: 4, title: "Set Piece Routine Analysis", duration: "1:45", reward: 130, instructions: "Analyze this set piece routine and its execution.", questions: ["What type of routine is being used?", "Identify the key movements that created the chance", "How could the defense have prevented this?"], color: "violet" },
-      { id: 5, title: "Individual Skill Breakdown", duration: "2:15", reward: 145, instructions: "Watch this individual piece of skill and break down the technique.", questions: ["Describe the technique used in detail", "What made this skill effective in this situation?", "Rate this skill out of 10 and justify"], color: "cyan" }
+      { 
+        id: 1, 
+        title: "Messi's Dribbling Masterclass", 
+        youtubeId: "dQw4w9WgXcQ",
+        reward: 150, 
+        instructions: "Watch Lionel Messi's incredible dribbling display and analyze his technique.",
+        questions: [
+          {
+            q: "What is the primary dribbling technique Messi uses to evade defenders?",
+            answers: ["close control", "ball close to his feet", "short touches", "tight control"],
+            keywords: ["close", "touch", "control", "feet"],
+            minLength: 10
+          },
+          {
+            q: "How does Messi use his body positioning when dribbling at pace?",
+            answers: ["leans forward", "bends knees", "low center of gravity", "shields ball"],
+            keywords: ["body", "position", "lean", "lower", "gravity", "shield"],
+            minLength: 15
+          },
+          {
+            q: "What defensive mistake allowed Messi to create this opportunity?",
+            answers: ["defender rushed", "lost balance", "poor positioning", "committed early"],
+            keywords: ["defender", "rush", "balance", "position", "committed"],
+            minLength: 15
+          }
+        ],
+        color: "rose" 
+      },
+      { 
+        id: 2, 
+        title: "Manchester City Pressing Tactics", 
+        youtubeId: "9bZkp7q19f0",
+        reward: 160, 
+        instructions: "Analyze Manchester City's high-press defensive system and how they suffocate opponent buildup.",
+        questions: [
+          {
+            q: "How many players does City commit to the initial press when the opponent has the ball?",
+            answers: ["3", "3 or 4", "4", "immediate press"],
+            keywords: ["3", "4", "player", "commit", "press"],
+            minLength: 8
+          },
+          {
+            q: "What is the trigger for City to activate their pressing system?",
+            answers: ["ball goes wide", "forward pass", "time on ball", "distance triggers"],
+            keywords: ["trigger", "ball", "forward", "pass", "wide", "time"],
+            minLength: 15
+          },
+          {
+            q: "Explain how City's defensive shape prevents passing lanes during buildup.",
+            answers: ["compact formation", "zonal marking", "close distances", "positioning"],
+            keywords: ["compact", "formation", "zonal", "marking", "close", "distance", "position"],
+            minLength: 20
+          }
+        ],
+        color: "emerald" 
+      },
+      { 
+        id: 3, 
+        title: "Tiki-Taka Buildup Play", 
+        youtubeId: "ZebKj4zF_Pc",
+        reward: 155, 
+        instructions: "Study Barcelona's possession-based buildup play and how they create space through movement.",
+        questions: [
+          {
+            q: "What is the primary principle of Barcelona's tiki-taka passing system?",
+            answers: ["possession retention", "short passes", "constant movement", "overload midfield"],
+            keywords: ["possession", "short", "pass", "movement", "retention", "control"],
+            minLength: 15
+          },
+          {
+            q: "How do Barcelona create numerical superiority in midfield during buildup?",
+            answers: ["defensive support", "running off ball", "spread formation", "movement"],
+            keywords: ["numerical", "superiority", "midfield", "support", "movement", "spread"],
+            minLength: 18
+          },
+          {
+            q: "What defensive vulnerability exists in this type of buildup play?",
+            answers: ["counter attack", "transition loss", "high press", "ball turnover"],
+            keywords: ["counter", "transition", "press", "turnover", "vulnerability", "loss"],
+            minLength: 15
+          }
+        ],
+        color: "amber" 
+      },
+      { 
+        id: 4, 
+        title: "Set Piece Delivery & Positioning", 
+        youtubeId: "m7KOKtUvkAM",
+        reward: 130, 
+        instructions: "Analyze a corner kick routine and how attacking players position for a goal-scoring opportunity.",
+        questions: [
+          {
+            q: "What type of corner kick delivery is being used in this clip?",
+            answers: ["near post", "far post", "short corner", "in-swinging delivery"],
+            keywords: ["near", "far", "post", "short", "corner", "delivery", "swing", "in", "out"],
+            minLength: 12
+          },
+          {
+            q: "Describe the positioning of the attacking players in the box.",
+            answers: ["near post runner", "far post poacher", "central presence", "spacing"],
+            keywords: ["position", "near", "far", "post", "runner", "poacher", "central", "space"],
+            minLength: 18
+          },
+          {
+            q: "What defending principle was broken that led to the goal?",
+            answers: ["lost runner", "poor marking", "space not covered", "communication"],
+            keywords: ["defend", "lost", "runner", "marking", "space", "cover", "communication"],
+            minLength: 15
+          }
+        ],
+        color: "violet" 
+      },
+      { 
+        id: 5, 
+        title: "Cristiano Ronaldo's Heading Technique", 
+        youtubeId: "Y-6KRVGFR4w",
+        reward: 145, 
+        instructions: "Watch Ronaldo's masterclass in heading technique and his positioning in the penalty area.",
+        questions: [
+          {
+            q: "What is the key to Ronaldo's heading technique for accuracy and power?",
+            answers: ["neck positioning", "contact point", "eyes on ball", "body alignment"],
+            keywords: ["neck", "head", "positioning", "contact", "point", "eye", "body", "alignment"],
+            minLength: 15
+          },
+          {
+            q: "How does Ronaldo use his jump and timing to gain advantage over defenders?",
+            answers: ["early jump", "timing", "positioning run", "vertical leap"],
+            keywords: ["jump", "timing", "position", "run", "vertical", "leap", "advantage"],
+            minLength: 18
+          },
+          {
+            q: "Describe Ronaldo's movement pattern in the box during a cross delivery.",
+            answers: ["marker evasion", "space exploitation", "timing run", "positioning"],
+            keywords: ["movement", "pattern", "marker", "evade", "space", "exploit", "run"],
+            minLength: 18
+          }
+        ],
+        color: "cyan" 
+      }
     ];
 
     // Initialize Elements SDK
@@ -1651,37 +1824,94 @@
       document.getElementById('video-analysis').classList.remove('hidden');
       
       document.getElementById('video-title').textContent = currentVideoTask.title;
-      document.getElementById('video-duration').textContent = `Duration: ${currentVideoTask.duration}`;
       document.getElementById('video-reward').textContent = `+${currentVideoTask.reward} pts`;
       document.getElementById('video-instructions').querySelector('p').textContent = currentVideoTask.instructions;
       
+      // Set YouTube video
+      const youtubeUrl = `https://www.youtube.com/embed/${currentVideoTask.youtubeId}?rel=0`;
+      document.getElementById('youtube-player').src = youtubeUrl;
+      
       let questionsHtml = '';
-      currentVideoTask.questions.forEach((q, i) => {
+      currentVideoTask.questions.forEach((questionObj, i) => {
         questionsHtml += `
           <div>
-            <label class="block text-sm font-medium mb-2">Question ${i + 1}: ${q}</label>
-            <textarea class="video-answer-${i} w-full px-4 py-3 bg-white/5 border border-gray-700 rounded-xl focus:border-emerald-500 transition resize-none" rows="3" placeholder="Your answer..."></textarea>
+            <label class="block text-sm font-medium mb-2">Question ${i + 1}: ${questionObj.q}</label>
+            <textarea class="video-answer-${i} w-full px-4 py-3 bg-white/5 border border-gray-700 rounded-xl focus:border-emerald-500 transition resize-none" rows="3" placeholder="Your detailed answer..."></textarea>
+            <p class="text-xs text-gray-500 mt-1">Minimum ${questionObj.minLength} characters</p>
           </div>
         `;
       });
       document.getElementById('video-questions').innerHTML = questionsHtml;
     }
 
+    // Validate answer quality
+    function validateAnswer(userAnswer, questionObj) {
+      const answer = userAnswer.toLowerCase().trim();
+      
+      // Check minimum length
+      if (answer.length < questionObj.minLength) {
+        return { valid: false, feedback: `Answer too short. Minimum ${questionObj.minLength} characters required.` };
+      }
+      
+      // Check for keyword matches
+      const matchedKeywords = questionObj.keywords.filter(keyword => answer.includes(keyword.toLowerCase()));
+      
+      if (matchedKeywords.length === 0) {
+        return { valid: false, feedback: 'Your answer is missing key concepts. Review the video and focus on the main tactical/technical points.' };
+      }
+      
+      const keywordCoverage = (matchedKeywords.length / questionObj.keywords.length) * 100;
+      
+      if (keywordCoverage < 40) {
+        return { valid: false, feedback: `Your answer covers only some concepts (${Math.round(keywordCoverage)}%). Please be more thorough.` };
+      }
+      
+      if (keywordCoverage < 70) {
+        return { valid: true, feedback: 'Good effort! You covered the main points but could be more detailed.', quality: 'decent' };
+      }
+      
+      return { valid: true, feedback: 'Excellent analysis! You demonstrated strong understanding.', quality: 'excellent' };
+    }
+
     function submitVideoAnalysis() {
       if (!currentVideoTask) return;
       
       const answers = [];
+      const validation = [];
+      let allValid = true;
+      
       for (let i = 0; i < currentVideoTask.questions.length; i++) {
-        const answer = document.querySelector(`.video-answer-${i}`).value;
-        if (!answer.trim()) {
+        const userAnswer = document.querySelector(`.video-answer-${i}`).value;
+        const questionObj = currentVideoTask.questions[i];
+        
+        if (!userAnswer.trim()) {
           showToast('Please answer all questions', 'error');
           return;
         }
-        answers.push(answer);
+        
+        const result = validateAnswer(userAnswer, questionObj);
+        validation.push(result);
+        
+        if (!result.valid) {
+          allValid = false;
+        }
+        
+        answers.push(userAnswer);
       }
       
-      currentUser.pending_reviews = (currentUser.pending_reviews || 0) + 1;
+      // Show validation feedback
+      if (!allValid) {
+        const firstInvalid = validation.findIndex(v => !v.valid);
+        showToast(`Question ${firstInvalid + 1}: ${validation[firstInvalid].feedback}`, 'error');
+        return;
+      }
+      
+      // Mark some as pending review for quality control
+      const isFullReview = Math.random() > 0.7;
+      
+      currentUser.pending_reviews = (currentUser.pending_reviews || 0) + (isFullReview ? 1 : 0);
       currentUser.points = (currentUser.points || 0) + currentVideoTask.reward;
+      currentUser.tasks_completed = (currentUser.tasks_completed || 0) + 1;
       saveUserToStorage(currentUser);
       updateDashboardStats();
       
@@ -1689,7 +1919,7 @@
       document.getElementById('video-list').classList.remove('hidden');
       currentVideoTask = null;
       
-      showToast(`Video analysis submitted! +${currentVideoTask.reward} points pending approval`, 'success');
+      showToast(`Video analysis submitted! +${currentVideoTask.reward} points${isFullReview ? ' (pending expert review)' : ' (instantly approved)'}`, 'success');
     }
 
     function cancelVideo() {
@@ -1780,6 +2010,65 @@
     document.getElementById('profile-form').addEventListener('submit', handleProfileUpdate);
     document.getElementById('withdraw-form').addEventListener('submit', handleWithdraw);
 
+    // Subscription Handler
+    function handleSubscribe(plan, amount) {
+      const paymentUrl = 'https://lipana.dev/pay/joblify-account-verification';
+      
+      // Store subscription info before redirecting
+      const subscriptionData = {
+        plan,
+        amount,
+        user_id: currentUser?.user_id,
+        timestamp: new Date().toISOString()
+      };
+      
+      localStorage.setItem('pending_subscription', JSON.stringify(subscriptionData));
+      
+      // Open payment link in new tab
+      window.open(paymentUrl, '_blank');
+      
+      // Show payment success message after a short delay
+      setTimeout(() => {
+        showPaymentSuccess(plan);
+      }, 1000);
+    }
+
+    function showPaymentSuccess(plan) {
+      const planName = plan.charAt(0).toUpperCase() + plan.slice(1);
+      const amount = plan === 'basic' ? 2.60 : 3.60;
+      
+      // Hide subscription plans and show success message
+      document.getElementById('subscription-plans').classList.add('hidden');
+      document.getElementById('payment-success-message').classList.remove('hidden');
+      document.getElementById('subscription-plan-display').textContent = `Plan: ${planName.toUpperCase()} - $${amount}`;
+      
+      // Update user subscription status
+      if (currentUser) {
+        currentUser.subscription_plan = plan;
+        currentUser.subscription_amount = amount;
+        currentUser.subscription_date = new Date().toISOString();
+        saveUserToStorage(currentUser);
+      }
+      
+      showToast(`🎉 Welcome to ${planName}! Your payment has been processed.`, 'success');
+    }
+
+    function resetSubscriptionPage() {
+      document.getElementById('payment-success-message').classList.add('hidden');
+      document.getElementById('subscription-plans').classList.remove('hidden');
+      navigateTo('dashboard-home');
+    }
+
+    // Check for pending subscription on load
+    window.addEventListener('DOMContentLoaded', () => {
+      const pendingSubscription = localStorage.getItem('pending_subscription');
+      if (pendingSubscription) {
+        const subscription = JSON.parse(pendingSubscription);
+        showPaymentSuccess(subscription.plan);
+        localStorage.removeItem('pending_subscription');
+      }
+    });
+
     // Toast Notifications
     function showToast(message, type = 'info') {
       const container = document.getElementById('toast-container');
@@ -1804,7 +2093,122 @@
         currentUser = savedUser;
         showDashboard();
       }
+      
+      // Initialize Music Player
+      initMusicPlayer();
     });
+
+    // Music Player Functions
+    function initMusicPlayer() {
+      const audio = document.getElementById('bg-music');
+      const progressBar = document.getElementById('progress-bar');
+      const currentTimeEl = document.getElementById('current-time');
+      const durationEl = document.getElementById('duration-time');
+      
+      // Set initial volume
+      audio.volume = 0.7;
+      
+      // Auto-play on load
+      audio.play().catch(err => {
+        console.log('Autoplay prevented by browser policy. User must interact first.');
+      });
+      
+      // Update progress bar
+      audio.addEventListener('timeupdate', () => {
+        const percent = (audio.currentTime / audio.duration) * 100;
+        progressBar.value = percent;
+        
+        // Update time display
+        currentTimeEl.textContent = formatTime(audio.currentTime);
+        durationEl.textContent = formatTime(audio.duration);
+        
+        // Update progress bar style gradient
+        updateProgressBarGradient(percent);
+      });
+      
+      // Update duration when metadata loads
+      audio.addEventListener('loadedmetadata', () => {
+        durationEl.textContent = formatTime(audio.duration);
+      });
+      
+      // Loop when finished
+      audio.addEventListener('ended', () => {
+        audio.currentTime = 0;
+        audio.play();
+      });
+      
+      // Progress bar seek
+      progressBar.addEventListener('change', () => {
+        audio.currentTime = (progressBar.value / 100) * audio.duration;
+      });
+      
+      // Volume slider
+      const volumeSlider = document.getElementById('volume-slider');
+      volumeSlider.addEventListener('input', () => {
+        setVolume(volumeSlider.value);
+      });
+      
+      updatePlayPauseButton();
+    }
+
+    function formatTime(seconds) {
+      if (!seconds || isNaN(seconds)) return '0:00';
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateProgressBarGradient(percent) {
+      const progressBar = document.getElementById('progress-bar');
+      progressBar.style.background = `linear-gradient(to right, #10b981 0%, #10b981 ${percent}%, #374151 ${percent}%, #374151 100%)`;
+    }
+
+    function togglePlayPause() {
+      const audio = document.getElementById('bg-music');
+      
+      if (audio.paused) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
+      
+      updatePlayPauseButton();
+    }
+
+    function updatePlayPauseButton() {
+      const audio = document.getElementById('bg-music');
+      const playIcon = document.getElementById('play-icon');
+      const pauseIcon = document.getElementById('pause-icon');
+      const playPauseText = document.getElementById('play-pause-text');
+      const btn = document.getElementById('play-pause-btn');
+      
+      if (audio.paused) {
+        playIcon.classList.remove('hidden');
+        pauseIcon.classList.add('hidden');
+        playPauseText.textContent = 'Play';
+        btn.classList.remove('bg-emerald-600');
+        btn.classList.add('bg-emerald-500');
+      } else {
+        playIcon.classList.add('hidden');
+        pauseIcon.classList.remove('hidden');
+        playPauseText.textContent = 'Pause';
+        btn.classList.add('bg-emerald-600');
+        btn.classList.remove('bg-emerald-500');
+      }
+    }
+
+    function setVolume(value) {
+      const audio = document.getElementById('bg-music');
+      audio.volume = value / 100;
+    }
+
+    function toggleMusicPlayer() {
+      const player = document.getElementById('music-player');
+      const minimized = document.getElementById('music-player-minimized');
+      
+      player.classList.toggle('hidden');
+      minimized.classList.toggle('hidden');
+    }
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c8b4804226a9c03',t:'MTc3MDIxOTc4Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c8be6e2b29c9c03',t:'MTc3MDIyNjI4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
