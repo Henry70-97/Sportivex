@@ -767,7 +767,7 @@
           <p class="text-amber-200 text-sm mt-2">Fees: Platform 5% + Transaction 10% = 15% total</p>
          </div>
          <form id="withdrawForm" class="space-y-6">
-          <div><label for="withdrawAmount" class="block text-sm font-semibold mb-2">Amount (Points)</label> <input type="number" id="withdrawAmount" min="1000" class="input-field w-full px-4 py-3 rounded-xl text-white" placeholder="Enter amount">
+          <div><label for="withdrawAmount" class="block text-sm font-semibold mb-2">Amount (Points)</label> <input type="number" id="withdrawAmount" min="100" class="input-field w-full px-4 py-3 rounded-xl text-white" placeholder="Enter amount">
            <p class="text-sm text-gray-400 mt-1">Available: <span id="availableWithdraw">0</span> points</p>
           </div>
           <div><label for="withdrawMethod" class="block text-sm font-semibold mb-2">Withdrawal Method</label> <select id="withdrawMethod" class="input-field w-full px-4 py-3 rounded-xl text-white bg-transparent"> <option value="mpesa">M-Pesa</option> <option value="bank">Bank Transfer</option> <option value="paypal">PayPal</option> </select>
@@ -894,7 +894,7 @@
         <div class="glass-effect rounded-2xl p-6">
          <h3 class="font-orbitron text-lg font-bold mb-4 text-rose-400">💰 Withdrawal Rules</h3>
          <ul class="space-y-2 text-gray-300">
-          <li>• Minimum withdrawal: 1000 points</li>
+          <li>• Minimum withdrawal: 100 points</li>
           <li>• Processing time: 24-48 hours</li>
           <li>• Available methods: M-Pesa, Bank, PayPal</li>
          </ul>
@@ -1573,7 +1573,7 @@
           clearInterval(quizTimer);
           selectAnswer(-1);
         }
-      }, 1000);
+      }, 100);
     }
     
     function selectAnswer(answerIndex) {
@@ -2124,7 +2124,7 @@
       // Auto-clear interval after 15 minutes (safety)
       setTimeout(() => {
         clearInterval(watchInterval);
-      }, 15 * 60 * 1000);
+      }, 15 * 60 * 100);
     }
     
     async function submitVideoReward() {
@@ -2426,7 +2426,7 @@
         // Activate subscription
         currentUser.isSubscribed = true;
         currentUser.subscriptionStart = new Date().toISOString();
-        currentUser.subscriptionExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+        currentUser.subscriptionExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 100).toISOString();
         
         saveToStorage('user', currentUser);
         
@@ -2448,7 +2448,7 @@
         // Provisionally activate subscription pending manual verification
         currentUser.isSubscribed = true;
         currentUser.subscriptionStart = new Date().toISOString();
-        currentUser.subscriptionExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+        currentUser.subscriptionExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 100).toISOString();
         saveToStorage('user', currentUser);
         updateDashboard();
       });
