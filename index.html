@@ -595,7 +595,7 @@
           🔒
          </div>
          <h3 class="font-orbitron text-2xl font-bold mb-3">Premium Feature</h3>
-         <p class="text-gray-400 mb-6">Unlock all trivia tasks with a Premium Membership. Start earning points today!</p><button onclick="showDashboardSection('subscribe')" class="btn-primary px-8 py-3 rounded-xl font-bold"> ⭐ Subscribe Now (KSH 458/yearly) </button>
+         <p class="text-gray-400 mb-6">Unlock all trivia tasks with a Premium Membership. Start earning points today!</p><button onclick="showDashboardSection('subscribe')" class="btn-primary px-8 py-3 rounded-xl font-bold"> ⭐ Subscribe Now (KSH 458/month) </button>
         </div>
        </div>
       </section><!-- Trivia Details Modal -->
@@ -649,7 +649,7 @@
           🔒
          </div>
          <h3 class="font-orbitron text-2xl font-bold mb-3">Premium Feature</h3>
-         <p class="text-gray-400 mb-6">Unlock all article writing tasks with a Premium Membership. Start earning points today!</p><button onclick="showDashboardSection('subscribe')" class="btn-primary px-8 py-3 rounded-xl font-bold"> ⭐ Subscribe Now (KSH 458/yearly) </button>
+         <p class="text-gray-400 mb-6">Unlock all article writing tasks with a Premium Membership. Start earning points today!</p><button onclick="showDashboardSection('subscribe')" class="btn-primary px-8 py-3 rounded-xl font-bold"> ⭐ Subscribe Now (KSH 458/month) </button>
         </div>
        </div>
       </section><!-- Article Editor -->
@@ -677,7 +677,7 @@
           🔒
          </div>
          <h3 class="font-orbitron text-2xl font-bold mb-3">Premium Feature</h3>
-         <p class="text-gray-400 mb-6">Unlock all video analysis tasks with a Premium Membership. Start earning points today!</p><button onclick="showDashboardSection('subscribe')" class="btn-primary px-8 py-3 rounded-xl font-bold"> ⭐ Subscribe Now (KSH 458/yearly) </button>
+         <p class="text-gray-400 mb-6">Unlock all video analysis tasks with a Premium Membership. Start earning points today!</p><button onclick="showDashboardSection('subscribe')" class="btn-primary px-8 py-3 rounded-xl font-bold"> ⭐ Subscribe Now (KSH 458/month) </button>
         </div>
        </div>
       </section><!-- Video Analysis Editor -->
@@ -785,7 +785,7 @@
          <h3 class="font-orbitron text-3xl font-bold mb-6 text-emerald-100">Premium Access</h3>
          <div class="mb-8">
           <div class="text-5xl font-bold mb-2">
-           KSH 458<span class="text-2xl text-emerald-200">/yearly</span>
+           KSH 458<span class="text-2xl text-emerald-200">/month</span>
           </div>
           <p class="text-emerald-100 text-lg">Unlimited access to all tasks &amp; priority rewards</p>
          </div>
@@ -916,7 +916,7 @@
       site_title: 'SportiveX',
       hero_headline: 'Test Your Football Knowledge. Analyze the Game. Earn Recognition.',
       subscription_fee: 458,
-      payment_link: 'https://lipana.dev/pay/joblify-account-verification '
+      payment_link: 'https://lipanampesa.com/pay'
     };
     
     let config = { ...defaultConfig };
@@ -955,7 +955,7 @@
     let quizTimer = null;
     let currentArticle = null;
     let currentVideo = null;
-    let paymentLink = 'https://lipana.dev/pay/joblify-account-verification '; // Default payment link - update in config
+    let paymentLink = 'https://lipanampesa.com/pay'; // Default payment link - update in config
     
     // ==================== TRIVIA DATA ====================
     // Conversion: 1 point = KSH 50
@@ -1253,26 +1253,26 @@
     // ==================== VIDEO DATA ====================
     // Conversion: 1 point = KSH 20
     const videoTasks = [
-      { id: 1, title: 'Goal Analysis: Counter-Attack Breakdown', description: 'Analyze the tactical movement in this counter-attacking goal', points: 80, ksh: 1600, color: 'card-rose' },
-      { id: 2, title: 'Defensive Shape Analysis', description: 'Break down the defensive organization in this clip', points: 70, ksh: 1400, color: 'card-violet' },
-      { id: 3, title: 'Midfield Pressing Patterns', description: 'Identify the pressing triggers and patterns', points: 90, ksh: 1800, color: 'card-cyan' },
-      { id: 4, title: 'Set Piece Execution', description: 'Analyze the corner kick routine and execution', points: 75, ksh: 1500, color: 'card-orange' },
-      { id: 5, title: 'Build-Up Play Analysis', description: 'Break down the passing sequences in build-up', points: 85, ksh: 1700, color: 'card-emerald' },
-      { id: 6, title: 'One-on-One Defending', description: 'Analyze the defensive decision making', points: 65, ksh: 1300, color: 'card-amber' },
-      { id: 7, title: 'Attacking Transition', description: 'Study the transition from defense to attack', points: 95, ksh: 1900, color: 'card-rose' },
-      { id: 8, title: 'Goalkeeper Positioning', description: 'Analyze the goalkeeper\'s positioning and decisions', points: 70, ksh: 1400, color: 'card-violet' },
-      { id: 9, title: 'Wing Play Analysis', description: 'Break down the winger\'s movement and delivery', points: 80, ksh: 1600, color: 'card-cyan' },
-      { id: 10, title: 'Striker Movement', description: 'Analyze the striker\'s runs and positioning', points: 85, ksh: 1700, color: 'card-orange' },
-      { id: 11, title: 'Full-Back Overlaps', description: 'Study the timing and execution of overlapping runs', points: 75, ksh: 1500, color: 'card-emerald' },
-      { id: 12, title: 'Defensive Midfield Screening', description: 'Analyze how the DM protects the backline', points: 90, ksh: 1800, color: 'card-amber' },
-      { id: 13, title: 'Penalty Area Chaos', description: 'Break down the chaotic sequence in the box', points: 65, ksh: 1300, color: 'card-rose' },
-      { id: 14, title: 'Long Ball Strategy', description: 'Analyze the direct play approach', points: 70, ksh: 1400, color: 'card-violet' },
-      { id: 15, title: 'Compact Defensive Block', description: 'Study how the team maintains its shape', points: 85, ksh: 1700, color: 'card-cyan' },
-      { id: 16, title: 'False 9 Movement', description: 'Analyze the false 9 position and impact', points: 95, ksh: 1900, color: 'card-orange' },
-      { id: 17, title: 'High Line Defense', description: 'Study the risks and rewards of a high line', points: 80, ksh: 1600, color: 'card-emerald' },
-      { id: 18, title: 'Through Ball Analysis', description: 'Break down the through ball execution', points: 75, ksh: 1500, color: 'card-amber' },
-      { id: 19, title: 'Header Goal Analysis', description: 'Analyze the aerial delivery and header', points: 70, ksh: 1400, color: 'card-rose' },
-      { id: 20, title: 'Team Shape Transitions', description: 'Study shape changes between phases', points: 90, ksh: 1800, color: 'card-violet' }
+      { id: 1, title: 'Goal Analysis: Counter-Attack Breakdown', youtubeId: 'dQw4w9WgXcQ', description: 'Analyze the tactical movement in this counter-attacking goal', points: 80, ksh: 1600, color: 'card-rose' },
+      { id: 2, title: 'Defensive Shape Analysis', youtubeId: 'jNQXAC9IVRw', description: 'Break down the defensive organization in this clip', points: 70, ksh: 1400, color: 'card-violet' },
+      { id: 3, title: 'Midfield Pressing Patterns', youtubeId: 'OPf0YbXqDm0', description: 'Identify the pressing triggers and patterns', points: 90, ksh: 1800, color: 'card-cyan' },
+      { id: 4, title: 'Set Piece Execution', youtubeId: 'AQOAL4zFvMw', description: 'Analyze the corner kick routine and execution', points: 75, ksh: 1500, color: 'card-orange' },
+      { id: 5, title: 'Build-Up Play Analysis', youtubeId: 'kffacxfA7g4', description: 'Break down the passing sequences in build-up', points: 85, ksh: 1700, color: 'card-emerald' },
+      { id: 6, title: 'One-on-One Defending', youtubeId: '8V5qxXjwGDU', description: 'Analyze the defensive decision making', points: 65, ksh: 1300, color: 'card-amber' },
+      { id: 7, title: 'Attacking Transition', youtubeId: 'aqz-KE-bpKQ', description: 'Study the transition from defense to attack', points: 95, ksh: 1900, color: 'card-rose' },
+      { id: 8, title: 'Goalkeeper Positioning', youtubeId: '9bZkp7q19f0', description: 'Analyze the goalkeeper\'s positioning and decisions', points: 70, ksh: 1400, color: 'card-violet' },
+      { id: 9, title: 'Wing Play Analysis', youtubeId: 'a-41m-qsPJo', description: 'Break down the winger\'s movement and delivery', points: 80, ksh: 1600, color: 'card-cyan' },
+      { id: 10, title: 'Striker Movement', youtubeId: 'FIkVCAIJfN0', description: 'Analyze the striker\'s runs and positioning', points: 85, ksh: 1700, color: 'card-orange' },
+      { id: 11, title: 'Full-Back Overlaps', youtubeId: 'tYzMGcUty6s', description: 'Study the timing and execution of overlapping runs', points: 75, ksh: 1500, color: 'card-emerald' },
+      { id: 12, title: 'Defensive Midfield Screening', youtubeId: 'dQw4w9WgXcQ', description: 'Analyze how the DM protects the backline', points: 90, ksh: 1800, color: 'card-amber' },
+      { id: 13, title: 'Penalty Area Chaos', youtubeId: 'jNQXAC9IVRw', description: 'Break down the chaotic sequence in the box', points: 65, ksh: 1300, color: 'card-rose' },
+      { id: 14, title: 'Long Ball Strategy', youtubeId: 'OPf0YbXqDm0', description: 'Analyze the direct play approach', points: 70, ksh: 1400, color: 'card-violet' },
+      { id: 15, title: 'Compact Defensive Block', youtubeId: 'AQOAL4zFvMw', description: 'Study how the team maintains its shape', points: 85, ksh: 1700, color: 'card-cyan' },
+      { id: 16, title: 'False 9 Movement', youtubeId: 'kffacxfA7g4', description: 'Analyze the false 9 position and impact', points: 95, ksh: 1900, color: 'card-orange' },
+      { id: 17, title: 'High Line Defense', youtubeId: '8V5qxXjwGDU', description: 'Study the risks and rewards of a high line', points: 80, ksh: 1600, color: 'card-emerald' },
+      { id: 18, title: 'Through Ball Analysis', youtubeId: 'aqz-KE-bpKQ', description: 'Break down the through ball execution', points: 75, ksh: 1500, color: 'card-amber' },
+      { id: 19, title: 'Header Goal Analysis', youtubeId: '9bZkp7q19f0', description: 'Analyze the aerial delivery and header', points: 70, ksh: 1400, color: 'card-rose' },
+      { id: 20, title: 'Team Shape Transitions', youtubeId: 'a-41m-qsPJo', description: 'Study shape changes between phases', points: 90, ksh: 1800, color: 'card-violet' }
     ];
     
     // ==================== UTILITY FUNCTIONS ====================
@@ -1827,211 +1827,206 @@
         return;
       }
       
-      // Smart grading system
-      let score = 0;
-      let scoreDetails = [];
+      // Show loading state
+      const btn = event.target;
+      btn.disabled = true;
+      btn.innerHTML = '⏳ Submitting & Reviewing...';
+      btn.style.opacity = '0.6';
       
-      // 1. Word count quality (20 points max)
-      const wordRatio = words / ((min + max) / 2);
-      if (wordRatio >= 0.9 && wordRatio <= 1.1) {
-        score += 20;
-        scoreDetails.push('✓ Excellent word count (20/20)');
-      } else if (wordRatio >= 0.8 && wordRatio <= 1.2) {
-        score += 15;
-        scoreDetails.push('✓ Good word count (15/20)');
-      } else {
-        score += 10;
-        scoreDetails.push('✓ Acceptable word count (10/20)');
-      }
-      
-      // 2. Spelling & Grammar check (20 points max)
-      const misspellings = (content.match(/\b[a-z]{1,2}\s+[a-z]{1,2}\b/gi) || []).length;
-      const commonGrammarErrors = (content.match(/\s{2,}|\.\.|\s\./g) || []).length;
-      
-      if (misspellings === 0 && commonGrammarErrors === 0) {
-        score += 20;
-        scoreDetails.push('✓ Perfect grammar & spelling (20/20)');
-      } else if (misspellings < 3 && commonGrammarErrors < 2) {
-        score += 15;
-        scoreDetails.push('✓ Good grammar & spelling (15/20)');
-      } else if (misspellings < 5 && commonGrammarErrors < 4) {
-        score += 10;
-        scoreDetails.push('✓ Acceptable grammar (10/20)');
-      } else {
-        score += 5;
-        scoreDetails.push('⚠ Multiple grammar issues (5/20)');
-      }
-      
-      // 3. Specific examples & case studies (20 points max)
-      const examplePatterns = content.match(/example|for instance|such as|including|case study|instance|in (?:20\d\d|the \w+ season)/gi) || [];
-      if (examplePatterns.length >= 5) {
-        score += 20;
-        scoreDetails.push('✓ Excellent use of examples (20/20)');
-      } else if (examplePatterns.length >= 3) {
-        score += 15;
-        scoreDetails.push('✓ Good use of examples (15/20)');
-      } else if (examplePatterns.length >= 1) {
-        score += 10;
-        scoreDetails.push('✓ Some examples included (10/20)');
-      } else {
-        score += 5;
-        scoreDetails.push('⚠ Limited examples (5/20)');
-      }
-      
-      // 4. Statistics & Data (20 points max)
-      const statsPatterns = content.match(/\d+%|\d+\/\d+|goals?|assists?|\d{1,3}\s+(?:games?|matches?|appearances)|record|statistic|average/gi) || [];
-      if (statsPatterns.length >= 8) {
-        score += 20;
-        scoreDetails.push('✓ Excellent statistics (20/20)');
-      } else if (statsPatterns.length >= 5) {
-        score += 15;
-        scoreDetails.push('✓ Good statistics (15/20)');
-      } else if (statsPatterns.length >= 2) {
-        score += 10;
-        scoreDetails.push('✓ Some statistics (10/20)');
-      } else {
-        score += 5;
-        scoreDetails.push('⚠ Limited statistics (5/20)');
-      }
-      
-      // 5. Analysis Depth (20 points max)
-      const analysisWords = content.match(/why|because|therefore|analysis|explain|strategy|approach|tactical|reason|impact|effect|influence/gi) || [];
-      if (analysisWords.length >= 15) {
-        score += 20;
-        scoreDetails.push('✓ Excellent analysis depth (20/20)');
-      } else if (analysisWords.length >= 10) {
-        score += 15;
-        scoreDetails.push('✓ Good analysis (15/20)');
-      } else if (analysisWords.length >= 5) {
-        score += 10;
-        scoreDetails.push('✓ Basic analysis (10/20)');
-      } else {
-        score += 5;
-        scoreDetails.push('⚠ Limited analysis (5/20)');
-      }
-      
-      // Calculate final score percentage
-      const scorePercentage = Math.round((score / 100) * 100);
-      
-      // Determine reward tier
-      let rewardMultiplier = 0;
-      let rewardMessage = '';
-      
-      if (scorePercentage >= 75) {
-        rewardMultiplier = 1; // Full reward
-        rewardMessage = '🌟 EXCELLENT! Full reward approved immediately!';
-      } else if (scorePercentage >= 50) {
-        rewardMultiplier = 0.5; // Half reward
-        rewardMessage = '👍 GOOD! Half reward instant payment. Full review pending.';
-      } else {
-        rewardMessage = '⏳ Under Review. Needs improvement for instant payment.';
-      }
-      
-      // Send to Web3Forms with scoring details
-      const formData = new FormData();
-      formData.append('access_key', 'ec37dec9-e0d1-495c-80d4-632e7c1f9ca3');
-      formData.append('subject', `SportiveX Article: ${currentArticle.title} (Score: ${scorePercentage}%)`);
-      formData.append('username', currentUser.username);
-      formData.append('email', currentUser.email);
-      formData.append('article_title', currentArticle.title);
-      formData.append('word_count', words);
-      formData.append('score_percentage', scorePercentage);
-      formData.append('score_breakdown', scoreDetails.join(' | '));
-      formData.append('reward_tier', scorePercentage >= 75 ? 'Full' : scorePercentage >= 50 ? 'Half' : 'Pending');
-      formData.append('content', content);
-      formData.append('type', 'article_submission_with_scoring');
-      
-      try {
-        await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          body: formData
-        });
-      } catch (err) {
-        console.error('Form submission error:', err);
-      }
-      
-      // Calculate instant reward
-      const instantReward = Math.round(currentArticle.points * rewardMultiplier);
-      const status = scorePercentage >= 75 ? 'Approved' : scorePercentage >= 50 ? 'Half Approved' : 'Under Review';
-      
-      // Apply instant rewards
-      if (instantReward > 0) {
-        currentUser.points += instantReward;
-      }
-      
-      if (scorePercentage < 75) {
-        currentUser.pendingTasks++;
-      }
-      
-      currentUser.submissions.push({
-        type: 'article',
-        title: currentArticle.title,
-        wordCount: words,
-        points: instantReward,
-        maxPoints: currentArticle.points,
-        scorePercentage: scorePercentage,
-        scoreDetails: scoreDetails,
-        status: status,
-        content: content.substring(0, 200) + '...',
-        date: new Date().toISOString()
+      // Simulate live review with animated scoring
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          // Smart grading system
+          let score = 0;
+          let scoreDetails = [];
+          
+          // 1. Word count quality (20 points max)
+          const wordRatio = words / ((min + max) / 2);
+          if (wordRatio >= 0.9 && wordRatio <= 1.1) {
+            score += 20;
+            scoreDetails.push('✓ Excellent word count (20/20)');
+          } else if (wordRatio >= 0.8 && wordRatio <= 1.2) {
+            score += 15;
+            scoreDetails.push('✓ Good word count (15/20)');
+          } else {
+            score += 10;
+            scoreDetails.push('✓ Acceptable word count (10/20)');
+          }
+          
+          // 2. Spelling & Grammar check (20 points max)
+          const misspellings = (content.match(/\b[a-z]{1,2}\s+[a-z]{1,2}\b/gi) || []).length;
+          const commonGrammarErrors = (content.match(/\s{2,}|\.\.|\s\./g) || []).length;
+          
+          if (misspellings === 0 && commonGrammarErrors === 0) {
+            score += 20;
+            scoreDetails.push('✓ Perfect grammar & spelling (20/20)');
+          } else if (misspellings < 3 && commonGrammarErrors < 2) {
+            score += 15;
+            scoreDetails.push('✓ Good grammar & spelling (15/20)');
+          } else if (misspellings < 5 && commonGrammarErrors < 4) {
+            score += 10;
+            scoreDetails.push('✓ Acceptable grammar (10/20)');
+          } else {
+            score += 5;
+            scoreDetails.push('⚠ Multiple grammar issues (5/20)');
+          }
+          
+          // 3. Specific examples & case studies (20 points max)
+          const examplePatterns = content.match(/example|for instance|such as|including|case study|instance|in (?:20\d\d|the \w+ season)/gi) || [];
+          if (examplePatterns.length >= 5) {
+            score += 20;
+            scoreDetails.push('✓ Excellent use of examples (20/20)');
+          } else if (examplePatterns.length >= 3) {
+            score += 15;
+            scoreDetails.push('✓ Good use of examples (15/20)');
+          } else if (examplePatterns.length >= 1) {
+            score += 10;
+            scoreDetails.push('✓ Some examples included (10/20)');
+          } else {
+            score += 5;
+            scoreDetails.push('⚠ Limited examples (5/20)');
+          }
+          
+          // 4. Statistics & Data (20 points max)
+          const statsPatterns = content.match(/\d+%|\d+\/\d+|goals?|assists?|\d{1,3}\s+(?:games?|matches?|appearances)|record|statistic|average/gi) || [];
+          if (statsPatterns.length >= 8) {
+            score += 20;
+            scoreDetails.push('✓ Excellent statistics (20/20)');
+          } else if (statsPatterns.length >= 5) {
+            score += 15;
+            scoreDetails.push('✓ Good statistics (15/20)');
+          } else if (statsPatterns.length >= 2) {
+            score += 10;
+            scoreDetails.push('✓ Some statistics (10/20)');
+          } else {
+            score += 5;
+            scoreDetails.push('⚠ Limited statistics (5/20)');
+          }
+          
+          // 5. Analysis Depth (20 points max)
+          const analysisWords = content.match(/why|because|therefore|analysis|explain|strategy|approach|tactical|reason|impact|effect|influence/gi) || [];
+          if (analysisWords.length >= 15) {
+            score += 20;
+            scoreDetails.push('✓ Excellent analysis depth (20/20)');
+          } else if (analysisWords.length >= 10) {
+            score += 15;
+            scoreDetails.push('✓ Good analysis (15/20)');
+          } else if (analysisWords.length >= 5) {
+            score += 10;
+            scoreDetails.push('✓ Basic analysis (10/20)');
+          } else {
+            score += 5;
+            scoreDetails.push('⚠ Limited analysis (5/20)');
+          }
+          
+          // Calculate final score percentage
+          const scorePercentage = Math.round((score / 100) * 100);
+          
+          // Determine reward tier
+          let rewardMultiplier = 0;
+          let rewardMessage = '';
+          
+          if (scorePercentage >= 75) {
+            rewardMultiplier = 1;
+            rewardMessage = '🌟 EXCELLENT! Full reward approved immediately!';
+          } else if (scorePercentage >= 50) {
+            rewardMultiplier = 0.5;
+            rewardMessage = '👍 GOOD! Half reward instant payment. Full review pending.';
+          } else {
+            rewardMessage = '⏳ Under Review. Needs improvement for instant payment.';
+          }
+          
+          // Send to Web3Forms
+          const formData = new FormData();
+          formData.append('access_key', 'ec37dec9-e0d1-495c-80d4-632e7c1f9ca3');
+          formData.append('subject', `SportiveX Article: ${currentArticle.title} (Score: ${scorePercentage}%)`);
+          formData.append('username', currentUser.username);
+          formData.append('email', currentUser.email);
+          formData.append('article_title', currentArticle.title);
+          formData.append('word_count', words);
+          formData.append('score_percentage', scorePercentage);
+          formData.append('score_breakdown', scoreDetails.join(' | '));
+          formData.append('reward_tier', scorePercentage >= 75 ? 'Full' : scorePercentage >= 50 ? 'Half' : 'Pending');
+          formData.append('content', content);
+          formData.append('type', 'article_submission_with_scoring');
+          
+          fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).catch(err => console.error('Form error:', err));
+          
+          // Calculate instant reward
+          const instantReward = Math.round(currentArticle.points * rewardMultiplier);
+          const status = scorePercentage >= 75 ? 'Approved' : scorePercentage >= 50 ? 'Half Approved' : 'Under Review';
+          
+          // Apply instant rewards
+          if (instantReward > 0) {
+            currentUser.points += instantReward;
+          }
+          
+          if (scorePercentage < 75) {
+            currentUser.pendingTasks++;
+          }
+          
+          currentUser.submissions.push({
+            type: 'article',
+            title: currentArticle.title,
+            wordCount: words,
+            points: instantReward,
+            maxPoints: currentArticle.points,
+            scorePercentage: scorePercentage,
+            scoreDetails: scoreDetails,
+            status: status,
+            content: content.substring(0, 200) + '...',
+            date: new Date().toISOString()
+          });
+          
+          saveToStorage('user', currentUser);
+          updateDashboard();
+          
+          // Show feedback modal
+          const modal = document.createElement('div');
+          modal.className = 'modal-overlay';
+          modal.innerHTML = `
+            <div class="glass-effect rounded-2xl p-8 max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+              <h2 class="font-orbitron text-2xl font-bold mb-4 text-emerald-400">✅ Article Reviewed!</h2>
+              
+              <div class="mb-6 p-4 ${scorePercentage >= 75 ? 'bg-emerald-500/20 border border-emerald-500' : scorePercentage >= 50 ? 'bg-amber-500/20 border border-amber-500' : 'bg-blue-500/20 border border-blue-500'} rounded-xl">
+                <h3 class="text-4xl font-bold mb-2">${scorePercentage}%</h3>
+                <p class="text-lg ${scorePercentage >= 75 ? 'text-emerald-400' : scorePercentage >= 50 ? 'text-amber-400' : 'text-blue-400'}">${rewardMessage}</p>
+              </div>
+              
+              <div class="mb-6">
+                <h4 class="font-bold mb-3 text-cyan-400">📊 Scoring Breakdown:</h4>
+                <div class="space-y-2">
+                  ${scoreDetails.map(detail => `<p class="text-sm text-gray-300">• ${detail}</p>`).join('')}
+                </div>
+              </div>
+              
+              <div class="mb-6 p-4 bg-emerald-500/20 rounded-xl border border-emerald-500">
+                <h4 class="font-bold mb-2 text-emerald-400">💰 Credit to Account:</h4>
+                <div class="text-sm text-gray-300 space-y-1">
+                  <p>Base Reward: ${currentArticle.points} points (KSH ${currentArticle.points * 20})</p>
+                  <p class="font-bold text-emerald-400 text-lg mt-2">✅ +${instantReward} points (KSH ${instantReward * 20}) CREDITED</p>
+                  ${scorePercentage < 75 ? `<p class="text-amber-400 text-xs mt-2">⏳ Remaining ${currentArticle.points - instantReward} points after full review</p>` : ''}
+                </div>
+              </div>
+              
+              <button onclick="this.closest('.modal-overlay').remove(); showDashboardSection('submissions')" class="btn-primary w-full py-4 rounded-xl font-bold">
+                ✓ Done
+              </button>
+            </div>
+          `;
+          
+          document.body.appendChild(modal);
+          modal.onclick = (e) => {
+            if (e.target === modal) modal.remove();
+          };
+          
+          btn.disabled = false;
+          btn.innerHTML = 'Submit Article';
+          btn.style.opacity = '1';
+          
+          resolve();
+        }, 2000);
       });
-      
-      saveToStorage('user', currentUser);
-      updateDashboard();
-      
-      // Show detailed feedback modal
-      const modal = document.createElement('div');
-      modal.className = 'modal-overlay';
-      modal.innerHTML = `
-        <div class="glass-effect rounded-2xl p-8 max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-          <h2 class="font-orbitron text-2xl font-bold mb-4 text-emerald-400">Article Submission Result</h2>
-          
-          <div class="mb-6 p-4 ${scorePercentage >= 75 ? 'bg-emerald-500/20 border border-emerald-500' : scorePercentage >= 50 ? 'bg-amber-500/20 border border-amber-500' : 'bg-blue-500/20 border border-blue-500'} rounded-xl">
-            <h3 class="text-3xl font-bold mb-2">${scorePercentage}%</h3>
-            <p class="text-lg ${scorePercentage >= 75 ? 'text-emerald-400' : scorePercentage >= 50 ? 'text-amber-400' : 'text-blue-400'}">${rewardMessage}</p>
-          </div>
-          
-          <div class="mb-6">
-            <h4 class="font-bold mb-3 text-cyan-400">📊 Scoring Breakdown:</h4>
-            <div class="space-y-2">
-              ${scoreDetails.map(detail => `<p class="text-sm text-gray-300">• ${detail}</p>`).join('')}
-            </div>
-          </div>
-          
-          <div class="mb-6 p-4 bg-white/10 rounded-xl">
-            <h4 class="font-bold mb-2">💰 Reward Details:</h4>
-            <div class="text-sm text-gray-300 space-y-1">
-              <p>Base Reward: ${currentArticle.points} points (KSH ${currentArticle.points * 20})</p>
-              <p>Your Score: ${scorePercentage}%</p>
-              <p class="font-bold text-emerald-400 mt-2">Instant Reward: +${instantReward} points (KSH ${instantReward * 20})</p>
-              ${scorePercentage < 75 ? `<p class="text-amber-400 text-xs mt-2">⏳ Remaining ${currentArticle.points - instantReward} points pending full review</p>` : ''}
-            </div>
-          </div>
-          
-          ${scorePercentage < 75 ? `
-            <div class="mb-6 p-4 bg-amber-500/20 border border-amber-500 rounded-xl">
-              <h4 class="font-bold mb-2 text-amber-400">📝 Tips for improvement:</h4>
-              <ul class="text-sm text-gray-300 space-y-1">
-                ${scorePercentage < 50 && scoreDetails.some(d => d.includes('grammar')) ? '<li>• Review your grammar and spelling more carefully</li>' : ''}
-                ${scorePercentage < 50 && scoreDetails.some(d => d.includes('examples')) ? '<li>• Include more specific examples and case studies</li>' : ''}
-                ${scorePercentage < 50 && scoreDetails.some(d => d.includes('statistics')) ? '<li>• Add more statistics and data to support your claims</li>' : ''}
-                ${scorePercentage < 50 && scoreDetails.some(d => d.includes('analysis')) ? '<li>• Deepen your analysis by explaining the why and impact</li>' : ''}
-                <li>• Be specific with dates, scores, and player names</li>
-                <li>• Provide at least 2-3 concrete examples per article</li>
-              </ul>
-            </div>
-          ` : ''}
-          
-          <button onclick="this.closest('.modal-overlay').remove(); showDashboardSection('submissions')" class="btn-primary w-full py-4 rounded-xl font-bold">
-            View My Submissions
-          </button>
-        </div>
-      `;
-      
-      document.body.appendChild(modal);
-      modal.onclick = (e) => {
-        if (e.target === modal) modal.remove();
-      };
     }
     
     // ==================== VIDEO ANALYSIS ====================
@@ -2065,83 +2060,145 @@
       currentVideo = video;
       
       document.getElementById('videoTitle').textContent = video.title;
+      document.getElementById('analysisVideo').src = `https://www.youtube.com/embed/${video.youtubeId}?enablejsapi=1`;
+      
       document.getElementById('videoInstructions').innerHTML = `
-        <h4 class="font-bold mb-2">Instructions:</h4>
-        <p class="text-gray-300">${video.description}. Watch the video carefully and answer the questions below with detailed analysis.</p>
+        <div class="mb-4 p-4 bg-amber-500/20 border border-amber-500 rounded-xl">
+          <h4 class="font-bold mb-2 text-amber-400">⏱️ Watch to Complete</h4>
+          <p class="text-gray-300">You must watch the entire video to earn rewards. Your progress: <span id="watchProgress">0%</span></p>
+          <div class="w-full bg-black/50 rounded-full h-2 mt-2">
+            <div id="watchBar" class="bg-emerald-500 h-2 rounded-full transition-all" style="width: 0%"></div>
+          </div>
+        </div>
       `;
       
       document.getElementById('videoQuestions').innerHTML = `
-        <div class="space-y-2">
-          <label for="vq1" class="block font-semibold">1. What tactical pattern do you observe?</label>
-          <textarea id="vq1" class="input-field w-full h-24 px-4 py-3 rounded-xl text-white resize-none" placeholder="Describe the tactical pattern..." maxlength="500"></textarea>
-          <span class="text-xs text-gray-500">Max 500 characters</span>
-        </div>
-        <div class="space-y-2">
-          <label for="vq2" class="block font-semibold">2. Identify the key players and their roles in this clip.</label>
-          <textarea id="vq2" class="input-field w-full h-24 px-4 py-3 rounded-xl text-white resize-none" placeholder="Identify key players..." maxlength="500"></textarea>
-          <span class="text-xs text-gray-500">Max 500 characters</span>
-        </div>
-        <div class="space-y-2">
-          <label for="vq3" class="block font-semibold">3. What could be improved in this sequence?</label>
-          <textarea id="vq3" class="input-field w-full h-24 px-4 py-3 rounded-xl text-white resize-none" placeholder="Suggest improvements..." maxlength="500"></textarea>
-          <span class="text-xs text-gray-500">Max 500 characters</span>
+        <div class="text-center py-8 text-gray-400">
+          <p class="text-lg mb-2">⏳ Watch the video above first...</p>
+          <p class="text-sm">Submit button will activate once video is complete</p>
         </div>
       `;
       
       showDashboardSection('videoAnalysis');
+      
+      // Track video watching
+      trackVideoProgress(video);
     }
     
-    async function submitVideoAnalysis() {
-      const q1 = document.getElementById('vq1').value.trim();
-      const q2 = document.getElementById('vq2').value.trim();
-      const q3 = document.getElementById('vq3').value.trim();
+    let videoWatchPercent = 0;
+    let videoCompleted = false;
+    
+    function trackVideoProgress(video) {
+      videoWatchPercent = 0;
+      videoCompleted = false;
       
-      if (!q1 || !q2 || !q3) {
-        showToast('Please answer all questions.', 'error');
+      // Simulate video watch tracking every 2 seconds
+      const watchInterval = setInterval(() => {
+        videoWatchPercent += Math.random() * 15;
+        if (videoWatchPercent > 100) videoWatchPercent = 100;
+        
+        document.getElementById('watchProgress').textContent = Math.round(videoWatchPercent) + '%';
+        document.getElementById('watchBar').style.width = videoWatchPercent + '%';
+        
+        // Video completed at 95%+ (accounting for slight variations)
+        if (videoWatchPercent >= 95 && !videoCompleted) {
+          videoCompleted = true;
+          clearInterval(watchInterval);
+          
+          showToast('✅ Video watched! You can now submit.');
+          
+          // Show submit button
+          document.getElementById('videoQuestions').innerHTML = `
+            <div class="text-center py-8">
+              <div class="text-5xl mb-4">🎬</div>
+              <h3 class="text-2xl font-bold mb-2 text-emerald-400">Video Complete!</h3>
+              <p class="text-gray-300 mb-6">You've earned <span class="text-emerald-400 font-bold">${video.points} points (KSH ${video.ksh})</span></p>
+              <button onclick="submitVideoReward()" class="btn-primary px-8 py-4 rounded-xl font-bold text-lg mx-auto">
+                ✓ Claim Reward
+              </button>
+            </div>
+          `;
+        }
+      }, 2000);
+      
+      // Auto-clear interval after 15 minutes (safety)
+      setTimeout(() => {
+        clearInterval(watchInterval);
+      }, 15 * 60 * 1000);
+    }
+    
+    async function submitVideoReward() {
+      if (!videoCompleted) {
+        showToast('Please watch the entire video first.', 'error');
         return;
       }
       
-      if (q1.length < 50 || q2.length < 50 || q3.length < 50) {
-        showToast('Each answer must be at least 50 characters.', 'error');
-        return;
-      }
+      // Show loading state
+      const btn = event.target;
+      btn.disabled = true;
+      btn.innerHTML = '⏳ Crediting...';
       
       // Send to Web3Forms
       const formData = new FormData();
       formData.append('access_key', 'ec37dec9-e0d1-495c-80d4-632e7c1f9ca3');
-      formData.append('subject', `SportiveX Video Analysis: ${currentVideo.title}`);
+      formData.append('subject', `SportiveX Video Completed: ${currentVideo.title}`);
       formData.append('username', currentUser.username);
       formData.append('email', currentUser.email);
       formData.append('video_title', currentVideo.title);
-      formData.append('answer_1', q1);
-      formData.append('answer_2', q2);
-      formData.append('answer_3', q3);
-      formData.append('type', 'video_analysis_submission');
+      formData.append('video_id', currentVideo.id);
+      formData.append('watch_percent', videoWatchPercent);
+      formData.append('points_earned', currentVideo.points);
+      formData.append('type', 'video_completion');
       
-      try {
-        await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          body: formData
-        });
-      } catch (err) {
-        console.error('Form submission error:', err);
-      }
+      fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).catch(err => console.error('Form error:', err));
       
-      currentUser.pendingTasks++;
+      // Add points immediately
+      currentUser.points += currentVideo.points;
+      currentUser.completedTasks++;
+      
       currentUser.submissions.push({
         type: 'video',
         title: currentVideo.title,
         points: currentVideo.points,
-        status: 'Under Review',
-        answers: [q1.substring(0, 100) + '...'],
+        status: 'Approved',
+        watchPercent: Math.round(videoWatchPercent),
         date: new Date().toISOString()
       });
       
       saveToStorage('user', currentUser);
       updateDashboard();
       
-      showToast('Video analysis submitted successfully!');
-      showDashboardSection('submissions');
+      // Show success modal
+      setTimeout(() => {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+          <div class="glass-effect rounded-2xl p-8 max-w-xl mx-4 text-center">
+            <div class="text-6xl mb-4">🎉</div>
+            <h2 class="font-orbitron text-2xl font-bold mb-2 text-emerald-400">Video Complete!</h2>
+            <p class="text-gray-300 mb-2">Watch Progress: <span class="text-emerald-400 font-bold">${Math.round(videoWatchPercent)}%</span></p>
+            <p class="text-gray-300 mb-6">Status: <span class="text-emerald-400 font-bold">✅ APPROVED</span></p>
+            
+            <div class="p-4 bg-emerald-500/20 rounded-xl border border-emerald-500 mb-6">
+              <p class="text-gray-300 text-sm mb-1">Reward Credited:</p>
+              <p class="text-3xl font-bold text-emerald-400">${currentVideo.points} pts</p>
+              <p class="text-gray-300 text-sm">KSH ${currentVideo.ksh}</p>
+            </div>
+            
+            <button onclick="this.closest('.modal-overlay').remove(); showDashboardSection('submissions')" class="btn-primary w-full py-4 rounded-xl font-bold">
+              ✓ Done
+            </button>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        modal.onclick = (e) => {
+          if (e.target === modal) modal.remove();
+        };
+        
+        btn.disabled = false;
+        btn.innerHTML = '✓ Claim Reward';
+      }, 1500);
     }
     
     // ==================== SUBMISSIONS ====================
@@ -2267,7 +2324,7 @@
     // ==================== SUBSCRIPTION & PAYMENT ====================
     function redirectToPayment() {
       // Open payment link in new tab
-      window.open(paymentLink || 'https://lipana.dev/pay/joblify-account-verification ', '_blank', 'noopener,noreferrer');
+      window.open(paymentLink || 'https://lipanampesa.com/pay', '_blank', 'noopener,noreferrer');
       showToast('Opening M-Pesa payment gateway...');
     }
     
@@ -2465,5 +2522,5 @@
     
     init();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c9d060ea5a79c05',t:'MTc3MDQwNTgyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c9d2bb801419c05',t:'MTc3MDQwNzM2Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
