@@ -153,7 +153,7 @@
      <div class="container mx-auto px-4 py-4 flex items-center justify-between">
       <div class="flex items-center gap-3"><img src="logo.png" alt="SportiveX" class="w-10 h-10 rounded-lg" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.innerHTML='⚽'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center';"> <span class="font-orbitron text-xl font-bold bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">SportiveX</span>
       </div>
-      <div class="flex items-center gap-4"><button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-800 transition-all"> <span id="theme-icon">🌙</span> </button> <button onclick="toggleMusic()" class="p-2 rounded-full hover:bg-gray-800 transition-all"> <span id="music-icon">���</span> </button> <button onclick="showLogin()" class="px-4 py-2 rounded-lg border border-green-500 text-green-400 hover:bg-green-500/20 transition-all">Login</button> <button onclick="showRegister()" class="btn-primary px-4 py-2 rounded-lg text-white font-semibold">Get Started</button>
+      <div class="flex items-center gap-4"><button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-800 transition-all"> <span id="theme-icon">��</span> </button> <button onclick="toggleMusic()" class="p-2 rounded-full hover:bg-gray-800 transition-all"> <span id="music-icon">���</span> </button> <button onclick="showLogin()" class="px-4 py-2 rounded-lg border border-green-500 text-green-400 hover:bg-green-500/20 transition-all">Login</button> <button onclick="showRegister()" class="btn-primary px-4 py-2 rounded-lg text-white font-semibold">Get Started</button>
       </div>
      </div>
     </header><!-- Hero Section -->
@@ -167,7 +167,7 @@
       <h1 id="hero-headline" class="font-orbitron text-4xl md:text-6xl font-black mb-6 leading-tight">Test Your Football Knowledge.<br><span class="bg-gradient-to-r from-green-400 via-emerald-500 to-teal-400 bg-clip-text text-transparent">Analyze the Game.</span><br>
         Earn Recognition.</h1>
       <p class="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">Complete trivia challenges, write sports articles, and analyze football video clips. Join thousands of football enthusiasts earning rewards for their expertise.</p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center"><button onclick="showRegister()" class="btn-primary px-8 py-4 rounded-xl text-lg font-bold glow-animation"> 🚀 Get Started Free </button> <button onclick="showLogin()" class="btn-secondary px-8 py-4 rounded-xl text-lg font-bold"> 🔑 Login </button>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center"><button onclick="showRegister()" class="btn-primary px-8 py-4 rounded-xl text-lg font-bold glow-animation"> �� Get Started Free </button> <button onclick="showLogin()" class="btn-secondary px-8 py-4 rounded-xl text-lg font-bold"> 🔑 Login </button>
       </div>
       <div class="mt-16 flex justify-center gap-8 flex-wrap">
        <div class="stat-card px-6 py-4 rounded-xl">
@@ -1023,27 +1023,27 @@
 
     // Video Tasks Database (20+) - Free public domain & creative commons trailers
     const videoTasks = [
-      { id: 1, title: "Big Buck Bunny - 4K Trailer", videoId: "YE7VzlLtp-4", duration: 150, usd: 5, ksh: 645 },
-      { id: 2, title: "Sintel - Animated Short", videoId: "eRsGyueVLvQ", duration: 148, usd: 6, ksh: 774 },
-      { id: 3, title: "Tears of Steel - Sci-Fi Short", videoId: "R6MlHxA4V4E", duration: 150, usd: 8, ksh: 1032 },
-      { id: 4, title: "Agent 327 - 3D Animation", videoId: "mN0zPOpADL4", duration: 140, usd: 6.50, ksh: 839 },
-      { id: 5, title: "Spring - Animated Fantasy", videoId: "WhWc3b3KhnY", duration: 141, usd: 7.50, ksh: 968 },
+      { id: 1, title: "Big Buck Bunny - 4K Animation", videoId: "aqz-KE-bpKQ", duration: 150, usd: 5, ksh: 645 },
+      { id: 2, title: "Sintel - Fantasy Adventure", videoId: "NyP-0EKYs38", duration: 148, usd: 6, ksh: 774 },
+      { id: 3, title: "Tears of Steel - Sci-Fi Drama", videoId: "seRGn8UNuX4", duration: 150, usd: 8, ksh: 1032 },
+      { id: 4, title: "Agent 327 - Action Animation", videoId: "mN0zPOpADL4", duration: 140, usd: 6.50, ksh: 839 },
+      { id: 5, title: "Spring - Fantasy Epic", videoId: "WhWc3b3KhnY", duration: 141, usd: 7.50, ksh: 968 },
       { id: 6, title: "Sprite Fright - Horror Comedy", videoId: "w6UjV-4w9nI", duration: 135, usd: 5.50, ksh: 710 },
-      { id: 7, title: "The Peach Open Movie", videoId: "Mxpjq5A1xFE", duration: 155, usd: 5.75, ksh: 742 },
-      { id: 8, title: "Elephants Dream - Surreal", videoId: "p6EHnVkSpKs", duration: 138, usd: 9, ksh: 1161 },
-      { id: 9, title: "Glass Half - Comedy Short", videoId: "JbW7Fu9JlIk", duration: 130, usd: 6.25, ksh: 807 },
-      { id: 10, title: "Blender Open Movies Collection", videoId: "xHVbNi4u_CE", duration: 145, usd: 5.50, ksh: 710 },
-      { id: 11, title: "Caminandes 1 - Llama Drama", videoId: "Y-rmzH0PI0c", duration: 152, usd: 5, ksh: 645 },
-      { id: 12, title: "Caminandes 2 - Gran Dillama", videoId: "d7iKVqnvI60", duration: 141, usd: 8.50, ksh: 1097 },
-      { id: 13, title: "Caminandes 3 - Llamigos", videoId: "PvlmqXFLy3U", duration: 149, usd: 9.50, ksh: 1226 },
-      { id: 14, title: "Cosmos Laundromat - Sci-Fi", videoId: "Y-rmzH0PI0c", duration: 140, usd: 9, ksh: 1161 },
-      { id: 15, title: "Production Reel - Creative", videoId: "K7UcjXplbQA", duration: 135, usd: 5.50, ksh: 710 },
-      { id: 16, title: "Andy Warhol - Art Film", videoId: "xUGJEk8c4dQ", duration: 138, usd: 7, ksh: 903 },
-      { id: 17, title: "Sunrise - Silent Classic", videoId: "n0i_hULmKxQ", duration: 142, usd: 6.50, ksh: 839 },
-      { id: 18, title: "Metropolis - Film Noir", videoId: "dHbWDLf9CDs", duration: 156, usd: 10, ksh: 1290 },
-      { id: 19, title: "Nosferatu - Horror Classic", videoId: "xY4s8JdhFRs", duration: 140, usd: 5.25, ksh: 677 },
-      { id: 20, title: "Battleship Potemkin - Epic", videoId: "F6rNPpSxwQ8", duration: 139, usd: 8.50, ksh: 1097 },
-      { id: 21, title: "Cabinet of Dr. Caligari", videoId: "hnJIrIbRnxU", duration: 145, usd: 7.50, ksh: 968 }
+      { id: 7, title: "Caminandes 1 - Llama Drama", videoId: "Y-rmzH0PI0c", duration: 152, usd: 5, ksh: 645 },
+      { id: 8, title: "Caminandes 2 - Comedy Quest", videoId: "d7iKVqnvI60", duration: 141, usd: 8.50, ksh: 1097 },
+      { id: 9, title: "Caminandes 3 - Friends", videoId: "PvlmqXFLy3U", duration: 149, usd: 9.50, ksh: 1226 },
+      { id: 10, title: "Elephant Dreams - Surreal", videoId: "p6EHnVkSpKs", duration: 138, usd: 9, ksh: 1161 },
+      { id: 11, title: "Cosmos Laundromat - Sci-Fi", videoId: "Y-rmzH0PI0c", duration: 140, usd: 9, ksh: 1161 },
+      { id: 12, title: "Blender Demo - 3D Showcase", videoId: "ynQHKcAy7M8", duration: 145, usd: 5.50, ksh: 710 },
+      { id: 13, title: "Metropolis - Classic Film", videoId: "dHbWDLf9CDs", duration: 156, usd: 10, ksh: 1290 },
+      { id: 14, title: "Nosferatu - Horror Classic", videoId: "xY4s8JdhFRs", duration: 140, usd: 5.25, ksh: 677 },
+      { id: 15, title: "Battleship Potemkin - Epic", videoId: "F6rNPpSxwQ8", duration: 139, usd: 8.50, ksh: 1097 },
+      { id: 16, title: "Cabinet of Dr. Caligari", videoId: "hnJIrIbRnxU", duration: 145, usd: 7.50, ksh: 968 },
+      { id: 17, title: "Sunrise - Silent Drama", videoId: "n0i_hULmKxQ", duration: 142, usd: 6.50, ksh: 839 },
+      { id: 18, title: "Andy Warhol - Art Film", videoId: "xUGJEk8c4dQ", duration: 138, usd: 7, ksh: 903 },
+      { id: 19, title: "A Trip to the Moon - Fantasy", videoId: "cBBpnKY5ZYU", duration: 144, usd: 6.75, ksh: 871 },
+      { id: 20, title: "Intolerance - Epic Silent", videoId: "S8jFvD5b5-0", duration: 140, usd: 8.75, ksh: 1129 },
+      { id: 21, title: "The Lodger - Thriller Classic", videoId: "FvZPdE8BxBc", duration: 155, usd: 7.25, ksh: 935 }
     ];
 
     // Initialize App
@@ -1943,5 +1943,5 @@ Confirm withdrawal?`;
     // Initialize on load
     init();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cab0890f7929c05',t:'MTc3MDU1MjcyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cab68d6f3919c05',t:'MTc3MDU1NjY3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
