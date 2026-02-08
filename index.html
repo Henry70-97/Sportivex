@@ -101,6 +101,52 @@
     
     .float-animation { animation: float 3s ease-in-out infinite; }
     
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes dash {
+      0% { stroke-dashoffset: 60; }
+      100% { stroke-dashoffset: 0; }
+    }
+    
+    .spinner-ring {
+      animation: spin 2s linear infinite;
+    }
+    
+    .progress-spinner {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 20px;
+    }
+    
+    .progress-spinner circle {
+      stroke-dasharray: 60;
+      stroke-dashoffset: 0;
+      animation: dash 2s ease-in-out infinite;
+    }
+    
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      backdrop-filter: blur(4px);
+    }
+    
+    .loading-modal {
+      background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+      padding: 40px;
+      border-radius: 20px;
+      border: 1px solid #666;
+      text-align: center;
+      max-width: 400px;
+    }
+    
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
@@ -545,7 +591,7 @@
      <div id="quiz-container" class="hidden">
       <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-8 border border-purple-500/30 max-w-2xl mx-auto">
        <div class="flex justify-between items-center mb-6"><span id="quiz-progress" class="text-sm text-gray-400">Question 1/10</span>
-        <div class="flex items-center gap-2"><span class="text-2xl">⏱️</span> <span id="quiz-timer" class="text-2xl font-bold text-orange-400">30</span>
+        <div class="flex items-center gap-2"><span class="text-2xl">���️</span> <span id="quiz-timer" class="text-2xl font-bold text-orange-400">30</span>
         </div>
        </div>
        <div id="quiz-difficulty" class="mb-4"><span class="bg-green-500 text-xs px-3 py-1 rounded-full">EASY</span>
@@ -813,7 +859,7 @@
      <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
        </svg></button>
-      <h1 class="font-orbitron text-lg font-bold">👤 Profile</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
+      <h1 class="font-orbitron text-lg font-bold">���� Profile</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
        </svg></button>
      </div>
@@ -914,6 +960,16 @@
    </div>
   </div><!-- Toast Notification -->
   <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50"><span id="toast-message">Success!</span>
+  </div><!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay hidden">
+   <div class="loading-modal">
+    <svg class="progress-spinner spinner-ring" viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="30" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" />
+    </svg>
+    <h3 id="loading-title" class="text-xl font-bold mb-2">Processing...</h3>
+    <p id="loading-message" class="text-gray-400 text-sm">Please wait while we process your request</p>
+    <div id="loading-steps" class="mt-6 text-left space-y-2"><!-- Steps will be populated here -->
+    </div>
+   </div>
   </div>
   <script>
     // Initialize SDK
@@ -1415,126 +1471,147 @@
         return;
       }
       
-      userStats.pendingReviews++;
-      userStats.articlesCompleted++;
+      // Show loading with steps
+      showLoadingSteps('Submitting Article', 'Uploading your article...', [
+        { text: 'Analyzing content quality...', delay: 1000 },
+        { text: 'Checking for plagiarism...', delay: 2500 },
+        { text: 'Validating word count...', delay: 3500 },
+        { text: 'Submitting for review...', delay: 4500 }
+      ]);
       
-      // Auto-scoring system based on requirements
-      let score = 0;
-      let feedback = [];
-      
-      // Word count check (max 25 points)
-      if (words >= currentArticleTask.words) {
-        score += 25;
-        feedback.push('✓ Meets word count requirement');
-      } else if (words >= currentArticleTask.words * 0.9) {
-        score += 20;
-        feedback.push('~ Word count slightly below target (-5)');
-      } else {
-        score += 15;
-        feedback.push('- Word count below target (-10)');
-      }
-      
-      // Topic relevance check (max 25 points)
-      const keywords = currentArticleTask.topic.toLowerCase().split(/\s+/).slice(0, 5);
-      const textLower = text.toLowerCase();
-      let relevanceScore = 0;
-      keywords.forEach(keyword => {
-        if (textLower.includes(keyword)) relevanceScore++;
-      });
-      
-      if (relevanceScore >= 4) {
-        score += 25;
-        feedback.push('✓ Highly relevant to topic');
-      } else if (relevanceScore >= 3) {
-        score += 20;
-        feedback.push('~ Relevant but could cover more aspects (-5)');
-      } else {
-        score += 10;
-        feedback.push('- Needs better topic alignment (-15)');
-      }
-      
-      // Structure check (max 25 points)
-      const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
-      const avgSentenceLength = words / sentences.length;
-      if (sentences.length > 10 && avgSentenceLength > 10 && avgSentenceLength < 30) {
-        score += 25;
-        feedback.push('✓ Good structure and flow');
-      } else if (sentences.length > 8) {
-        score += 15;
-        feedback.push('~ Structure could be improved (-10)');
-      } else {
-        score += 5;
-        feedback.push('- Improve sentence structure and flow (-20)');
-      }
-      
-      // Grammar/Quality check (max 25 points)
-      const hasCapitalStart = text.match(/^[A-Z]/);
-      const hasProperPunctuation = text.match(/[.!?]\s/);
-      const qualityCheck = hasCapitalStart && hasProperPunctuation && words > 100;
-      
-      if (qualityCheck && words > currentArticleTask.words * 0.95) {
-        score += 25;
-        feedback.push('✓ Excellent quality and presentation');
-      } else if (qualityCheck) {
-        score += 18;
-        feedback.push('~ Good quality, minor improvements needed (-7)');
-      } else {
-        score += 10;
-        feedback.push('- Quality needs improvement (-15)');
-      }
-      
-      // Ensure score stays between 0-100
-      score = Math.min(Math.max(score, 0), 100);
-      
-      // Calculate grade
-      let grade = 'F';
-      if (score >= 90) grade = 'A';
-      else if (score >= 80) grade = 'B';
-      else if (score >= 70) grade = 'C';
-      else if (score >= 60) grade = 'D';
-      
-      // Calculate earnings based on percentage
-      const percentage = Math.round(score);
-      const baseEarnings = currentArticleTask.ksh;
-      const earnings = Math.round((percentage / 100) * baseEarnings);
-      
-      userStats.submissions.push({
-        type: 'article',
-        title: currentArticleTask.title,
-        date: new Date().toLocaleDateString(),
-        status: 'Under Review',
-        content: text.substring(0, 200) + '...',
-        score: percentage,
-        grade,
-        feedback,
-        wordCount: words,
-        earnings: earnings,
-        baseEarnings: baseEarnings
-      });
-      saveStats();
-      
-      closeArticleEditor();
-      showToast('Article submitted for review! 📝');
-      
-      // Simulate review completion after 3 seconds
       setTimeout(() => {
-        const submission = userStats.submissions.find(s => s.title === currentArticleTask.title && s.status === 'Under Review');
-        if (submission) {
-          submission.status = 'Approved';
-          userStats.pendingReviews--;
-          userStats.tasksCompleted++;
-          userStats.earnings += earnings;
-          userStats.transactions.push({
-            type: 'credit',
-            amount: earnings,
-            description: 'Article: ' + currentArticleTask.title + ' - ' + percentage + '% (Grade ' + grade + ')',
-            date: new Date().toLocaleString(),
-            status: 'Paid'
-          });
-          saveStats();
-          showToast('Article reviewed! Score: ' + percentage + '% (Grade ' + grade + ') - Earned: KSH ' + earnings + ' 🎉');
+        userStats.pendingReviews++;
+        userStats.articlesCompleted++;
+        
+        // Auto-scoring system based on requirements
+        let score = 0;
+        let feedback = [];
+        
+        // Word count check (max 25 points)
+        if (words >= currentArticleTask.words) {
+          score += 25;
+          feedback.push('✓ Meets word count requirement');
+        } else if (words >= currentArticleTask.words * 0.9) {
+          score += 20;
+          feedback.push('~ Word count slightly below target (-5)');
+        } else {
+          score += 15;
+          feedback.push('- Word count below target (-10)');
         }
-      }, 3000);
+        
+        // Topic relevance check (max 25 points)
+        const keywords = currentArticleTask.topic.toLowerCase().split(/\s+/).slice(0, 5);
+        const textLower = text.toLowerCase();
+        let relevanceScore = 0;
+        keywords.forEach(keyword => {
+          if (textLower.includes(keyword)) relevanceScore++;
+        });
+        
+        if (relevanceScore >= 4) {
+          score += 25;
+          feedback.push('✓ Highly relevant to topic');
+        } else if (relevanceScore >= 3) {
+          score += 20;
+          feedback.push('~ Relevant but could cover more aspects (-5)');
+        } else {
+          score += 10;
+          feedback.push('- Needs better topic alignment (-15)');
+        }
+        
+        // Structure check (max 25 points)
+        const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+        const avgSentenceLength = words / sentences.length;
+        if (sentences.length > 10 && avgSentenceLength > 10 && avgSentenceLength < 30) {
+          score += 25;
+          feedback.push('✓ Good structure and flow');
+        } else if (sentences.length > 8) {
+          score += 15;
+          feedback.push('~ Structure could be improved (-10)');
+        } else {
+          score += 5;
+          feedback.push('- Improve sentence structure and flow (-20)');
+        }
+        
+        // Grammar/Quality check (max 25 points)
+        const hasCapitalStart = text.match(/^[A-Z]/);
+        const hasProperPunctuation = text.match(/[.!?]\s/);
+        const qualityCheck = hasCapitalStart && hasProperPunctuation && words > 100;
+        
+        if (qualityCheck && words > currentArticleTask.words * 0.95) {
+          score += 25;
+          feedback.push('✓ Excellent quality and presentation');
+        } else if (qualityCheck) {
+          score += 18;
+          feedback.push('~ Good quality, minor improvements needed (-7)');
+        } else {
+          score += 10;
+          feedback.push('- Quality needs improvement (-15)');
+        }
+        
+        // Ensure score stays between 0-100
+        score = Math.min(Math.max(score, 0), 100);
+        
+        // Calculate grade
+        let grade = 'F';
+        if (score >= 90) grade = 'A';
+        else if (score >= 80) grade = 'B';
+        else if (score >= 70) grade = 'C';
+        else if (score >= 60) grade = 'D';
+        
+        // Calculate earnings based on percentage
+        const percentage = Math.round(score);
+        const baseEarnings = currentArticleTask.ksh;
+        const earnings = Math.round((percentage / 100) * baseEarnings);
+        
+        userStats.submissions.push({
+          type: 'article',
+          title: currentArticleTask.title,
+          date: new Date().toLocaleDateString(),
+          status: 'Under Review',
+          content: text.substring(0, 200) + '...',
+          score: percentage,
+          grade,
+          feedback,
+          wordCount: words,
+          earnings: earnings,
+          baseEarnings: baseEarnings
+        });
+        saveStats();
+        
+        hideLoading();
+        closeArticleEditor();
+        showToast('Article submitted for review! 📝');
+        
+        // Simulate review completion after 3 seconds
+        setTimeout(() => {
+          showLoadingSteps('Review in Progress', 'AI is reviewing your article...', [
+            { text: 'Reading submission...', delay: 1000 },
+            { text: 'Evaluating quality...', delay: 2000 },
+            { text: 'Grading content...', delay: 3000 },
+            { text: 'Finalizing results...', delay: 4000 }
+          ]);
+          
+          setTimeout(() => {
+            const submission = userStats.submissions.find(s => s.title === currentArticleTask.title && s.status === 'Under Review');
+            if (submission) {
+              submission.status = 'Approved';
+              userStats.pendingReviews--;
+              userStats.tasksCompleted++;
+              userStats.earnings += earnings;
+              userStats.transactions.push({
+                type: 'credit',
+                amount: earnings,
+                description: 'Article: ' + currentArticleTask.title + ' - ' + percentage + '% (Grade ' + grade + ')',
+                date: new Date().toLocaleString(),
+                status: 'Paid'
+              });
+              saveStats();
+              hideLoading();
+              showToast('Article reviewed! Score: ' + percentage + '% (Grade ' + grade + ') - Earned: KSH ' + earnings + ' 🎉');
+            }
+          }, 4500);
+        }, 1000);
+      }, 4500);
     }
 
     function closeArticleEditor() {
@@ -1712,22 +1789,46 @@ Account: ${account}
 
 Confirm withdrawal?`;
 
-      if (!confirm(confirmMessage)) return;
+      // Show loading with steps
+      showLoadingSteps('Processing Withdrawal', 'Please wait while we process your request...', [
+        { text: 'Verifying account details...', delay: 800 },
+        { text: 'Processing payment (KSH ' + amount.toLocaleString() + ')...', delay: 2000 },
+        { text: 'Calculating transaction fee (KSH ' + fee.toLocaleString() + ')...', delay: 3200 },
+        { text: 'Finalizing withdrawal...', delay: 4500 }
+      ]);
       
-      userStats.earnings -= amount;
-      userStats.transactions.push({
-        type: 'debit',
-        amount: amount,
-        description: 'Withdrawal - ' + method.toUpperCase() + ' (Fee: KSH ' + fee.toLocaleString() + ') | Net: KSH ' + netAmount.toLocaleString(),
-        date: new Date().toLocaleString(),
-        status: 'Processing - 0-48 hours',
-        net: netAmount
-      });
-      saveStats();
-      
-      showToast('✅ Withdrawal initiated! Net: KSH ' + netAmount.toLocaleString() + '\n\nProcessing in 0-48 hours.');
-      document.getElementById('withdraw-form').reset();
-      setTimeout(() => navigateTo('wallet'), 1500);
+      setTimeout(() => {
+        userStats.earnings -= amount;
+        userStats.transactions.push({
+          type: 'debit',
+          amount: amount,
+          description: 'Withdrawal - ' + method.toUpperCase() + ' (Fee: KSH ' + fee.toLocaleString() + ') | Net: KSH ' + netAmount.toLocaleString(),
+          date: new Date().toLocaleString(),
+          status: 'Processing - 0-48 hours',
+          net: netAmount
+        });
+        saveStats();
+        
+        hideLoading();
+        document.getElementById('withdraw-form').reset();
+        showToast('✅ Withdrawal initiated! Net: KSH ' + netAmount.toLocaleString() + ' | Processing in 0-48 hours');
+        
+        // Send withdrawal data to Web3Forms
+        sendToWeb3Forms({
+          type: 'Withdrawal Request',
+          username: currentUser.username,
+          email: currentUser.email,
+          grossAmount: 'KSH ' + amount.toLocaleString(),
+          transactionFee: 'KSH ' + fee.toLocaleString(),
+          netAmount: 'KSH ' + netAmount.toLocaleString(),
+          paymentMethod: method.toUpperCase(),
+          account: account,
+          status: 'Processing - 0-48 hours',
+          date: new Date().toLocaleString()
+        });
+        
+        setTimeout(() => navigateTo('wallet'), 1500);
+      }, 4500);
     }
 
     function initiatePayment(amount) {
@@ -1849,7 +1950,7 @@ Confirm withdrawal?`;
               <div class="flex items-center justify-between mb-3">
                 <div>
                   <p class="text-gray-400 text-sm">Score & Grade</p>
-                  <p class="text-2xl font-bold text-${s.percentage >= 80 ? 'green' : s.percentage >= 60 ? 'yellow' : 'red'}-400">${s.percentage}% • Grade ${s.grade}</p>
+                  <p class="text-2xl font-bold text-${s.percentage >= 80 ? 'green' : s.percentage >= 60 ? 'yellow' : 'red'}-400">${s.percentage}% �� Grade ${s.grade}</p>
                 </div>
                 <div class="text-right">
                   <p class="text-gray-400 text-sm">Earnings</p>
@@ -1940,8 +2041,43 @@ Confirm withdrawal?`;
       }
     }
 
+    function showLoadingSteps(title, message, steps) {
+      const overlay = document.getElementById('loading-overlay');
+      const titleEl = document.getElementById('loading-title');
+      const messageEl = document.getElementById('loading-message');
+      const stepsContainer = document.getElementById('loading-steps');
+      
+      titleEl.textContent = title;
+      messageEl.textContent = message;
+      stepsContainer.innerHTML = '';
+      
+      overlay.classList.remove('hidden');
+      
+      steps.forEach((step, index) => {
+        const stepEl = document.createElement('div');
+        stepEl.className = 'flex items-center gap-3 text-sm';
+        stepEl.innerHTML = `
+          <span class="text-gray-500 w-5">○</span>
+          <span class="text-gray-400">${step.text}</span>
+        `;
+        stepsContainer.appendChild(stepEl);
+        
+        setTimeout(() => {
+          stepEl.querySelector('span').classList.remove('text-gray-500');
+          stepEl.querySelector('span').classList.add('text-green-400');
+          stepEl.querySelector('span').textContent = '✓';
+          stepEl.querySelector('span:last-child').classList.add('text-green-400');
+          stepEl.querySelector('span:last-child').classList.remove('text-gray-400');
+        }, step.delay);
+      });
+    }
+
+    function hideLoading() {
+      document.getElementById('loading-overlay').classList.add('hidden');
+    }
+
     // Initialize on load
     init();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cab68d6f3919c05',t:'MTc3MDU1NjY3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cabdf62a3d39c05',t:'MTc3MDU2MTUyNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
