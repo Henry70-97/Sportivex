@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" class="h-full">
-<head>
+ <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SportiveX - Football Tasks Platform</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
   <script src="/_sdk/element_sdk.js"></script>
   <style>
     body { box-sizing: border-box; }
@@ -104,1177 +104,817 @@
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
-</head>
-<body class="h-full dark bg-[#0a0f1c] text-white overflow-auto">
-  
-  <!-- Triple TV Screen Banner -->
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full dark bg-[#0a0f1c] text-white overflow-auto"><!-- Triple TV Screen Banner -->
   <div id="tv-banner" class="w-full bg-black p-2 flex justify-center gap-2 sticky top-0 z-50">
-    <div class="tv-screen w-1/3 max-w-xs aspect-video flex items-center justify-center overflow-hidden">
-      <video id="tv-video-1" class="w-full h-full object-cover" muted loop playsinline>
-        <source src="video.mp4" type="video/mp4">
-        <div class="text-green-400 text-xs text-center p-2">📺 Live Sports</div>
-      </video>
-    </div>
-    <div class="tv-screen w-1/3 max-w-xs aspect-video flex items-center justify-center overflow-hidden">
-      <video id="tv-video-2" class="w-full h-full object-cover" muted loop playsinline>
-        <source src="video.mp4" type="video/mp4">
-        <div class="text-green-400 text-xs text-center p-2">📺 Highlights</div>
-      </video>
-    </div>
-    <div class="tv-screen w-1/3 max-w-xs aspect-video flex items-center justify-center overflow-hidden">
-      <video id="tv-video-3" class="w-full h-full object-cover" muted loop playsinline>
-        <source src="video.mp4" type="video/mp4">
-        <div class="text-green-400 text-xs text-center p-2">📺 Analysis</div>
-      </video>
-    </div>
-  </div>
-
-  <!-- Audio Player (hidden) -->
-  <audio id="bg-music" loop>
-    <source src="song.mp3" type="audio/mpeg">
-  </audio>
-
-  <!-- Hamburger Menu Overlay -->
-  <div id="menu-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleMenu()"></div>
-  
-  <!-- Hamburger Menu -->
+   <div class="tv-screen w-1/3 max-w-xs aspect-video flex items-center justify-center overflow-hidden">
+    <video id="tv-video-1" class="w-full h-full object-cover" muted loop playsinline><source src="video.mp4" type="video/mp4">
+     <div class="text-green-400 text-xs text-center p-2">
+      📺 Live Sports
+     </div>
+    </video>
+   </div>
+   <div class="tv-screen w-1/3 max-w-xs aspect-video flex items-center justify-center overflow-hidden">
+    <video id="tv-video-2" class="w-full h-full object-cover" muted loop playsinline><source src="video.mp4" type="video/mp4">
+     <div class="text-green-400 text-xs text-center p-2">
+      📺 Highlights
+     </div>
+    </video>
+   </div>
+   <div class="tv-screen w-1/3 max-w-xs aspect-video flex items-center justify-center overflow-hidden">
+    <video id="tv-video-3" class="w-full h-full object-cover" muted loop playsinline><source src="video.mp4" type="video/mp4">
+     <div class="text-green-400 text-xs text-center p-2">
+      📺 Analysis
+     </div>
+    </video>
+   </div>
+  </div><!-- Audio Player (hidden) -->
+  <audio id="bg-music" loop><source src="song.mp3" type="audio/mpeg">
+  </audio><!-- Hamburger Menu Overlay -->
+  <div id="menu-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleMenu()"></div><!-- Hamburger Menu -->
   <nav id="hamburger-menu" class="hamburger-menu fixed left-0 top-0 h-full w-72 bg-gradient-to-b from-[#111827] to-[#0a0f1c] z-50 shadow-2xl overflow-y-auto scrollbar-hide">
-    <div class="p-6">
-      <div class="flex items-center gap-3 mb-8">
-        <img src="logo.png" alt="SportiveX" class="w-12 h-12 rounded-lg" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.alt='⚽';">
-        <span class="font-orbitron text-xl font-bold text-green-400">SportiveX</span>
+   <div class="p-6">
+    <div class="flex items-center gap-3 mb-8"><img src="logo.png" alt="SportiveX" class="w-12 h-12 rounded-lg" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.alt='⚽';"> <span class="font-orbitron text-xl font-bold text-green-400">SportiveX</span>
+    </div>
+    <div class="space-y-2"><button onclick="navigateTo('dashboard')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-green-500/20 transition-all text-left"> <span class="text-2xl">🏠</span> <span>Dashboard Home</span> </button>
+     <div class="pt-2 pb-1 px-3 text-xs text-gray-500 uppercase tracking-wider">
+      Today's Tasks
+     </div><button onclick="navigateTo('trivia')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-purple-500/20 transition-all text-left"> <span class="text-2xl">���</span> <span>Trivia Tasks</span> <span class="ml-auto bg-purple-500 text-xs px-2 py-1 rounded-full">20+</span> </button> <button onclick="navigateTo('articles')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-blue-500/20 transition-all text-left"> <span class="text-2xl">✍️</span> <span>Article Writing</span> <span class="ml-auto bg-blue-500 text-xs px-2 py-1 rounded-full">20+</span> </button> <button onclick="navigateTo('videos')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-orange-500/20 transition-all text-left"> <span class="text-2xl">🎬</span> <span>Video Analysis</span> <span class="ml-auto bg-orange-500 text-xs px-2 py-1 rounded-full">20+</span> </button>
+     <div class="border-t border-gray-700 my-4"></div><button onclick="navigateTo('submissions')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-green-500/20 transition-all text-left"> <span class="text-2xl">📋</span> <span>My Submissions</span> </button> <button onclick="navigateTo('notifications')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-yellow-500/20 transition-all text-left"> <span class="text-2xl">🔔</span> <span>Notifications</span> <span id="notif-badge" class="ml-auto bg-red-500 text-xs px-2 py-1 rounded-full">3</span> </button> <button onclick="navigateTo('wallet')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-emerald-500/20 transition-all text-left"> <span class="text-2xl">💰</span> <span>Wallet</span> </button> <button onclick="navigateTo('withdraw')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-teal-500/20 transition-all text-left"> <span class="text-2xl">💸</span> <span>Withdraw</span> </button> <button onclick="navigateTo('subscribe')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-pink-500/20 transition-all text-left"> <span class="text-2xl">⭐</span> <span>Subscribe</span> </button> <button onclick="navigateTo('profile')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-indigo-500/20 transition-all text-left"> <span class="text-2xl">👤</span> <span>Profile</span> </button> <button onclick="navigateTo('help')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-500/20 transition-all text-left"> <span class="text-2xl">❓</span> <span>Help / Rules</span> </button>
+     <div class="border-t border-gray-700 my-4"></div><button onclick="logout()" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-500/20 transition-all text-left text-red-400"> <span class="text-2xl">🚪</span> <span>Logout</span> </button>
+    </div>
+   </div>
+  </nav><!-- Main Content Container -->
+  <div id="main-container" class="min-h-full"><!-- LANDING PAGE -->
+   <div id="page-landing" class="page active"><!-- Header -->
+    <header class="fixed top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
+     <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3"><img src="logo.png" alt="SportiveX" class="w-10 h-10 rounded-lg" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.innerHTML='⚽'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center';"> <span class="font-orbitron text-xl font-bold bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">SportiveX</span>
       </div>
-      
-      <div class="space-y-2">
-        <button onclick="navigateTo('dashboard')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-green-500/20 transition-all text-left">
-          <span class="text-2xl">🏠</span>
-          <span>Dashboard Home</span>
-        </button>
-        
-        <div class="pt-2 pb-1 px-3 text-xs text-gray-500 uppercase tracking-wider">Today's Tasks</div>
-        
-        <button onclick="navigateTo('trivia')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-purple-500/20 transition-all text-left">
-          <span class="text-2xl">���</span>
-          <span>Trivia Tasks</span>
-          <span class="ml-auto bg-purple-500 text-xs px-2 py-1 rounded-full">20+</span>
-        </button>
-        
-        <button onclick="navigateTo('articles')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-blue-500/20 transition-all text-left">
-          <span class="text-2xl">✍️</span>
-          <span>Article Writing</span>
-          <span class="ml-auto bg-blue-500 text-xs px-2 py-1 rounded-full">20+</span>
-        </button>
-        
-        <button onclick="navigateTo('videos')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-orange-500/20 transition-all text-left">
-          <span class="text-2xl">🎬</span>
-          <span>Video Analysis</span>
-          <span class="ml-auto bg-orange-500 text-xs px-2 py-1 rounded-full">20+</span>
-        </button>
-        
-        <div class="border-t border-gray-700 my-4"></div>
-        
-        <button onclick="navigateTo('submissions')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-green-500/20 transition-all text-left">
-          <span class="text-2xl">📋</span>
-          <span>My Submissions</span>
-        </button>
-        
-        <button onclick="navigateTo('notifications')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-yellow-500/20 transition-all text-left">
-          <span class="text-2xl">🔔</span>
-          <span>Notifications</span>
-          <span id="notif-badge" class="ml-auto bg-red-500 text-xs px-2 py-1 rounded-full">3</span>
-        </button>
-        
-        <button onclick="navigateTo('wallet')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-emerald-500/20 transition-all text-left">
-          <span class="text-2xl">💰</span>
-          <span>Wallet</span>
-        </button>
-        
-        <button onclick="navigateTo('withdraw')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-teal-500/20 transition-all text-left">
-          <span class="text-2xl">💸</span>
-          <span>Withdraw</span>
-        </button>
-        
-        <button onclick="navigateTo('subscribe')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-pink-500/20 transition-all text-left">
-          <span class="text-2xl">⭐</span>
-          <span>Subscribe</span>
-        </button>
-        
-        <button onclick="navigateTo('profile')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-indigo-500/20 transition-all text-left">
-          <span class="text-2xl">👤</span>
-          <span>Profile</span>
-        </button>
-        
-        <button onclick="navigateTo('help')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-500/20 transition-all text-left">
-          <span class="text-2xl">❓</span>
-          <span>Help / Rules</span>
-        </button>
-        
-        <div class="border-t border-gray-700 my-4"></div>
-        
-        <button onclick="logout()" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-500/20 transition-all text-left text-red-400">
-          <span class="text-2xl">🚪</span>
-          <span>Logout</span>
-        </button>
+      <div class="flex items-center gap-4"><button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-800 transition-all"> <span id="theme-icon">🌙</span> </button> <button onclick="toggleMusic()" class="p-2 rounded-full hover:bg-gray-800 transition-all"> <span id="music-icon">���</span> </button> <button onclick="showLogin()" class="px-4 py-2 rounded-lg border border-green-500 text-green-400 hover:bg-green-500/20 transition-all">Login</button> <button onclick="showRegister()" class="btn-primary px-4 py-2 rounded-lg text-white font-semibold">Get Started</button>
       </div>
-    </div>
-  </nav>
-
-  <!-- Main Content Container -->
-  <div id="main-container" class="min-h-full">
-    
-    <!-- LANDING PAGE -->
-    <div id="page-landing" class="page active">
-      <!-- Header -->
-      <header class="fixed top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <img src="logo.png" alt="SportiveX" class="w-10 h-10 rounded-lg" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.innerHTML='⚽'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center';">
-            <span class="font-orbitron text-xl font-bold bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">SportiveX</span>
-          </div>
-          <div class="flex items-center gap-4">
-            <button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-800 transition-all">
-              <span id="theme-icon">🌙</span>
-            </button>
-            <button onclick="toggleMusic()" class="p-2 rounded-full hover:bg-gray-800 transition-all">
-              <span id="music-icon">���</span>
-            </button>
-            <button onclick="showLogin()" class="px-4 py-2 rounded-lg border border-green-500 text-green-400 hover:bg-green-500/20 transition-all">Login</button>
-            <button onclick="showRegister()" class="btn-primary px-4 py-2 rounded-lg text-white font-semibold">Get Started</button>
-          </div>
-        </div>
-      </header>
-
-      <!-- Hero Section -->
-      <section class="pt-48 pb-20 px-4 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-green-900/20 to-purple-900/20"></div>
-        <div class="absolute top-20 left-10 w-72 h-72 bg-green-500/10 rounded-full blur-3xl"></div>
-        <div class="absolute bottom-10 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-        
-        <div class="container mx-auto text-center relative z-10">
-          <div class="float-animation inline-block mb-6">
-            <span class="text-8xl">⚽</span>
-          </div>
-          <h1 id="hero-headline" class="font-orbitron text-4xl md:text-6xl font-black mb-6 leading-tight">
-            Test Your Football Knowledge.<br>
-            <span class="bg-gradient-to-r from-green-400 via-emerald-500 to-teal-400 bg-clip-text text-transparent">Analyze the Game.</span><br>
-            Earn Recognition.
-          </h1>
-          <p class="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
-            Complete trivia challenges, write sports articles, and analyze football video clips. Join thousands of football enthusiasts earning rewards for their expertise.
-          </p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <button onclick="showRegister()" class="btn-primary px-8 py-4 rounded-xl text-lg font-bold glow-animation">
-              🚀 Get Started Free
-            </button>
-            <button onclick="showLogin()" class="btn-secondary px-8 py-4 rounded-xl text-lg font-bold">
-              🔑 Login
-            </button>
-          </div>
-          
-          <div class="mt-16 flex justify-center gap-8 flex-wrap">
-            <div class="stat-card px-6 py-4 rounded-xl">
-              <div class="text-3xl font-bold text-green-400">60+</div>
-              <div class="text-gray-400">Daily Tasks</div>
-            </div>
-            <div class="stat-card px-6 py-4 rounded-xl">
-              <div class="text-3xl font-bold text-purple-400">KSH 7,740</div>
-              <div class="text-gray-400">Total Earnings</div>
-            </div>
-            <div class="stat-card px-6 py-4 rounded-xl">
-              <div class="text-3xl font-bold text-orange-400">10K+</div>
-              <div class="text-gray-400">Active Users</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- How It Works -->
-      <section class="py-20 px-4 bg-gradient-to-b from-transparent to-[#111827]/50">
-        <div class="container mx-auto">
-          <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-16">
-            <span class="bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">How It Works</span>
-          </h2>
-          
-          <div class="grid md:grid-cols-3 gap-8">
-            <div class="task-card card-gradient-1 p-8 rounded-2xl text-center">
-              <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">1️⃣</div>
-              <h3 class="text-xl font-bold mb-4">Sign Up Free</h3>
-              <p class="text-white/80">Create your account in seconds. No payment required to start.</p>
-            </div>
-            
-            <div class="task-card card-gradient-2 p-8 rounded-2xl text-center">
-              <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">2️⃣</div>
-              <h3 class="text-xl font-bold mb-4">Complete Tasks</h3>
-              <p class="text-white/80">Choose from trivia, writing, or video analysis tasks daily.</p>
-            </div>
-            
-            <div class="task-card card-gradient-3 p-8 rounded-2xl text-center">
-              <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">3️⃣</div>
-              <h3 class="text-xl font-bold mb-4">Earn Rewards</h3>
-              <p class="text-white/80">Get paid KSH 129 per task. Withdraw anytime.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Task Categories -->
-      <section class="py-20 px-4">
-        <div class="container mx-auto">
-          <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-16">
-            <span class="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Task Categories</span>
-          </h2>
-          
-          <div class="grid md:grid-cols-3 gap-8">
-            <div class="task-card card-gradient-4 p-8 rounded-2xl">
-              <div class="text-5xl mb-6">🧠</div>
-              <h3 class="text-2xl font-bold mb-4 text-gray-900">Football Trivia</h3>
-              <p class="text-gray-800 mb-4">Test your knowledge with 20+ daily trivia questions covering leagues, players, and history.</p>
-              <ul class="text-gray-700 space-y-2">
-                <li>✓ Multiple choice format</li>
-                <li>✓ Timed challenges</li>
-                <li>✓ Instant feedback</li>
-                <li>✓ KSH 129 per completion</li>
-              </ul>
-            </div>
-            
-            <div class="task-card card-gradient-5 p-8 rounded-2xl">
-              <div class="text-5xl mb-6">✍️</div>
-              <h3 class="text-2xl font-bold mb-4 text-gray-900">Article Writing</h3>
-              <p class="text-gray-800 mb-4">Write match previews, player analyses, and tactical breakdowns.</p>
-              <ul class="text-gray-700 space-y-2">
-                <li>✓ Clear guidelines</li>
-                <li>✓ Word count targets</li>
-                <li>✓ Expert review</li>
-                <li>✓ KSH 129 per article</li>
-              </ul>
-            </div>
-            
-            <div class="task-card card-gradient-6 p-8 rounded-2xl">
-              <div class="text-5xl mb-6">🎬</div>
-              <h3 class="text-2xl font-bold mb-4 text-gray-900">Video Analysis</h3>
-              <p class="text-gray-800 mb-4">Watch and analyze football comedy clips and trailers.</p>
-              <ul class="text-gray-700 space-y-2">
-                <li>✓ Fun content</li>
-                <li>✓ Watch to completion</li>
-                <li>✓ Easy earnings</li>
-                <li>✓ KSH 129 per video</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Featured Challenges -->
-      <section class="py-20 px-4 bg-gradient-to-b from-[#111827]/50 to-transparent">
-        <div class="container mx-auto">
-          <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-16">
-            <span class="bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">Featured Challenges</span>
-          </h2>
-          
-          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="task-card bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-6 rounded-2xl border border-purple-500/30">
-              <div class="flex justify-between items-start mb-4">
-                <span class="bg-purple-500 text-xs px-3 py-1 rounded-full">TRIVIA</span>
-                <span class="text-green-400 font-bold">KSH 129</span>
-              </div>
-              <h3 class="text-lg font-bold mb-2">Premier League Quiz</h3>
-              <p class="text-gray-400 text-sm mb-4">Test your EPL knowledge</p>
-              <div class="flex justify-between text-sm text-gray-500">
-                <span>⏱️ 10 mins</span>
-                <span>🎯 Easy</span>
-              </div>
-            </div>
-            
-            <div class="task-card bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-6 rounded-2xl border border-blue-500/30">
-              <div class="flex justify-between items-start mb-4">
-                <span class="bg-blue-500 text-xs px-3 py-1 rounded-full">ARTICLE</span>
-                <span class="text-green-400 font-bold">KSH 129</span>
-              </div>
-              <h3 class="text-lg font-bold mb-2">Match Preview</h3>
-              <p class="text-gray-400 text-sm mb-4">Write UCL preview</p>
-              <div class="flex justify-between text-sm text-gray-500">
-                <span>📝 500 words</span>
-                <span>🎯 Medium</span>
-              </div>
-            </div>
-            
-            <div class="task-card bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-6 rounded-2xl border border-orange-500/30">
-              <div class="flex justify-between items-start mb-4">
-                <span class="bg-orange-500 text-xs px-3 py-1 rounded-full">VIDEO</span>
-                <span class="text-green-400 font-bold">KSH 129</span>
-              </div>
-              <h3 class="text-lg font-bold mb-2">Comedy Highlights</h3>
-              <p class="text-gray-400 text-sm mb-4">Watch funny moments</p>
-              <div class="flex justify-between text-sm text-gray-500">
-                <span>🎥 5 mins</span>
-                <span>🎯 Easy</span>
-              </div>
-            </div>
-            
-            <div class="task-card bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-6 rounded-2xl border border-green-500/30">
-              <div class="flex justify-between items-start mb-4">
-                <span class="bg-green-500 text-xs px-3 py-1 rounded-full">BONUS</span>
-                <span class="text-yellow-400 font-bold">KSH 258</span>
-              </div>
-              <h3 class="text-lg font-bold mb-2">World Cup Special</h3>
-              <p class="text-gray-400 text-sm mb-4">Double rewards quiz</p>
-              <div class="flex justify-between text-sm text-gray-500">
-                <span>⏱️ 15 mins</span>
-                <span>🎯 Hard</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Testimonials -->
-      <section class="py-20 px-4">
-        <div class="container mx-auto">
-          <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-16">
-            <span class="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">What Users Say</span>
-          </h2>
-          
-          <div class="grid md:grid-cols-3 gap-8">
-            <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-8 rounded-2xl border border-gray-700">
-              <div class="flex items-center gap-4 mb-6">
-                <div class="w-14 h-14 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center text-2xl">👨</div>
-                <div>
-                  <h4 class="font-bold">Kevin Omondi</h4>
-                  <p class="text-gray-400 text-sm">Nairobi, Kenya</p>
-                </div>
-              </div>
-              <p class="text-gray-300">"I've earned over KSH 15,000 in just 2 months! The trivia questions are fun and challenging. Perfect for any football fan."</p>
-              <div class="mt-4 text-yellow-400">⭐⭐⭐⭐⭐</div>
-            </div>
-            
-            <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-8 rounded-2xl border border-gray-700">
-              <div class="flex items-center gap-4 mb-6">
-                <div class="w-14 h-14 rounded-full bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center text-2xl">👩</div>
-                <div>
-                  <h4 class="font-bold">Faith Wanjiku</h4>
-                  <p class="text-gray-400 text-sm">Mombasa, Kenya</p>
-                </div>
-              </div>
-              <p class="text-gray-300">"The article writing tasks helped improve my sports journalism skills while earning. Best platform for football content creators!"</p>
-              <div class="mt-4 text-yellow-400">⭐⭐⭐⭐⭐</div>
-            </div>
-            
-            <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-8 rounded-2xl border border-gray-700">
-              <div class="flex items-center gap-4 mb-6">
-                <div class="w-14 h-14 rounded-full bg-gradient-to-r from-orange-400 to-red-500 flex items-center justify-center text-2xl">👨</div>
-                <div>
-                  <h4 class="font-bold">James Kiprop</h4>
-                  <p class="text-gray-400 text-sm">Eldoret, Kenya</p>
-                </div>
-              </div>
-              <p class="text-gray-300">"Video analysis tasks are so easy! Just watch funny football clips and get paid. Withdrawals are fast and reliable."</p>
-              <div class="mt-4 text-yellow-400">⭐⭐⭐⭐⭐</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Footer -->
-      <footer class="py-16 px-4 bg-[#111827] border-t border-gray-800">
-        <div class="container mx-auto">
-          <div class="grid md:grid-cols-4 gap-8 mb-12">
-            <div>
-              <div class="flex items-center gap-3 mb-6">
-                <img src="logo.png" alt="SportiveX" class="w-10 h-10 rounded-lg" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.innerHTML='⚽';">
-                <span class="font-orbitron text-xl font-bold text-green-400">SportiveX</span>
-              </div>
-              <p class="text-gray-400">The ultimate platform for football enthusiasts to earn while testing their knowledge.</p>
-            </div>
-            
-            <div>
-              <h4 class="font-bold mb-4">Quick Links</h4>
-              <ul class="space-y-2 text-gray-400">
-                <li><a href="#" class="hover:text-green-400 transition-colors">Home</a></li>
-                <li><a href="#" class="hover:text-green-400 transition-colors">About Us</a></li>
-                <li><a href="#" class="hover:text-green-400 transition-colors">How It Works</a></li>
-                <li><a href="#" class="hover:text-green-400 transition-colors">FAQ</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 class="font-bold mb-4">Legal</h4>
-              <ul class="space-y-2 text-gray-400">
-                <li><a href="#" class="hover:text-green-400 transition-colors">Terms of Service</a></li>
-                <li><a href="#" class="hover:text-green-400 transition-colors">Privacy Policy</a></li>
-                <li><a href="#" class="hover:text-green-400 transition-colors">Cookie Policy</a></li>
-                <li><a href="#" class="hover:text-green-400 transition-colors">Refund Policy</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 class="font-bold mb-4">Contact</h4>
-              <ul class="space-y-2 text-gray-400">
-                <li>📧 eduscriptwriters@gmail.com</li>
-                <li>📱 +254 700 000 000</li>
-                <li>📍 Nairobi, Kenya</li>
-              </ul>
-            </div>
-          </div>
-          
-          <div class="border-t border-gray-800 pt-8 text-center text-gray-500">
-            <p>© 2024 SportiveX. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
-    </div>
-
-    <!-- LOGIN MODAL -->
-    <div id="login-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
-      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-8 rounded-2xl max-w-md w-full border border-gray-700">
-        <div class="text-center mb-8">
-          <img src="logo.png" alt="SportiveX" class="w-16 h-16 rounded-xl mx-auto mb-4" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.innerHTML='⚽'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.style.fontSize='2rem';">
-          <h2 class="font-orbitron text-2xl font-bold">Welcome Back!</h2>
-          <p class="text-gray-400">Login to your account</p>
-        </div>
-        
-        <form id="login-form" onsubmit="handleLogin(event)">
-          <div class="space-y-4">
-            <div>
-              <label for="login-email" class="block text-sm font-medium mb-2">Email</label>
-              <input type="email" id="login-email" required class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none transition-colors" placeholder="your@email.com">
-            </div>
-            <div>
-              <label for="login-password" class="block text-sm font-medium mb-2">Password</label>
-              <input type="password" id="login-password" required class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none transition-colors" placeholder="••••••••">
-            </div>
-          </div>
-          
-          <button type="submit" class="btn-primary w-full py-3 rounded-xl font-bold mt-6">Login</button>
-          
-          <p class="text-center mt-4 text-gray-400">
-            Don't have an account? 
-            <button type="button" onclick="showRegister()" class="text-green-400 hover:underline">Sign Up</button>
-          </p>
-        </form>
-        
-        <button onclick="closeModals()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
+     </div>
+    </header><!-- Hero Section -->
+    <section class="pt-48 pb-20 px-4 relative overflow-hidden">
+     <div class="absolute inset-0 bg-gradient-to-br from-green-900/20 to-purple-900/20"></div>
+     <div class="absolute top-20 left-10 w-72 h-72 bg-green-500/10 rounded-full blur-3xl"></div>
+     <div class="absolute bottom-10 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+     <div class="container mx-auto text-center relative z-10">
+      <div class="float-animation inline-block mb-6"><span class="text-8xl">⚽</span>
       </div>
-    </div>
-
-    <!-- REGISTER MODAL -->
-    <div id="register-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
-      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-8 rounded-2xl max-w-md w-full border border-gray-700 relative">
-        <div class="text-center mb-8">
-          <img src="logo.png" alt="SportiveX" class="w-16 h-16 rounded-xl mx-auto mb-4" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.innerHTML='⚽'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.style.fontSize='2rem';">
-          <h2 class="font-orbitron text-2xl font-bold">Join SportiveX!</h2>
-          <p class="text-gray-400">Create your free account</p>
-        </div>
-        
-        <form id="register-form" onsubmit="handleRegister(event)">
-          <div class="space-y-4">
-            <div>
-              <label for="reg-username" class="block text-sm font-medium mb-2">Username</label>
-              <input type="text" id="reg-username" required class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none transition-colors" placeholder="FootballFan123">
-            </div>
-            <div>
-              <label for="reg-email" class="block text-sm font-medium mb-2">Email</label>
-              <input type="email" id="reg-email" required class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none transition-colors" placeholder="your@email.com">
-            </div>
-            <div>
-              <label for="reg-password" class="block text-sm font-medium mb-2">Password</label>
-              <input type="password" id="reg-password" required minlength="6" class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none transition-colors" placeholder="••••••••">
-            </div>
-          </div>
-          
-          <button type="submit" class="btn-primary w-full py-3 rounded-xl font-bold mt-6">Create Account</button>
-          
-          <p class="text-center mt-4 text-gray-400">
-            Already have an account? 
-            <button type="button" onclick="showLogin()" class="text-green-400 hover:underline">Login</button>
-          </p>
-        </form>
-        
-        <button onclick="closeModals()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
+      <h1 id="hero-headline" class="font-orbitron text-4xl md:text-6xl font-black mb-6 leading-tight">Test Your Football Knowledge.<br><span class="bg-gradient-to-r from-green-400 via-emerald-500 to-teal-400 bg-clip-text text-transparent">Analyze the Game.</span><br>
+        Earn Recognition.</h1>
+      <p class="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">Complete trivia challenges, write sports articles, and analyze football video clips. Join thousands of football enthusiasts earning rewards for their expertise.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center"><button onclick="showRegister()" class="btn-primary px-8 py-4 rounded-xl text-lg font-bold glow-animation"> 🚀 Get Started Free </button> <button onclick="showLogin()" class="btn-secondary px-8 py-4 rounded-xl text-lg font-bold"> 🔑 Login </button>
       </div>
+      <div class="mt-16 flex justify-center gap-8 flex-wrap">
+       <div class="stat-card px-6 py-4 rounded-xl">
+        <div class="text-3xl font-bold text-green-400">
+         60+
+        </div>
+        <div class="text-gray-400">
+         Daily Tasks
+        </div>
+       </div>
+       <div class="stat-card px-6 py-4 rounded-xl">
+        <div class="text-3xl font-bold text-purple-400">
+         KSH 7,740
+        </div>
+        <div class="text-gray-400">
+         Total Earnings
+        </div>
+       </div>
+       <div class="stat-card px-6 py-4 rounded-xl">
+        <div class="text-3xl font-bold text-orange-400">
+         10K+
+        </div>
+        <div class="text-gray-400">
+         Active Users
+        </div>
+       </div>
+      </div>
+     </div>
+    </section><!-- How It Works -->
+    <section class="py-20 px-4 bg-gradient-to-b from-transparent to-[#111827]/50">
+     <div class="container mx-auto">
+      <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-16"><span class="bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">How It Works</span></h2>
+      <div class="grid md:grid-cols-3 gap-8">
+       <div class="task-card card-gradient-1 p-8 rounded-2xl text-center">
+        <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
+         1️⃣
+        </div>
+        <h3 class="text-xl font-bold mb-4">Sign Up Free</h3>
+        <p class="text-white/80">Create your account in seconds. No payment required to start.</p>
+       </div>
+       <div class="task-card card-gradient-2 p-8 rounded-2xl text-center">
+        <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
+         2️⃣
+        </div>
+        <h3 class="text-xl font-bold mb-4">Complete Tasks</h3>
+        <p class="text-white/80">Choose from trivia, writing, or video analysis tasks daily.</p>
+       </div>
+       <div class="task-card card-gradient-3 p-8 rounded-2xl text-center">
+        <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
+         3️⃣
+        </div>
+        <h3 class="text-xl font-bold mb-4">Earn Rewards</h3>
+        <p class="text-white/80">Get paid KSH 129 per task. Withdraw anytime.</p>
+       </div>
+      </div>
+     </div>
+    </section><!-- Task Categories -->
+    <section class="py-20 px-4">
+     <div class="container mx-auto">
+      <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-16"><span class="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Task Categories</span></h2>
+      <div class="grid md:grid-cols-3 gap-8">
+       <div class="task-card card-gradient-4 p-8 rounded-2xl">
+        <div class="text-5xl mb-6">
+         🧠
+        </div>
+        <h3 class="text-2xl font-bold mb-4 text-gray-900">Football Trivia</h3>
+        <p class="text-gray-800 mb-4">Test your knowledge with 20+ daily trivia questions covering leagues, players, and history.</p>
+        <ul class="text-gray-700 space-y-2">
+         <li>✓ Multiple choice format</li>
+         <li>✓ Timed challenges</li>
+         <li>✓ Instant feedback</li>
+         <li>✓ KSH 129 per completion</li>
+        </ul>
+       </div>
+       <div class="task-card card-gradient-5 p-8 rounded-2xl">
+        <div class="text-5xl mb-6">
+         ✍️
+        </div>
+        <h3 class="text-2xl font-bold mb-4 text-gray-900">Article Writing</h3>
+        <p class="text-gray-800 mb-4">Write match previews, player analyses, and tactical breakdowns.</p>
+        <ul class="text-gray-700 space-y-2">
+         <li>✓ Clear guidelines</li>
+         <li>✓ Word count targets</li>
+         <li>✓ Expert review</li>
+         <li>✓ KSH 129 per article</li>
+        </ul>
+       </div>
+       <div class="task-card card-gradient-6 p-8 rounded-2xl">
+        <div class="text-5xl mb-6">
+         🎬
+        </div>
+        <h3 class="text-2xl font-bold mb-4 text-gray-900">Video Analysis</h3>
+        <p class="text-gray-800 mb-4">Watch and analyze football comedy clips and trailers.</p>
+        <ul class="text-gray-700 space-y-2">
+         <li>✓ Fun content</li>
+         <li>✓ Watch to completion</li>
+         <li>✓ Easy earnings</li>
+         <li>✓ KSH 129 per video</li>
+        </ul>
+       </div>
+      </div>
+     </div>
+    </section><!-- Featured Challenges -->
+    <section class="py-20 px-4 bg-gradient-to-b from-[#111827]/50 to-transparent">
+     <div class="container mx-auto">
+      <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-16"><span class="bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">Featured Challenges</span></h2>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+       <div class="task-card bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-6 rounded-2xl border border-purple-500/30">
+        <div class="flex justify-between items-start mb-4"><span class="bg-purple-500 text-xs px-3 py-1 rounded-full">TRIVIA</span> <span class="text-green-400 font-bold">KSH 129</span>
+        </div>
+        <h3 class="text-lg font-bold mb-2">Premier League Quiz</h3>
+        <p class="text-gray-400 text-sm mb-4">Test your EPL knowledge</p>
+        <div class="flex justify-between text-sm text-gray-500"><span>⏱️ 10 mins</span> <span>🎯 Easy</span>
+        </div>
+       </div>
+       <div class="task-card bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-6 rounded-2xl border border-blue-500/30">
+        <div class="flex justify-between items-start mb-4"><span class="bg-blue-500 text-xs px-3 py-1 rounded-full">ARTICLE</span> <span class="text-green-400 font-bold">KSH 129</span>
+        </div>
+        <h3 class="text-lg font-bold mb-2">Match Preview</h3>
+        <p class="text-gray-400 text-sm mb-4">Write UCL preview</p>
+        <div class="flex justify-between text-sm text-gray-500"><span>📝 500 words</span> <span>🎯 Medium</span>
+        </div>
+       </div>
+       <div class="task-card bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-6 rounded-2xl border border-orange-500/30">
+        <div class="flex justify-between items-start mb-4"><span class="bg-orange-500 text-xs px-3 py-1 rounded-full">VIDEO</span> <span class="text-green-400 font-bold">KSH 129</span>
+        </div>
+        <h3 class="text-lg font-bold mb-2">Comedy Highlights</h3>
+        <p class="text-gray-400 text-sm mb-4">Watch funny moments</p>
+        <div class="flex justify-between text-sm text-gray-500"><span>🎥 5 mins</span> <span>🎯 Easy</span>
+        </div>
+       </div>
+       <div class="task-card bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-6 rounded-2xl border border-green-500/30">
+        <div class="flex justify-between items-start mb-4"><span class="bg-green-500 text-xs px-3 py-1 rounded-full">BONUS</span> <span class="text-yellow-400 font-bold">KSH 258</span>
+        </div>
+        <h3 class="text-lg font-bold mb-2">World Cup Special</h3>
+        <p class="text-gray-400 text-sm mb-4">Double rewards quiz</p>
+        <div class="flex justify-between text-sm text-gray-500"><span>⏱️ 15 mins</span> <span>🎯 Hard</span>
+        </div>
+       </div>
+      </div>
+     </div>
+    </section><!-- Testimonials -->
+    <section class="py-20 px-4">
+     <div class="container mx-auto">
+      <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-16"><span class="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">What Users Say</span></h2>
+      <div class="grid md:grid-cols-3 gap-8">
+       <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-8 rounded-2xl border border-gray-700">
+        <div class="flex items-center gap-4 mb-6">
+         <div class="w-14 h-14 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center text-2xl">
+          👨
+         </div>
+         <div>
+          <h4 class="font-bold">Kevin Omondi</h4>
+          <p class="text-gray-400 text-sm">Nairobi, Kenya</p>
+         </div>
+        </div>
+        <p class="text-gray-300">"I've earned over KSH 15,000 in just 2 months! The trivia questions are fun and challenging. Perfect for any football fan."</p>
+        <div class="mt-4 text-yellow-400">
+         ⭐⭐⭐⭐⭐
+        </div>
+       </div>
+       <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-8 rounded-2xl border border-gray-700">
+        <div class="flex items-center gap-4 mb-6">
+         <div class="w-14 h-14 rounded-full bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center text-2xl">
+          👩
+         </div>
+         <div>
+          <h4 class="font-bold">Faith Wanjiku</h4>
+          <p class="text-gray-400 text-sm">Mombasa, Kenya</p>
+         </div>
+        </div>
+        <p class="text-gray-300">"The article writing tasks helped improve my sports journalism skills while earning. Best platform for football content creators!"</p>
+        <div class="mt-4 text-yellow-400">
+         ⭐⭐⭐⭐⭐
+        </div>
+       </div>
+       <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-8 rounded-2xl border border-gray-700">
+        <div class="flex items-center gap-4 mb-6">
+         <div class="w-14 h-14 rounded-full bg-gradient-to-r from-orange-400 to-red-500 flex items-center justify-center text-2xl">
+          👨
+         </div>
+         <div>
+          <h4 class="font-bold">James Kiprop</h4>
+          <p class="text-gray-400 text-sm">Eldoret, Kenya</p>
+         </div>
+        </div>
+        <p class="text-gray-300">"Video analysis tasks are so easy! Just watch funny football clips and get paid. Withdrawals are fast and reliable."</p>
+        <div class="mt-4 text-yellow-400">
+         ⭐⭐⭐⭐⭐
+        </div>
+       </div>
+      </div>
+     </div>
+    </section><!-- Footer -->
+    <footer class="py-16 px-4 bg-[#111827] border-t border-gray-800">
+     <div class="container mx-auto">
+      <div class="grid md:grid-cols-4 gap-8 mb-12">
+       <div>
+        <div class="flex items-center gap-3 mb-6"><img src="logo.png" alt="SportiveX" class="w-10 h-10 rounded-lg" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.innerHTML='⚽';"> <span class="font-orbitron text-xl font-bold text-green-400">SportiveX</span>
+        </div>
+        <p class="text-gray-400">The ultimate platform for football enthusiasts to earn while testing their knowledge.</p>
+       </div>
+       <div>
+        <h4 class="font-bold mb-4">Quick Links</h4>
+        <ul class="space-y-2 text-gray-400">
+         <li><a href="#" class="hover:text-green-400 transition-colors">Home</a></li>
+         <li><a href="#" class="hover:text-green-400 transition-colors">About Us</a></li>
+         <li><a href="#" class="hover:text-green-400 transition-colors">How It Works</a></li>
+         <li><a href="#" class="hover:text-green-400 transition-colors">FAQ</a></li>
+        </ul>
+       </div>
+       <div>
+        <h4 class="font-bold mb-4">Legal</h4>
+        <ul class="space-y-2 text-gray-400">
+         <li><a href="#" class="hover:text-green-400 transition-colors">Terms of Service</a></li>
+         <li><a href="#" class="hover:text-green-400 transition-colors">Privacy Policy</a></li>
+         <li><a href="#" class="hover:text-green-400 transition-colors">Cookie Policy</a></li>
+         <li><a href="#" class="hover:text-green-400 transition-colors">Refund Policy</a></li>
+        </ul>
+       </div>
+       <div>
+        <h4 class="font-bold mb-4">Contact</h4>
+        <ul class="space-y-2 text-gray-400">
+         <li>📧 eduscriptwriters@gmail.com</li>
+         <li>📱 +254 700 000 000</li>
+         <li>📍 Nairobi, Kenya</li>
+        </ul>
+       </div>
+      </div>
+      <div class="border-t border-gray-800 pt-8 text-center text-gray-500">
+       <p>© 2024 SportiveX. All rights reserved.</p>
+      </div>
+     </div>
+    </footer>
+   </div><!-- LOGIN MODAL -->
+   <div id="login-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-8 rounded-2xl max-w-md w-full border border-gray-700">
+     <div class="text-center mb-8"><img src="logo.png" alt="SportiveX" class="w-16 h-16 rounded-xl mx-auto mb-4" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.innerHTML='⚽'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.style.fontSize='2rem';">
+      <h2 class="font-orbitron text-2xl font-bold">Welcome Back!</h2>
+      <p class="text-gray-400">Login to your account</p>
+     </div>
+     <form id="login-form" onsubmit="handleLogin(event)">
+      <div class="space-y-4">
+       <div><label for="login-email" class="block text-sm font-medium mb-2">Email</label> <input type="email" id="login-email" required class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none transition-colors" placeholder="your@email.com">
+       </div>
+       <div><label for="login-password" class="block text-sm font-medium mb-2">Password</label> <input type="password" id="login-password" required class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none transition-colors" placeholder="••••••••">
+       </div>
+      </div><button type="submit" class="btn-primary w-full py-3 rounded-xl font-bold mt-6">Login</button>
+      <p class="text-center mt-4 text-gray-400">Don't have an account? <button type="button" onclick="showRegister()" class="text-green-400 hover:underline">Sign Up</button></p>
+     </form><button onclick="closeModals()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">×</button>
     </div>
-
-    <!-- DASHBOARD PAGE -->
-    <div id="page-dashboard" class="page">
-      <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-          <button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800 transition-all">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
-          <div class="flex items-center gap-3">
-            <img src="logo.png" alt="SportiveX" class="w-8 h-8 rounded-lg" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.innerHTML='⚽';">
-            <span class="font-orbitron text-lg font-bold text-green-400 hidden sm:block">SportiveX</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-800">
-              <span id="theme-icon-dash">🌙</span>
-            </button>
-            <button onclick="navigateTo('notifications')" class="p-2 rounded-full hover:bg-gray-800 relative">
-              🔔
-              <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs flex items-center justify-center">3</span>
-            </button>
-            <button onclick="navigateTo('profile')" class="w-10 h-10 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center font-bold">
-              <span id="user-avatar">U</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main class="container mx-auto px-4 py-8">
-        <div class="mb-8">
-          <h1 class="text-3xl font-bold mb-2">Welcome back, <span id="dash-username" class="text-green-400">User</span>! 👋</h1>
-          <p class="text-gray-400">Ready to earn today? Here's your progress.</p>
-        </div>
-
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div class="stat-card p-6 rounded-2xl card-gradient-1">
-            <div class="text-4xl mb-2">✅</div>
-            <div class="text-3xl font-bold" id="tasks-completed">0</div>
-            <div class="text-white/70">Tasks Completed</div>
-          </div>
-          <div class="stat-card p-6 rounded-2xl card-gradient-2">
-            <div class="text-4xl mb-2">⏳</div>
-            <div class="text-3xl font-bold" id="pending-reviews">0</div>
-            <div class="text-white/70">Pending Reviews</div>
-          </div>
-          <div class="stat-card p-6 rounded-2xl card-gradient-3">
-            <div class="text-4xl mb-2">⭐</div>
-            <div class="text-3xl font-bold" id="total-points">0</div>
-            <div class="text-white/70">Total Points</div>
-          </div>
-          <div class="stat-card p-6 rounded-2xl card-gradient-4">
-            <div class="text-4xl mb-2">💰</div>
-            <div class="text-3xl font-bold text-gray-900" id="total-earnings">KSH 0</div>
-            <div class="text-gray-700">Total Earnings</div>
-          </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="grid md:grid-cols-3 gap-6 mb-8">
-          <button onclick="navigateTo('trivia')" class="task-card card-gradient-1 p-6 rounded-2xl text-left">
-            <div class="text-4xl mb-4">🧠</div>
-            <h3 class="text-xl font-bold mb-2">Start Trivia</h3>
-            <p class="text-white/80">20+ questions available</p>
-            <div class="mt-4 text-sm bg-white/20 px-3 py-1 rounded-full inline-block">KSH 129 each</div>
-          </button>
-          
-          <button onclick="navigateTo('articles')" class="task-card card-gradient-5 p-6 rounded-2xl text-left">
-            <div class="text-4xl mb-4">✍️</div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Write Articles</h3>
-            <p class="text-gray-700">20+ topics waiting</p>
-            <div class="mt-4 text-sm bg-white/40 px-3 py-1 rounded-full inline-block text-gray-900">KSH 129 each</div>
-          </button>
-          
-          <button onclick="navigateTo('videos')" class="task-card card-gradient-3 p-6 rounded-2xl text-left">
-            <div class="text-4xl mb-4">🎬</div>
-            <h3 class="text-xl font-bold mb-2">Watch Videos</h3>
-            <p class="text-white/80">20+ clips ready</p>
-            <div class="mt-4 text-sm bg-white/20 px-3 py-1 rounded-full inline-block">KSH 129 each</div>
-          </button>
-        </div>
-
-        <!-- Recent Tasks -->
-        <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-gray-700">
-          <h2 class="text-xl font-bold mb-6">Recent Activity</h2>
-          <div id="recent-activity" class="space-y-4">
-            <p class="text-gray-400 text-center py-8">No recent activity. Start completing tasks to see your progress!</p>
-          </div>
-        </div>
-      </main>
+   </div><!-- REGISTER MODAL -->
+   <div id="register-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-8 rounded-2xl max-w-md w-full border border-gray-700 relative">
+     <div class="text-center mb-8"><img src="logo.png" alt="SportiveX" class="w-16 h-16 rounded-xl mx-auto mb-4" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.innerHTML='⚽'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.style.fontSize='2rem';">
+      <h2 class="font-orbitron text-2xl font-bold">Join SportiveX!</h2>
+      <p class="text-gray-400">Create your free account</p>
+     </div>
+     <form id="register-form" onsubmit="handleRegister(event)">
+      <div class="space-y-4">
+       <div><label for="reg-username" class="block text-sm font-medium mb-2">Username</label> <input type="text" id="reg-username" required class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none transition-colors" placeholder="FootballFan123">
+       </div>
+       <div><label for="reg-email" class="block text-sm font-medium mb-2">Email</label> <input type="email" id="reg-email" required class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none transition-colors" placeholder="your@email.com">
+       </div>
+       <div><label for="reg-password" class="block text-sm font-medium mb-2">Password</label> <input type="password" id="reg-password" required minlength="6" class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none transition-colors" placeholder="••••••••">
+       </div>
+      </div><button type="submit" class="btn-primary w-full py-3 rounded-xl font-bold mt-6">Create Account</button>
+      <p class="text-center mt-4 text-gray-400">Already have an account? <button type="button" onclick="showLogin()" class="text-green-400 hover:underline">Login</button></p>
+     </form><button onclick="closeModals()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">×</button>
     </div>
-
-    <!-- TRIVIA PAGE -->
-    <div id="page-trivia" class="page">
-      <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-          <button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
-          <h1 class="font-orbitron text-lg font-bold">🧠 Trivia Tasks</h1>
-          <button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-            </svg>
-          </button>
+   </div><!-- DASHBOARD PAGE -->
+   <div id="page-dashboard" class="page">
+    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
+     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800 transition-all">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+       </svg></button>
+      <div class="flex items-center gap-3"><img src="logo.png" alt="SportiveX" class="w-8 h-8 rounded-lg" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.innerHTML='⚽';"> <span class="font-orbitron text-lg font-bold text-green-400 hidden sm:block">SportiveX</span>
+      </div>
+      <div class="flex items-center gap-3"><button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-800"> <span id="theme-icon-dash">🌙</span> </button> <button onclick="navigateTo('notifications')" class="p-2 rounded-full hover:bg-gray-800 relative"> 🔔 <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs flex items-center justify-center">3</span> </button> <button onclick="navigateTo('profile')" class="w-10 h-10 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center font-bold"> <span id="user-avatar">U</span> </button>
+      </div>
+     </div>
+    </header>
+    <main class="container mx-auto px-4 py-8">
+     <div class="mb-8">
+      <h1 class="text-3xl font-bold mb-2">Welcome back, <span id="dash-username" class="text-green-400">User</span>! 👋</h1>
+      <p class="text-gray-400">Ready to earn today? Here's your progress.</p>
+     </div><!-- Stats Cards -->
+     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="stat-card p-6 rounded-2xl card-gradient-1">
+       <div class="text-4xl mb-2">
+        ✅
+       </div>
+       <div class="text-3xl font-bold" id="tasks-completed">
+        0
+       </div>
+       <div class="text-white/70">
+        Tasks Completed
+       </div>
+      </div>
+      <div class="stat-card p-6 rounded-2xl card-gradient-2">
+       <div class="text-4xl mb-2">
+        ⏳
+       </div>
+       <div class="text-3xl font-bold" id="pending-reviews">
+        0
+       </div>
+       <div class="text-white/70">
+        Pending Reviews
+       </div>
+      </div>
+      <div class="stat-card p-6 rounded-2xl card-gradient-3">
+       <div class="text-4xl mb-2">
+        ⭐
+       </div>
+       <div class="text-3xl font-bold" id="total-points">
+        0
+       </div>
+       <div class="text-white/70">
+        Total Points
+       </div>
+      </div>
+      <div class="stat-card p-6 rounded-2xl card-gradient-4">
+       <div class="text-4xl mb-2">
+        💰
+       </div>
+       <div class="text-3xl font-bold text-gray-900" id="total-earnings">
+        KSH 0
+       </div>
+       <div class="text-gray-700">
+        Total Earnings
+       </div>
+      </div>
+     </div><!-- Quick Actions -->
+     <div class="grid md:grid-cols-3 gap-6 mb-8"><button onclick="navigateTo('trivia')" class="task-card card-gradient-1 p-6 rounded-2xl text-left">
+       <div class="text-4xl mb-4">
+        🧠
+       </div><h3 class="text-xl font-bold mb-2">Start Trivia</h3><p class="text-white/80">20+ questions available</p>
+       <div class="mt-4 text-sm bg-white/20 px-3 py-1 rounded-full inline-block">
+        KSH 129 each
+       </div></button> <button onclick="navigateTo('articles')" class="task-card card-gradient-5 p-6 rounded-2xl text-left">
+       <div class="text-4xl mb-4">
+        ✍️
+       </div><h3 class="text-xl font-bold text-gray-900 mb-2">Write Articles</h3><p class="text-gray-700">20+ topics waiting</p>
+       <div class="mt-4 text-sm bg-white/40 px-3 py-1 rounded-full inline-block text-gray-900">
+        KSH 129 each
+       </div></button> <button onclick="navigateTo('videos')" class="task-card card-gradient-3 p-6 rounded-2xl text-left">
+       <div class="text-4xl mb-4">
+        🎬
+       </div><h3 class="text-xl font-bold mb-2">Watch Videos</h3><p class="text-white/80">20+ clips ready</p>
+       <div class="mt-4 text-sm bg-white/20 px-3 py-1 rounded-full inline-block">
+        KSH 129 each
+       </div></button>
+     </div><!-- Recent Tasks -->
+     <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-gray-700">
+      <h2 class="text-xl font-bold mb-6">Recent Activity</h2>
+      <div id="recent-activity" class="space-y-4">
+       <p class="text-gray-400 text-center py-8">No recent activity. Start completing tasks to see your progress!</p>
+      </div>
+     </div>
+    </main>
+   </div><!-- TRIVIA PAGE -->
+   <div id="page-trivia" class="page">
+    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
+     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+       </svg></button>
+      <h1 class="font-orbitron text-lg font-bold">🧠 Trivia Tasks</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+       </svg></button>
+     </div>
+    </header>
+    <main class="container mx-auto px-4 py-8">
+     <div id="trivia-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"><!-- Trivia tasks will be populated here -->
+     </div><!-- Active Quiz Container -->
+     <div id="quiz-container" class="hidden">
+      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-8 border border-purple-500/30 max-w-2xl mx-auto">
+       <div class="flex justify-between items-center mb-6"><span id="quiz-progress" class="text-sm text-gray-400">Question 1/10</span>
+        <div class="flex items-center gap-2"><span class="text-2xl">⏱️</span> <span id="quiz-timer" class="text-2xl font-bold text-orange-400">30</span>
         </div>
-      </header>
-
-      <main class="container mx-auto px-4 py-8">
-        <div id="trivia-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Trivia tasks will be populated here -->
+       </div>
+       <div id="quiz-difficulty" class="mb-4"><span class="bg-green-500 text-xs px-3 py-1 rounded-full">EASY</span>
+       </div>
+       <h2 id="quiz-question" class="text-xl font-bold mb-6">Loading question...</h2>
+       <div id="quiz-options" class="space-y-3"><!-- Options will be populated here -->
+       </div>
+       <div id="quiz-feedback" class="mt-6 hidden">
+        <div class="p-4 rounded-xl"></div>
+       </div><button id="quiz-next" onclick="nextQuestion()" class="btn-primary w-full py-3 rounded-xl font-bold mt-6 hidden"> Next Question → </button>
+      </div>
+     </div><!-- Quiz Results -->
+     <div id="quiz-results" class="hidden">
+      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-8 border border-green-500/30 max-w-md mx-auto text-center">
+       <div class="text-6xl mb-4">
+        🏆
+       </div>
+       <h2 class="text-2xl font-bold mb-4">Quiz Complete!</h2>
+       <div class="text-5xl font-bold text-green-400 mb-2" id="quiz-score">
+        0/10
+       </div>
+       <p class="text-gray-400 mb-6">Great job! You've earned:</p>
+       <div class="text-3xl font-bold text-yellow-400 mb-6" id="quiz-earnings">
+        KSH 129
+       </div><button onclick="closeQuiz()" class="btn-primary px-8 py-3 rounded-xl font-bold">Back to Tasks</button>
+      </div>
+     </div>
+    </main>
+   </div><!-- ARTICLES PAGE -->
+   <div id="page-articles" class="page">
+    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
+     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+       </svg></button>
+      <h1 class="font-orbitron text-lg font-bold">✍️ Article Tasks</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+       </svg></button>
+     </div>
+    </header>
+    <main class="container mx-auto px-4 py-8">
+     <div id="articles-list" class="grid md:grid-cols-2 gap-6"><!-- Article tasks will be populated here -->
+     </div><!-- Article Editor -->
+     <div id="article-editor" class="hidden">
+      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-8 border border-blue-500/30 max-w-4xl mx-auto">
+       <div class="flex justify-between items-start mb-6">
+        <div>
+         <h2 id="article-title" class="text-2xl font-bold mb-2">Article Title</h2>
+         <p id="article-instructions" class="text-gray-400">Instructions will appear here</p>
+        </div><button onclick="closeArticleEditor()" class="text-gray-400 hover:text-white text-2xl">×</button>
+       </div>
+       <div class="mb-4 flex items-center justify-between"><span class="text-sm text-gray-400">Word requirement: <span id="word-requirement" class="text-blue-400">500</span> words</span> <span class="text-sm">Current: <span id="word-count" class="text-green-400">0</span> words</span>
+       </div><textarea id="article-content" class="w-full h-96 p-4 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-blue-500 focus:outline-none resize-none" placeholder="Start writing your article here..." oninput="updateWordCount()"></textarea>
+       <div class="mt-4 flex flex-col sm:flex-row gap-4"><label class="flex-1"> <span class="block text-sm text-gray-400 mb-2">Or upload a file:</span> <input type="file" id="article-file" accept=".txt,.doc,.docx,.pdf" class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 text-sm"> </label>
+       </div><button onclick="submitArticle()" id="submit-article-btn" class="btn-primary w-full py-3 rounded-xl font-bold mt-6"> Submit Article </button>
+      </div>
+     </div>
+    </main>
+   </div><!-- VIDEOS PAGE -->
+   <div id="page-videos" class="page">
+    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
+     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+       </svg></button>
+      <h1 class="font-orbitron text-lg font-bold">🎬 Video Tasks</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+       </svg></button>
+     </div>
+    </header>
+    <main class="container mx-auto px-4 py-8">
+     <div id="videos-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"><!-- Video tasks will be populated here -->
+     </div><!-- Video Player -->
+     <div id="video-player" class="hidden">
+      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-orange-500/30 max-w-4xl mx-auto">
+       <div class="flex justify-between items-center mb-4">
+        <h2 id="video-title" class="text-xl font-bold">Video Title</h2><button onclick="closeVideoPlayer()" class="text-gray-400 hover:text-white text-2xl">×</button>
+       </div>
+       <div class="aspect-video bg-black rounded-xl overflow-hidden mb-4"><iframe id="youtube-player" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+       </div>
+       <div class="flex items-center justify-between">
+        <div class="text-sm text-gray-400"><span>Watch completely to earn</span> <span class="text-green-400 font-bold ml-2">KSH 129</span>
         </div>
-        
-        <!-- Active Quiz Container -->
-        <div id="quiz-container" class="hidden">
-          <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-8 border border-purple-500/30 max-w-2xl mx-auto">
-            <div class="flex justify-between items-center mb-6">
-              <span id="quiz-progress" class="text-sm text-gray-400">Question 1/10</span>
-              <div class="flex items-center gap-2">
-                <span class="text-2xl">⏱️</span>
-                <span id="quiz-timer" class="text-2xl font-bold text-orange-400">30</span>
-              </div>
-            </div>
-            
-            <div id="quiz-difficulty" class="mb-4">
-              <span class="bg-green-500 text-xs px-3 py-1 rounded-full">EASY</span>
-            </div>
-            
-            <h2 id="quiz-question" class="text-xl font-bold mb-6">Loading question...</h2>
-            
-            <div id="quiz-options" class="space-y-3">
-              <!-- Options will be populated here -->
-            </div>
-            
-            <div id="quiz-feedback" class="mt-6 hidden">
-              <div class="p-4 rounded-xl"></div>
-            </div>
-            
-            <button id="quiz-next" onclick="nextQuestion()" class="btn-primary w-full py-3 rounded-xl font-bold mt-6 hidden">
-              Next Question →
-            </button>
-          </div>
+        <div id="video-progress" class="flex items-center gap-2">
+         <div class="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
+          <div id="video-progress-bar" class="h-full bg-green-500 transition-all duration-1000" style="width: 0%"></div>
+         </div><span id="video-progress-text" class="text-sm">0%</span>
         </div>
-        
-        <!-- Quiz Results -->
-        <div id="quiz-results" class="hidden">
-          <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-8 border border-green-500/30 max-w-md mx-auto text-center">
-            <div class="text-6xl mb-4">🏆</div>
-            <h2 class="text-2xl font-bold mb-4">Quiz Complete!</h2>
-            <div class="text-5xl font-bold text-green-400 mb-2" id="quiz-score">0/10</div>
-            <p class="text-gray-400 mb-6">Great job! You've earned:</p>
-            <div class="text-3xl font-bold text-yellow-400 mb-6" id="quiz-earnings">KSH 129</div>
-            <button onclick="closeQuiz()" class="btn-primary px-8 py-3 rounded-xl font-bold">Back to Tasks</button>
-          </div>
+       </div><button id="claim-video-btn" onclick="claimVideoReward()" class="btn-primary w-full py-3 rounded-xl font-bold mt-4 hidden"> 🎉 Claim KSH 129 Reward </button>
+      </div>
+     </div>
+    </main>
+   </div><!-- SUBMISSIONS PAGE -->
+   <div id="page-submissions" class="page">
+    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
+     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+       </svg></button>
+      <h1 class="font-orbitron text-lg font-bold">📋 My Submissions</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+       </svg></button>
+     </div>
+    </header>
+    <main class="container mx-auto px-4 py-8">
+     <div id="submissions-list" class="space-y-4">
+      <p class="text-gray-400 text-center py-8">No submissions yet. Start completing tasks!</p>
+     </div>
+    </main>
+   </div><!-- NOTIFICATIONS PAGE -->
+   <div id="page-notifications" class="page">
+    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
+     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+       </svg></button>
+      <h1 class="font-orbitron text-lg font-bold">🔔 Notifications</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+       </svg></button>
+     </div>
+    </header>
+    <main class="container mx-auto px-4 py-8">
+     <div class="space-y-4">
+      <div class="bg-gradient-to-r from-green-500/20 to-transparent p-4 rounded-xl border-l-4 border-green-500">
+       <div class="flex items-start gap-4"><span class="text-2xl">🎉</span>
+        <div>
+         <h3 class="font-bold">Welcome to SportiveX!</h3>
+         <p class="text-gray-400 text-sm">Start completing tasks to earn rewards. 60+ tasks available daily!</p><span class="text-xs text-gray-500">Just now</span>
         </div>
-      </main>
-    </div>
-
-    <!-- ARTICLES PAGE -->
-    <div id="page-articles" class="page">
-      <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-          <button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
-          <h1 class="font-orbitron text-lg font-bold">✍️ Article Tasks</h1>
-          <button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-            </svg>
-          </button>
+       </div>
+      </div>
+      <div class="bg-gradient-to-r from-purple-500/20 to-transparent p-4 rounded-xl border-l-4 border-purple-500">
+       <div class="flex items-start gap-4"><span class="text-2xl">🧠</span>
+        <div>
+         <h3 class="font-bold">New Trivia Available</h3>
+         <p class="text-gray-400 text-sm">20+ new football trivia questions are ready for you!</p><span class="text-xs text-gray-500">1 hour ago</span>
         </div>
-      </header>
-
-      <main class="container mx-auto px-4 py-8">
-        <div id="articles-list" class="grid md:grid-cols-2 gap-6">
-          <!-- Article tasks will be populated here -->
+       </div>
+      </div>
+      <div class="bg-gradient-to-r from-orange-500/20 to-transparent p-4 rounded-xl border-l-4 border-orange-500">
+       <div class="flex items-start gap-4"><span class="text-2xl">🎬</span>
+        <div>
+         <h3 class="font-bold">Video Tasks Updated</h3>
+         <p class="text-gray-400 text-sm">Fresh comedy clips and trailers added. Watch to earn!</p><span class="text-xs text-gray-500">2 hours ago</span>
         </div>
-        
-        <!-- Article Editor -->
-        <div id="article-editor" class="hidden">
-          <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-8 border border-blue-500/30 max-w-4xl mx-auto">
-            <div class="flex justify-between items-start mb-6">
-              <div>
-                <h2 id="article-title" class="text-2xl font-bold mb-2">Article Title</h2>
-                <p id="article-instructions" class="text-gray-400">Instructions will appear here</p>
-              </div>
-              <button onclick="closeArticleEditor()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
-            </div>
-            
-            <div class="mb-4 flex items-center justify-between">
-              <span class="text-sm text-gray-400">Word requirement: <span id="word-requirement" class="text-blue-400">500</span> words</span>
-              <span class="text-sm">Current: <span id="word-count" class="text-green-400">0</span> words</span>
-            </div>
-            
-            <textarea id="article-content" class="w-full h-96 p-4 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-blue-500 focus:outline-none resize-none" placeholder="Start writing your article here..." oninput="updateWordCount()"></textarea>
-            
-            <div class="mt-4 flex flex-col sm:flex-row gap-4">
-              <label class="flex-1">
-                <span class="block text-sm text-gray-400 mb-2">Or upload a file:</span>
-                <input type="file" id="article-file" accept=".txt,.doc,.docx,.pdf" class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 text-sm">
-              </label>
-            </div>
-            
-            <button onclick="submitArticle()" id="submit-article-btn" class="btn-primary w-full py-3 rounded-xl font-bold mt-6">
-              Submit Article
-            </button>
-          </div>
+       </div>
+      </div>
+     </div>
+    </main>
+   </div><!-- WALLET PAGE -->
+   <div id="page-wallet" class="page">
+    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
+     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+       </svg></button>
+      <h1 class="font-orbitron text-lg font-bold">💰 Wallet</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+       </svg></button>
+     </div>
+    </header>
+    <main class="container mx-auto px-4 py-8">
+     <div class="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-8 mb-8">
+      <p class="text-emerald-100 mb-2">Available Balance</p>
+      <h2 class="text-4xl font-bold mb-4" id="wallet-balance">KSH 0</h2>
+      <div class="flex gap-4"><button onclick="navigateTo('withdraw')" class="bg-white/20 hover:bg-white/30 px-6 py-2 rounded-xl transition-all"> �� Withdraw </button> <button onclick="navigateTo('subscribe')" class="bg-white/20 hover:bg-white/30 px-6 py-2 rounded-xl transition-all"> ⭐ Subscribe </button>
+      </div>
+     </div>
+     <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-gray-700">
+      <h3 class="font-bold mb-4">Transaction History</h3>
+      <div id="transaction-history" class="space-y-3">
+       <p class="text-gray-400 text-center py-4">No transactions yet</p>
+      </div>
+     </div>
+    </main>
+   </div><!-- WITHDRAW PAGE -->
+   <div id="page-withdraw" class="page">
+    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
+     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+       </svg></button>
+      <h1 class="font-orbitron text-lg font-bold">💸 Withdraw</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+       </svg></button>
+     </div>
+    </header>
+    <main class="container mx-auto px-4 py-8">
+     <div class="max-w-md mx-auto">
+      <div id="withdraw-not-member" class="bg-gradient-to-br from-yellow-900/30 to-orange-900/30 rounded-2xl p-8 border border-yellow-500">
+       <div class="text-center mb-6">
+        <div class="text-6xl mb-4">
+         🔒
         </div>
-      </main>
-    </div>
-
-    <!-- VIDEOS PAGE -->
-    <div id="page-videos" class="page">
-      <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-          <button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
-          <h1 class="font-orbitron text-lg font-bold">🎬 Video Tasks</h1>
-          <button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-            </svg>
-          </button>
-        </div>
-      </header>
-
-      <main class="container mx-auto px-4 py-8">
-        <div id="videos-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Video tasks will be populated here -->
-        </div>
-        
-        <!-- Video Player -->
-        <div id="video-player" class="hidden">
-          <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-orange-500/30 max-w-4xl mx-auto">
-            <div class="flex justify-between items-center mb-4">
-              <h2 id="video-title" class="text-xl font-bold">Video Title</h2>
-              <button onclick="closeVideoPlayer()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
-            </div>
-            
-            <div class="aspect-video bg-black rounded-xl overflow-hidden mb-4">
-              <iframe id="youtube-player" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            </div>
-            
-            <div class="flex items-center justify-between">
-              <div class="text-sm text-gray-400">
-                <span>Watch completely to earn</span>
-                <span class="text-green-400 font-bold ml-2">KSH 129</span>
-              </div>
-              <div id="video-progress" class="flex items-center gap-2">
-                <div class="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
-                  <div id="video-progress-bar" class="h-full bg-green-500 transition-all duration-1000" style="width: 0%"></div>
-                </div>
-                <span id="video-progress-text" class="text-sm">0%</span>
-              </div>
-            </div>
-            
-            <button id="claim-video-btn" onclick="claimVideoReward()" class="btn-primary w-full py-3 rounded-xl font-bold mt-4 hidden">
-              🎉 Claim KSH 129 Reward
-            </button>
-          </div>
-        </div>
-      </main>
-    </div>
-
-    <!-- SUBMISSIONS PAGE -->
-    <div id="page-submissions" class="page">
-      <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-          <button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
-          <h1 class="font-orbitron text-lg font-bold">📋 My Submissions</h1>
-          <button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-            </svg>
-          </button>
-        </div>
-      </header>
-
-      <main class="container mx-auto px-4 py-8">
-        <div id="submissions-list" class="space-y-4">
-          <p class="text-gray-400 text-center py-8">No submissions yet. Start completing tasks!</p>
-        </div>
-      </main>
-    </div>
-
-    <!-- NOTIFICATIONS PAGE -->
-    <div id="page-notifications" class="page">
-      <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-          <button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
-          <h1 class="font-orbitron text-lg font-bold">🔔 Notifications</h1>
-          <button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-            </svg>
-          </button>
-        </div>
-      </header>
-
-      <main class="container mx-auto px-4 py-8">
+        <h2 class="text-2xl font-bold mb-2">Withdrawal Locked</h2>
+        <p class="text-gray-300">Become an active member to unlock withdrawals</p>
+       </div>
+       <div class="bg-yellow-500/20 border border-yellow-500/50 rounded-xl p-4 mb-6">
+        <p class="text-sm text-gray-300">Active members unlock unlimited withdrawals with only 10% transaction fee. Upgrade now for just KSH 357!</p>
+       </div><button onclick="navigateTo('subscribe')" class="btn-secondary w-full py-3 rounded-xl font-bold"> ⭐ Become Active Member </button>
+      </div>
+      <div id="withdraw-member-form" class="hidden bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-8 border border-gray-700">
+       <div class="text-center mb-6">
+        <p class="text-gray-400">Available Balance</p>
+        <h2 class="text-4xl font-bold text-green-400" id="withdraw-balance">KSH 0</h2>
+       </div>
+       <form id="withdraw-form" onsubmit="handleWithdraw(event)">
         <div class="space-y-4">
-          <div class="bg-gradient-to-r from-green-500/20 to-transparent p-4 rounded-xl border-l-4 border-green-500">
-            <div class="flex items-start gap-4">
-              <span class="text-2xl">🎉</span>
-              <div>
-                <h3 class="font-bold">Welcome to SportiveX!</h3>
-                <p class="text-gray-400 text-sm">Start completing tasks to earn rewards. 60+ tasks available daily!</p>
-                <span class="text-xs text-gray-500">Just now</span>
-              </div>
-            </div>
-          </div>
-          
-          <div class="bg-gradient-to-r from-purple-500/20 to-transparent p-4 rounded-xl border-l-4 border-purple-500">
-            <div class="flex items-start gap-4">
-              <span class="text-2xl">🧠</span>
-              <div>
-                <h3 class="font-bold">New Trivia Available</h3>
-                <p class="text-gray-400 text-sm">20+ new football trivia questions are ready for you!</p>
-                <span class="text-xs text-gray-500">1 hour ago</span>
-              </div>
-            </div>
-          </div>
-          
-          <div class="bg-gradient-to-r from-orange-500/20 to-transparent p-4 rounded-xl border-l-4 border-orange-500">
-            <div class="flex items-start gap-4">
-              <span class="text-2xl">🎬</span>
-              <div>
-                <h3 class="font-bold">Video Tasks Updated</h3>
-                <p class="text-gray-400 text-sm">Fresh comedy clips and trailers added. Watch to earn!</p>
-                <span class="text-xs text-gray-500">2 hours ago</span>
-              </div>
-            </div>
-          </div>
+         <div><label for="withdraw-amount" class="block text-sm font-medium mb-2">Amount (KSH)</label> <input type="number" id="withdraw-amount" required min="100" class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none" placeholder="Enter amount">
+          <p class="text-xs text-gray-500 mt-1">10% transaction fee will be deducted</p>
+         </div>
+         <div><label for="withdraw-method" class="block text-sm font-medium mb-2">Payment Method</label> <select id="withdraw-method" required class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none"> <option value="">Select method</option> <option value="mpesa">M-Pesa</option> <option value="bank">Bank Transfer</option> <option value="paypal">PayPal</option> </select>
+         </div>
+         <div><label for="withdraw-account" class="block text-sm font-medium mb-2">Account Number / Phone</label> <input type="text" id="withdraw-account" required class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none" placeholder="Enter account details">
+         </div>
+        </div><button type="submit" class="btn-primary w-full py-3 rounded-xl font-bold mt-6"> Confirm Withdrawal </button>
+       </form>
+      </div>
+     </div>
+    </main>
+   </div><!-- SUBSCRIBE PAGE -->
+   <div id="page-subscribe" class="page">
+    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
+     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+       </svg></button>
+      <h1 class="font-orbitron text-lg font-bold">⭐ Subscribe</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+       </svg></button>
+     </div>
+    </header>
+    <main class="container mx-auto px-4 py-8">
+     <div class="text-center mb-8">
+      <h2 class="text-2xl font-bold mb-2">Become an Active Member</h2>
+      <p class="text-gray-400">Unlock withdrawal feature and earn higher rewards</p>
+     </div>
+     <div class="max-w-md mx-auto">
+      <div class="bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-2xl p-8 border border-purple-500">
+       <div class="text-center mb-6">
+        <div class="text-5xl mb-4">
+         ⭐
         </div>
-      </main>
-    </div>
-
-    <!-- WALLET PAGE -->
-    <div id="page-wallet" class="page">
-      <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-          <button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
-          <h1 class="font-orbitron text-lg font-bold">💰 Wallet</h1>
-          <button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-            </svg>
-          </button>
+        <h3 class="text-2xl font-bold">Active Member</h3>
+        <p class="text-gray-300 text-sm mt-2">Get full access to withdraw your earnings</p>
+       </div>
+       <div class="text-4xl font-bold text-purple-400 text-center mb-6">
+        KSH 357 <span class="text-sm text-gray-400 block">One-time payment</span>
+       </div>
+       <ul class="space-y-3 mb-8">
+        <li class="flex items-center gap-3 text-gray-300"><span class="text-green-400">✓</span> <span>Withdraw earnings anytime</span></li>
+        <li class="flex items-center gap-3 text-gray-300"><span class="text-green-400">✓</span> <span>No withdrawal limits</span></li>
+        <li class="flex items-center gap-3 text-gray-300"><span class="text-green-400">✓</span> <span>10% transaction fee on withdrawals</span></li>
+        <li class="flex items-center gap-3 text-gray-300"><span class="text-green-400">✓</span> <span>Priority support</span></li>
+        <li class="flex items-center gap-3 text-gray-300"><span class="text-green-400">✓</span> <span>Bonus task access</span></li>
+       </ul><button onclick="initiatePayment()" class="btn-secondary w-full py-3 rounded-xl font-bold mb-3"> ��� Initiate STK Payment </button> <button onclick="togglePaymentMessage()" class="w-full py-2 text-sm text-purple-400 hover:text-purple-300 border border-purple-500 rounded-xl"> ✓ Already paid? Verify M-Pesa message </button>
+       <div id="payment-message-box" class="hidden mt-4">
+        <p class="text-xs text-gray-400 mb-2">📋 Expected M-Pesa message format:</p>
+        <div class="bg-[#0a0f1c] p-3 rounded-lg mb-3 text-xs text-gray-400 border border-gray-600">
+         <p>MPESA CONFIRMATION CODE</p>
+         <p>You have sent KSH 357.00 to</p>
+         <p>LIPANA TECHNOLOGIES LIMITED</p>
+         <p>on [TODAY'S DATE]</p>
+        </div><textarea id="payment-message" class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-purple-500 focus:outline-none resize-none" rows="3" placeholder="Paste your M-Pesa payment message here..."></textarea> <button onclick="verifyPayment()" class="btn-primary w-full py-2 rounded-xl font-bold mt-3"> ✓ Verify Payment </button>
+       </div>
+      </div>
+     </div>
+    </main>
+   </div><!-- PROFILE PAGE -->
+   <div id="page-profile" class="page">
+    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
+     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+       </svg></button>
+      <h1 class="font-orbitron text-lg font-bold">👤 Profile</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+       </svg></button>
+     </div>
+    </header>
+    <main class="container mx-auto px-4 py-8">
+     <div class="max-w-2xl mx-auto">
+      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-8 border border-gray-700 mb-6">
+       <div class="flex items-center gap-6 mb-6">
+        <div class="w-24 h-24 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center text-4xl font-bold"><span id="profile-avatar">U</span>
         </div>
-      </header>
-
-      <main class="container mx-auto px-4 py-8">
-        <div class="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-8 mb-8">
-          <p class="text-emerald-100 mb-2">Available Balance</p>
-          <h2 class="text-4xl font-bold mb-4" id="wallet-balance">KSH 0</h2>
-          <div class="flex gap-4">
-            <button onclick="navigateTo('withdraw')" class="bg-white/20 hover:bg-white/30 px-6 py-2 rounded-xl transition-all">
-              �� Withdraw
-            </button>
-            <button onclick="navigateTo('subscribe')" class="bg-white/20 hover:bg-white/30 px-6 py-2 rounded-xl transition-all">
-              ⭐ Subscribe
-            </button>
-          </div>
+        <div>
+         <h2 class="text-2xl font-bold" id="profile-username">Username</h2>
+         <p class="text-gray-400" id="profile-email">user@email.com</p><span class="inline-block mt-2 bg-green-500/20 text-green-400 text-sm px-3 py-1 rounded-full">⭐ Level 1</span>
         </div>
-        
-        <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-gray-700">
-          <h3 class="font-bold mb-4">Transaction History</h3>
-          <div id="transaction-history" class="space-y-3">
-            <p class="text-gray-400 text-center py-4">No transactions yet</p>
-          </div>
+       </div>
+       <form id="profile-form" onsubmit="updateProfile(event)">
+        <div class="space-y-4">
+         <div><label for="profile-bio" class="block text-sm font-medium mb-2">Bio</label> <textarea id="profile-bio" rows="3" class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none resize-none" placeholder="Tell us about yourself..."></textarea>
+         </div>
+        </div><button type="submit" class="btn-primary w-full py-3 rounded-xl font-bold mt-6">Save Profile</button>
+       </form>
+      </div>
+      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-gray-700">
+       <h3 class="font-bold mb-4">Task History</h3>
+       <div class="grid grid-cols-3 gap-4 text-center">
+        <div class="p-4 bg-purple-500/20 rounded-xl">
+         <div class="text-2xl font-bold text-purple-400" id="profile-trivia">
+          0
+         </div>
+         <div class="text-sm text-gray-400">
+          Trivia
+         </div>
         </div>
-      </main>
-    </div>
-
-    <!-- WITHDRAW PAGE -->
-    <div id="page-withdraw" class="page">
-      <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-          <button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
-          <h1 class="font-orbitron text-lg font-bold">💸 Withdraw</h1>
-          <button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-            </svg>
-          </button>
+        <div class="p-4 bg-blue-500/20 rounded-xl">
+         <div class="text-2xl font-bold text-blue-400" id="profile-articles">
+          0
+         </div>
+         <div class="text-sm text-gray-400">
+          Articles
+         </div>
         </div>
-      </header>
-
-      <main class="container mx-auto px-4 py-8">
-        <div class="max-w-md mx-auto">
-          <div id="withdraw-not-member" class="bg-gradient-to-br from-yellow-900/30 to-orange-900/30 rounded-2xl p-8 border border-yellow-500">
-            <div class="text-center mb-6">
-              <div class="text-6xl mb-4">🔒</div>
-              <h2 class="text-2xl font-bold mb-2">Withdrawal Locked</h2>
-              <p class="text-gray-300">Become an active member to unlock withdrawals</p>
-            </div>
-            
-            <div class="bg-yellow-500/20 border border-yellow-500/50 rounded-xl p-4 mb-6">
-              <p class="text-sm text-gray-300">
-                Active members unlock unlimited withdrawals with only 10% transaction fee. Upgrade now for just KSH 357!
-              </p>
-            </div>
-            
-            <button onclick="navigateTo('subscribe')" class="btn-secondary w-full py-3 rounded-xl font-bold">
-              ⭐ Become Active Member
-            </button>
-          </div>
-          
-          <div id="withdraw-member-form" class="hidden bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-8 border border-gray-700">
-            <div class="text-center mb-6">
-              <p class="text-gray-400">Available Balance</p>
-              <h2 class="text-4xl font-bold text-green-400" id="withdraw-balance">KSH 0</h2>
-            </div>
-            
-            <form id="withdraw-form" onsubmit="handleWithdraw(event)">
-              <div class="space-y-4">
-                <div>
-                  <label for="withdraw-amount" class="block text-sm font-medium mb-2">Amount (KSH)</label>
-                  <input type="number" id="withdraw-amount" required min="100" class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none" placeholder="Enter amount">
-                  <p class="text-xs text-gray-500 mt-1">10% transaction fee will be deducted</p>
-                </div>
-                <div>
-                  <label for="withdraw-method" class="block text-sm font-medium mb-2">Payment Method</label>
-                  <select id="withdraw-method" required class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none">
-                    <option value="">Select method</option>
-                    <option value="mpesa">M-Pesa</option>
-                    <option value="bank">Bank Transfer</option>
-                    <option value="paypal">PayPal</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="withdraw-account" class="block text-sm font-medium mb-2">Account Number / Phone</label>
-                  <input type="text" id="withdraw-account" required class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none" placeholder="Enter account details">
-                </div>
-              </div>
-              
-              <button type="submit" class="btn-primary w-full py-3 rounded-xl font-bold mt-6">
-                Confirm Withdrawal
-              </button>
-            </form>
-          </div>
+        <div class="p-4 bg-orange-500/20 rounded-xl">
+         <div class="text-2xl font-bold text-orange-400" id="profile-videos">
+          0
+         </div>
+         <div class="text-sm text-gray-400">
+          Videos
+         </div>
         </div>
-      </main>
-    </div>
-
-    <!-- SUBSCRIBE PAGE -->
-    <div id="page-subscribe" class="page">
-      <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-          <button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
-          <h1 class="font-orbitron text-lg font-bold">⭐ Subscribe</h1>
-          <button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-            </svg>
-          </button>
-        </div>
-      </header>
-
-      <main class="container mx-auto px-4 py-8">
-        <div class="text-center mb-8">
-          <h2 class="text-2xl font-bold mb-2">Become an Active Member</h2>
-          <p class="text-gray-400">Unlock withdrawal feature and earn higher rewards</p>
-        </div>
-        
-        <div class="max-w-md mx-auto">
-          <div class="bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-2xl p-8 border border-purple-500">
-            <div class="text-center mb-6">
-              <div class="text-5xl mb-4">⭐</div>
-              <h3 class="text-2xl font-bold">Active Member</h3>
-              <p class="text-gray-300 text-sm mt-2">Get full access to withdraw your earnings</p>
-            </div>
-            
-            <div class="text-4xl font-bold text-purple-400 text-center mb-6">
-              KSH 357
-              <span class="text-sm text-gray-400 block">One-time payment</span>
-            </div>
-            
-            <ul class="space-y-3 mb-8">
-              <li class="flex items-center gap-3 text-gray-300">
-                <span class="text-green-400">✓</span>
-                <span>Withdraw earnings anytime</span>
-              </li>
-              <li class="flex items-center gap-3 text-gray-300">
-                <span class="text-green-400">✓</span>
-                <span>No withdrawal limits</span>
-              </li>
-              <li class="flex items-center gap-3 text-gray-300">
-                <span class="text-green-400">✓</span>
-                <span>10% transaction fee on withdrawals</span>
-              </li>
-              <li class="flex items-center gap-3 text-gray-300">
-                <span class="text-green-400">✓</span>
-                <span>Priority support</span>
-              </li>
-              <li class="flex items-center gap-3 text-gray-300">
-                <span class="text-green-400">✓</span>
-                <span>Bonus task access</span>
-              </li>
-            </ul>
-            
-            <button onclick="initiatePayment()" class="btn-secondary w-full py-3 rounded-xl font-bold mb-3">
-              ��� Initiate STK Payment
-            </button>
-            
-            <button onclick="togglePaymentMessage()" class="w-full py-2 text-sm text-purple-400 hover:text-purple-300 border border-purple-500 rounded-xl">
-              ✓ Already paid? Verify M-Pesa message
-            </button>
-            
-            <div id="payment-message-box" class="hidden mt-4">
-              <p class="text-xs text-gray-400 mb-2">📋 Expected M-Pesa message format:</p>
-              <div class="bg-[#0a0f1c] p-3 rounded-lg mb-3 text-xs text-gray-400 border border-gray-600">
-                <p>MPESA CONFIRMATION CODE</p>
-                <p>You have sent KSH 357.00 to</p>
-                <p>LIPANA TECHNOLOGIES LIMITED</p>
-                <p>on [TODAY'S DATE]</p>
-              </div>
-              <textarea id="payment-message" class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-purple-500 focus:outline-none resize-none" rows="3" placeholder="Paste your M-Pesa payment message here..."></textarea>
-              <button onclick="verifyPayment()" class="btn-primary w-full py-2 rounded-xl font-bold mt-3">
-                ✓ Verify Payment
-              </button>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
-
-    <!-- PROFILE PAGE -->
-    <div id="page-profile" class="page">
-      <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-          <button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
-          <h1 class="font-orbitron text-lg font-bold">👤 Profile</h1>
-          <button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-            </svg>
-          </button>
-        </div>
-      </header>
-
-      <main class="container mx-auto px-4 py-8">
-        <div class="max-w-2xl mx-auto">
-          <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-8 border border-gray-700 mb-6">
-            <div class="flex items-center gap-6 mb-6">
-              <div class="w-24 h-24 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center text-4xl font-bold">
-                <span id="profile-avatar">U</span>
-              </div>
-              <div>
-                <h2 class="text-2xl font-bold" id="profile-username">Username</h2>
-                <p class="text-gray-400" id="profile-email">user@email.com</p>
-                <span class="inline-block mt-2 bg-green-500/20 text-green-400 text-sm px-3 py-1 rounded-full">⭐ Level 1</span>
-              </div>
-            </div>
-            
-            <form id="profile-form" onsubmit="updateProfile(event)">
-              <div class="space-y-4">
-                <div>
-                  <label for="profile-bio" class="block text-sm font-medium mb-2">Bio</label>
-                  <textarea id="profile-bio" rows="3" class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none resize-none" placeholder="Tell us about yourself..."></textarea>
-                </div>
-              </div>
-              
-              <button type="submit" class="btn-primary w-full py-3 rounded-xl font-bold mt-6">Save Profile</button>
-            </form>
-          </div>
-          
-          <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-gray-700">
-            <h3 class="font-bold mb-4">Task History</h3>
-            <div class="grid grid-cols-3 gap-4 text-center">
-              <div class="p-4 bg-purple-500/20 rounded-xl">
-                <div class="text-2xl font-bold text-purple-400" id="profile-trivia">0</div>
-                <div class="text-sm text-gray-400">Trivia</div>
-              </div>
-              <div class="p-4 bg-blue-500/20 rounded-xl">
-                <div class="text-2xl font-bold text-blue-400" id="profile-articles">0</div>
-                <div class="text-sm text-gray-400">Articles</div>
-              </div>
-              <div class="p-4 bg-orange-500/20 rounded-xl">
-                <div class="text-2xl font-bold text-orange-400" id="profile-videos">0</div>
-                <div class="text-sm text-gray-400">Videos</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
-
-    <!-- HELP PAGE -->
-    <div id="page-help" class="page">
-      <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-          <button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
-          <h1 class="font-orbitron text-lg font-bold">❓ Help & Rules</h1>
-          <button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-            </svg>
-          </button>
-        </div>
-      </header>
-
-      <main class="container mx-auto px-4 py-8">
-        <div class="max-w-3xl mx-auto space-y-6">
-          <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-gray-700">
-            <h3 class="text-xl font-bold mb-4 flex items-center gap-2">��� Platform Rules</h3>
-            <ul class="space-y-3 text-gray-300">
-              <li>• Complete tasks honestly and to the best of your ability</li>
-              <li>• One account per user - multiple accounts will be banned</li>
-              <li>• Minimum withdrawal amount is KSH 500</li>
-              <li>• Earnings are paid weekly via your chosen method</li>
-              <li>• Plagiarism in article tasks results in account suspension</li>
-              <li>• Videos must be watched completely to earn rewards</li>
-            </ul>
-          </div>
-          
-          <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-gray-700">
-            <h3 class="text-xl font-bold mb-4 flex items-center gap-2">💰 Earnings Structure</h3>
-            <ul class="space-y-3 text-gray-300">
-              <li>• <span class="text-green-400">KSH 129</span> per trivia quiz completed</li>
-              <li>• <span class="text-green-400">KSH 129</span> per article approved</li>
-              <li>• <span class="text-green-400">KSH 129</span> per video watched completely</li>
-              <li>• <span class="text-yellow-400">Bonus rewards</span> for streaks and achievements</li>
-              <li>• Total potential: <span class="text-green-400">KSH 7,740</span> daily (60 tasks × KSH 129)</li>
-            </ul>
-          </div>
-          
-          <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-gray-700">
-            <h3 class="text-xl font-bold mb-4 flex items-center gap-2">📞 Contact Support</h3>
-            <p class="text-gray-300 mb-4">Need help? Reach out to us:</p>
-            <div class="space-y-2">
-              <p>📧 Email: eduscriptwriters@gmail.com</p>
-              <p>⏰ Response time: Within 24 hours</p>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
-
+       </div>
+      </div>
+     </div>
+    </main>
+   </div><!-- HELP PAGE -->
+   <div id="page-help" class="page">
+    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
+     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+       </svg></button>
+      <h1 class="font-orbitron text-lg font-bold">❓ Help &amp; Rules</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+       </svg></button>
+     </div>
+    </header>
+    <main class="container mx-auto px-4 py-8">
+     <div class="max-w-3xl mx-auto space-y-6">
+      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-gray-700">
+       <h3 class="text-xl font-bold mb-4 flex items-center gap-2">��� Platform Rules</h3>
+       <ul class="space-y-3 text-gray-300">
+        <li>• Complete tasks honestly and to the best of your ability</li>
+        <li>• One account per user - multiple accounts will be banned</li>
+        <li>• Minimum withdrawal amount is KSH 500</li>
+        <li>• Earnings are paid weekly via your chosen method</li>
+        <li>• Plagiarism in article tasks results in account suspension</li>
+        <li>• Videos must be watched completely to earn rewards</li>
+       </ul>
+      </div>
+      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-gray-700">
+       <h3 class="text-xl font-bold mb-4 flex items-center gap-2">💰 Earnings Structure</h3>
+       <ul class="space-y-3 text-gray-300">
+        <li>• <span class="text-green-400">KSH 129</span> per trivia quiz completed</li>
+        <li>• <span class="text-green-400">KSH 129</span> per article approved</li>
+        <li>• <span class="text-green-400">KSH 129</span> per video watched completely</li>
+        <li>• <span class="text-yellow-400">Bonus rewards</span> for streaks and achievements</li>
+        <li>• Total potential: <span class="text-green-400">KSH 7,740</span> daily (60 tasks × KSH 129)</li>
+       </ul>
+      </div>
+      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-gray-700">
+       <h3 class="text-xl font-bold mb-4 flex items-center gap-2">📞 Contact Support</h3>
+       <p class="text-gray-300 mb-4">Need help? Reach out to us:</p>
+       <div class="space-y-2">
+        <p>📧 Email: eduscriptwriters@gmail.com</p>
+        <p>⏰ Response time: Within 24 hours</p>
+       </div>
+      </div>
+     </div>
+    </main>
+   </div>
+  </div><!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50"><span id="toast-message">Success!</span>
   </div>
-
-  <!-- Toast Notification -->
-  <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50">
-    <span id="toast-message">Success!</span>
-  </div>
-
   <script>
     // Initialize SDK
     const defaultConfig = {
@@ -1381,29 +1021,29 @@
       { id: 21, title: "Penalty Shootout Psychology", topic: "The mental aspects of penalty kicks", words: 500, deadline: "24 hours", difficulty: "Medium", usd: 10, ksh: 1290 }
     ];
 
-    // Video Tasks Database (20+) - $5-10 per video
+    // Video Tasks Database (20+) - Real YouTube trailers - $5-10 per video
     const videoTasks = [
-      { id: 1, title: "Funny Football Fails 2024", videoId: "dQw4w9WgXcQ", duration: 300, usd: 5, ksh: 645 },
-      { id: 2, title: "Best Goals of the Month", videoId: "dQw4w9WgXcQ", duration: 240, usd: 6, ksh: 774 },
-      { id: 3, title: "Funniest Red Cards Ever", videoId: "dQw4w9WgXcQ", duration: 360, usd: 8, ksh: 1032 },
-      { id: 4, title: "Goalkeeper Blunders Compilation", videoId: "dQw4w9WgXcQ", duration: 280, usd: 6.50, ksh: 839 },
-      { id: 5, title: "Skills & Tricks Highlights", videoId: "dQw4w9WgXcQ", duration: 320, usd: 7.50, ksh: 968 },
-      { id: 6, title: "Football Comedy Moments", videoId: "dQw4w9WgXcQ", duration: 300, usd: 5.50, ksh: 710 },
-      { id: 7, title: "Crazy Fan Reactions", videoId: "dQw4w9WgXcQ", duration: 240, usd: 5.75, ksh: 742 },
-      { id: 8, title: "Legendary Free Kicks", videoId: "dQw4w9WgXcQ", duration: 360, usd: 9, ksh: 1161 },
-      { id: 9, title: "Referee Funny Moments", videoId: "dQw4w9WgXcQ", duration: 280, usd: 6.25, ksh: 807 },
-      { id: 10, title: "Best Celebrations Ever", videoId: "dQw4w9WgXcQ", duration: 300, usd: 5.50, ksh: 710 },
-      { id: 11, title: "Football Trailers 2024", videoId: "dQw4w9WgXcQ", duration: 180, usd: 5, ksh: 645 },
-      { id: 12, title: "Impossible Saves Compilation", videoId: "dQw4w9WgXcQ", duration: 320, usd: 8.50, ksh: 1097 },
-      { id: 13, title: "Derby Day Highlights", videoId: "dQw4w9WgXcQ", duration: 400, usd: 9.50, ksh: 1226 },
-      { id: 14, title: "Penalty Shootout Drama", videoId: "dQw4w9WgXcQ", duration: 360, usd: 9, ksh: 1161 },
-      { id: 15, title: "Football Pranks", videoId: "dQw4w9WgXcQ", duration: 240, usd: 5.50, ksh: 710 },
-      { id: 16, title: "Best Counter Attacks", videoId: "dQw4w9WgXcQ", duration: 300, usd: 7, ksh: 903 },
-      { id: 17, title: "Player Interviews Gone Wrong", videoId: "dQw4w9WgXcQ", duration: 280, usd: 6.50, ksh: 839 },
-      { id: 18, title: "Champions League Drama", videoId: "dQw4w9WgXcQ", duration: 420, usd: 10, ksh: 1290 },
-      { id: 19, title: "Football Memes Video", videoId: "dQw4w9WgXcQ", duration: 200, usd: 5.25, ksh: 677 },
-      { id: 20, title: "Underdog Stories", videoId: "dQw4w9WgXcQ", duration: 360, usd: 8.50, ksh: 1097 },
-      { id: 21, title: "Last Minute Winners", videoId: "dQw4w9WgXcQ", duration: 300, usd: 7.50, ksh: 968 }
+      { id: 1, title: "Gladiator II Trailer", videoId: "EVbdJAy_5Lk", duration: 150, usd: 5, ksh: 645 },
+      { id: 2, title: "Dune: Part Two Official Trailer", videoId: "n9xhJsAgkgc", duration: 148, usd: 6, ksh: 774 },
+      { id: 3, title: "Oppenheimer Official Trailer", videoId: "uYPbbksJxIg", duration: 150, usd: 8, ksh: 1032 },
+      { id: 4, title: "Killers of the Flower Moon Trailer", videoId: "gMlqqaMe5rQ", duration: 140, usd: 6.50, ksh: 839 },
+      { id: 5, title: "Barbie Official Trailer", videoId: "G7lbeQ7_nAE", duration: 141, usd: 7.50, ksh: 968 },
+      { id: 6, title: "Elemental Pixar Trailer", videoId: "l6Iqu_sSn0s", duration: 135, usd: 5.50, ksh: 710 },
+      { id: 7, title: "Mission: Impossible - Dead Reckoning Trailer", videoId: "qSqVVswa420", duration: 155, usd: 5.75, ksh: 742 },
+      { id: 8, title: "Dungeons & Dragons Trailer", videoId: "Y-kQTO5TBDE", duration: 138, usd: 9, ksh: 1161 },
+      { id: 9, title: "Cocaine Bear Official Trailer", videoId: "zHT_OzW-5rU", duration: 130, usd: 6.25, ksh: 807 },
+      { id: 10, title: "Insidious: The Red Door Trailer", videoId: "0ydlREALHjM", duration: 145, usd: 5.50, ksh: 710 },
+      { id: 11, title: "Fast X Official Trailer", videoId: "5O5vbzBZO-U", duration: 152, usd: 5, ksh: 645 },
+      { id: 12, title: "The Nun II Official Trailer", videoId: "7aq9dB4AZLM", duration: 141, usd: 8.50, ksh: 1097 },
+      { id: 13, title: "Aquaman and the Lost Kingdom Trailer", videoId: "fQ6r1qjXvqQ", duration: 149, usd: 9.50, ksh: 1226 },
+      { id: 14, title: "Killers of the Flower Moon Full Trailer", videoId: "gMlqqaMe5rQ", duration: 140, usd: 9, ksh: 1161 },
+      { id: 15, title: "Priscilla Official Trailer", videoId: "8qsf7SXjBdY", duration: 135, usd: 5.50, ksh: 710 },
+      { id: 16, title: "Saw X Official Trailer", videoId: "BYHzY0YZ-04", duration: 138, usd: 7, ksh: 903 },
+      { id: 17, title: "The Hunger Games: Ballad of Songbirds and Snakes Trailer", videoId: "EtgAWaH-Iy0", duration: 142, usd: 6.50, ksh: 839 },
+      { id: 18, title: "Expend4bles Official Trailer", videoId: "WpJW47XzRB4", duration: 156, usd: 10, ksh: 1290 },
+      { id: 19, title: "The Creator Official Trailer", videoId: "E6r7FE0K7jI", duration: 140, usd: 5.25, ksh: 677 },
+      { id: 20, title: "A Haunting in Venice Official Trailer", videoId: "UcIj7iFqVqQ", duration: 139, usd: 8.50, ksh: 1097 },
+      { id: 21, title: "The Omen Remake Official Trailer", videoId: "qGTBn9xXmHQ", duration: 145, usd: 7.50, ksh: 968 }
     ];
 
     // Initialize App
@@ -2061,7 +1701,7 @@ WITHDRAWAL REQUEST SUMMARY
 
 Gross Amount: KSH ${amount.toLocaleString()}
 Transaction Fee (10%): KSH ${fee.toLocaleString()}
-─────────────────────────
+─���───────────────────────
 Net Amount: KSH ${netAmount.toLocaleString()}
 
 Payment Method: ${method.toUpperCase()}
@@ -2303,5 +1943,5 @@ Confirm withdrawal?`;
     // Initialize on load
     init();
   </script>
-</body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9caaeb51709b9c05',t:'MTc3MDU1MTUyOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
