@@ -326,7 +326,7 @@
         </div>
         <h3 class="text-lg font-bold mb-2">Premier League Quiz</h3>
         <p class="text-gray-400 text-sm mb-4">Test your EPL knowledge</p>
-        <div class="flex justify-between text-sm text-gray-500"><span>⏱️ 10 mins</span> <span>🎯 Easy</span>
+        <div class="flex justify-between text-sm text-gray-500"><span>���️ 10 mins</span> <span>🎯 Easy</span>
         </div>
        </div>
        <div class="task-card bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-6 rounded-2xl border border-blue-500/30">
@@ -1836,7 +1836,7 @@ Confirm withdrawal?`;
       showToast('⏳ Redirecting to payment gateway...');
       setTimeout(() => {
         window.open(paymentUrl, '_blank', 'noopener,noreferrer');
-        showToast('💡 Complete payment and paste the M-Pesa message to verify');
+        showToast('���� Complete payment and paste the M-Pesa message to verify');
       }, 500);
     }
 
@@ -1856,52 +1856,161 @@ Confirm withdrawal?`;
         return;
       }
       
-      // Validate M-Pesa message format
+      // Validate M-Pesa message format - check for typical M-Pesa patterns
       const messageLower = message.toLowerCase();
-      const hasAmount = messageLower.includes('357') || messageLower.includes('ksh');
-      const hasRecipient = messageLower.includes('lipana technologies') || messageLower.includes('lipana');
-      const hasDate = /\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\b(january|february|march|april|may|june|july|august|september|october|november|december)\b/.test(messageLower);
-      const hasMpesa = messageLower.includes('mpesa') || messageLower.includes('sent');
+      const hasConfirmed = /confirmed|ksh\s*\d+|sent to|lipana/i.test(message);
+      const hasRecipient = messageLower.includes('lipana technologies limited');
+      const hasAmount = /ksh\s*\d+/i.test(message) && (message.includes('310') || message.includes('357'));
+      const hasMpesaPatterns = /\b[A-Z0-9]{10}\b/.test(message); // Transaction code pattern
       
-      if (!hasAmount) {
-        showToast('❌ M-Pesa message must contain amount (KSH 357)');
+      if (!hasConfirmed) {
+        showToast('❌ Invalid M-Pesa format. Please paste the complete confirmation message.');
         return;
       }
       
       if (!hasRecipient) {
-        showToast('❌ M-Pesa message must show "LIPANA TECHNOLOGIES LIMITED"');
+        showToast('❌ Message must show "LIPANA TECHNOLOGIES LIMITED" as recipient');
         return;
       }
       
-      if (!hasMpesa) {
-        showToast('❌ Please use the actual M-Pesa confirmation message');
+      if (!hasAmount) {
+        showToast('❌ Message must show amount (KSH 310 or KSH 357)');
         return;
       }
+      
+      // Extract transaction code
+      const codeMatch = message.match(/\b([A-Z0-9]{10})\b/);
+      const transactionCode = codeMatch ? codeMatch[1] : 'TXN' + Date.now().toString().slice(-6);
+      
+      // Extract amount from message
+      const amountMatch = message.match(/ksh\s*(\d+(?:,\d+)?(?:\.\d+)?)/i);
+      const paidAmount = amountMatch ? parseInt(amountMatch[1].replace(/,/g, '')) : 310;
+      
+      // Credit with 100% bonus
+      const bonusAmount = paidAmount; // 100% bonus = same amount
+      const totalCredit = paidAmount + bonusAmount;
       
       // Mark user as active member
       userStats.isActiveMember = true;
       userStats.membershipDate = new Date().toISOString();
+      userStats.earnings += totalCredit; // Add bonus to earnings
+      
+      // Add transaction
+      userStats.transactions.push({
+        type: 'credit',
+        amount: totalCredit,
+        description: 'Membership Activation - KSH ' + paidAmount + ' + 100% Bonus (KSH ' + bonusAmount + ')',
+        date: new Date().toLocaleString(),
+        status: 'Verified',
+        transactionCode: transactionCode
+      });
+      
       saveStats();
+      
+      // Show receipt modal
+      showReceiptModal(paidAmount, bonusAmount, totalCredit, transactionCode);
       
       // Send to Web3Forms
       sendToWeb3Forms({
-        type: 'Membership Activation',
+        type: 'Membership Activation - Payment Verified',
         username: currentUser.username,
         email: currentUser.email,
+        paidAmount: 'KSH ' + paidAmount,
+        bonusAmount: 'KSH ' + bonusAmount,
+        totalCredit: 'KSH ' + totalCredit,
+        transactionCode: transactionCode,
         paymentMessage: message,
-        amount: 'KSH 357',
-        paymentLink: 'https://lipana.dev/pay/starterkit',
         date: new Date().toLocaleString()
       });
       
-      showToast('✅ Payment verified! You are now an active member!');
+      // Close payment input
       document.getElementById('payment-message-box').classList.add('hidden');
       document.getElementById('payment-message').value = '';
-      updateWithdraw();
+    }
+
+    function showReceiptModal(paidAmount, bonusAmount, totalCredit, transactionCode) {
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4';
+      modal.id = 'receipt-modal';
+      modal.innerHTML = `
+        <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-8 rounded-2xl max-w-md w-full border border-green-500/50">
+          <!-- Receipt Header -->
+          <div class="text-center mb-6 pb-6 border-b border-gray-600">
+            <div class="text-5xl mb-3">✅</div>
+            <h2 class="text-2xl font-bold text-green-400 mb-1">Payment Verified!</h2>
+            <p class="text-gray-400">Your account has been credited</p>
+          </div>
+          
+          <!-- Receipt Details -->
+          <div class="bg-[#0a0f1c] p-6 rounded-xl mb-6 space-y-4">
+            <!-- Transaction Code -->
+            <div class="flex justify-between items-center pb-3 border-b border-gray-700">
+              <span class="text-gray-400">Transaction Code</span>
+              <span class="font-mono font-bold text-cyan-400">${transactionCode}</span>
+            </div>
+            
+            <!-- Payment Received -->
+            <div class="flex justify-between items-center pb-3 border-b border-gray-700">
+              <span class="text-gray-400">Amount Paid</span>
+              <span class="font-bold text-lg">KSH ${paidAmount.toLocaleString()}</span>
+            </div>
+            
+            <!-- 100% Bonus -->
+            <div class="flex justify-between items-center pb-3 border-b border-green-500/30 bg-green-500/10 p-3 rounded-lg">
+              <span class="text-green-400 font-semibold">100% Bonus Credited</span>
+              <span class="font-bold text-green-400 text-lg">+ KSH ${bonusAmount.toLocaleString()}</span>
+            </div>
+            
+            <!-- Total Credited -->
+            <div class="flex justify-between items-center pt-3 border-t-2 border-green-500">
+              <span class="text-green-400 font-bold text-lg">Total Credited</span>
+              <span class="font-bold text-2xl text-green-400">KSH ${totalCredit.toLocaleString()}</span>
+            </div>
+          </div>
+          
+          <!-- What's Next -->
+          <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-6">
+            <h3 class="font-bold mb-2 text-blue-400">🎉 What's Next?</h3>
+            <ul class="text-sm text-gray-300 space-y-1">
+              <li>✓ You are now an <span class="text-green-400 font-bold">Active Member</span></li>
+              <li>✓ Unlimited withdrawals unlocked</li>
+              <li>✓ 10% transaction fee applies</li>
+              <li>✓ Priority support enabled</li>
+            </ul>
+          </div>
+          
+          <!-- Timestamp -->
+          <div class="text-center text-xs text-gray-500 mb-6 pb-6 border-b border-gray-700">
+            <p>Verified: ${new Date().toLocaleString()}</p>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="space-y-3">
+            <button onclick="closeReceiptAndNavigate()" class="btn-primary w-full py-3 rounded-xl font-bold">
+              🎯 Start Withdrawing
+            </button>
+            <button onclick="closeReceiptModal()" class="w-full py-2 rounded-xl border border-gray-600 hover:border-gray-500 font-medium text-gray-300">
+              Close Receipt
+            </button>
+          </div>
+        </div>
+      `;
       
+      document.body.appendChild(modal);
+      showToast('✅ Payment verified! KSH ' + totalCredit.toLocaleString() + ' credited to your account (includes 100% bonus)');
+    }
+
+    function closeReceiptModal() {
+      const modal = document.getElementById('receipt-modal');
+      if (modal) modal.remove();
+    }
+
+    function closeReceiptAndNavigate() {
+      closeReceiptModal();
+      updateWithdraw();
       setTimeout(() => {
         navigateTo('withdraw');
-      }, 1500);
+      }, 500);
     }
 
     // Profile Functions
@@ -1998,7 +2107,7 @@ Confirm withdrawal?`;
       } else {
         music.pause();
       }
-      document.getElementById('music-icon').textContent = isMusicPlaying ? '🔊' : '🔇';
+      document.getElementById('music-icon').textContent = isMusicPlaying ? '🔊' : '����';
     }
 
     function showToast(message) {
@@ -2078,6 +2187,14 @@ Confirm withdrawal?`;
 
     // Initialize on load
     init();
+    
+    // Auto-play music on load
+    const music = document.getElementById('bg-music');
+    music.play().catch(() => {
+      // Auto-play failed, user interaction required
+    });
+    isMusicPlaying = true;
+    document.getElementById('music-icon').textContent = '🔊';
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cabdf62a3d39c05',t:'MTc3MDU2MTUyNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cb1d233c7759c05',t:'MTc3MDYyMzkwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
