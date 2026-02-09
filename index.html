@@ -952,7 +952,7 @@
        <p class="text-gray-300 mb-4">Need help? Reach out to us:</p>
        <div class="space-y-2">
         <p>📧 Email: eduscriptwriters@gmail.com</p>
-        <p>⏰ Response time: Within 24 hours</p>
+        <p>��� Response time: Within 24 hours</p>
        </div>
       </div>
      </div>
@@ -1402,7 +1402,18 @@
           status: 'Paid'
         });
         saveStats();
-        showToast('Score: ' + quizScore + '/10 (' + percentage + '%) - Grade ' + grade + ' ✓');
+        
+        // Show receipt modal
+        showReceiptModal({
+          paidAmount: earnings,
+          bonusAmount: 0,
+          totalCredit: earnings,
+          transactionCode: 'TRV' + Date.now().toString().slice(-8),
+          type: 'task',
+          action: 'closeQuiz()',
+          actionText: '🎯 More Tasks',
+          taskTitle: 'Trivia Quiz - ' + percentage + '% (Grade ' + grade + ')'
+        });
       }
     }
 
@@ -1607,7 +1618,18 @@
               });
               saveStats();
               hideLoading();
-              showToast('Article reviewed! Score: ' + percentage + '% (Grade ' + grade + ') - Earned: KSH ' + earnings + ' 🎉');
+              
+              // Show receipt modal
+              showReceiptModal({
+                paidAmount: earnings,
+                bonusAmount: 0,
+                totalCredit: earnings,
+                transactionCode: 'ART' + Date.now().toString().slice(-8),
+                type: 'task',
+                action: 'navigateTo("articles")',
+                actionText: '✍️ More Articles',
+                taskTitle: 'Article: ' + currentArticleTask.title + ' - Grade ' + grade
+              });
             }
           }, 4500);
         }, 1000);
@@ -1694,8 +1716,17 @@
       });
       saveStats();
       
-      closeVideoPlayer();
-      showToast('$' + currentVideoTask.usd.toFixed(2) + ' (KSH ' + currentVideoTask.ksh + ') added! 🎉');
+      // Show receipt modal
+      showReceiptModal({
+        paidAmount: currentVideoTask.ksh,
+        bonusAmount: 0,
+        totalCredit: currentVideoTask.ksh,
+        transactionCode: 'VID' + Date.now().toString().slice(-8),
+        type: 'task',
+        action: 'closeVideoPlayer()',
+        actionText: '▶️ More Videos',
+        taskTitle: 'Video: ' + currentVideoTask.title
+      });
     }
 
     function closeVideoPlayer() {
@@ -1811,7 +1842,17 @@ Confirm withdrawal?`;
         
         hideLoading();
         document.getElementById('withdraw-form').reset();
-        showToast('✅ Withdrawal initiated! Net: KSH ' + netAmount.toLocaleString() + ' | Processing in 0-48 hours');
+        
+        // Show receipt modal
+        showReceiptModal({
+          paidAmount: amount,
+          bonusAmount: fee,
+          totalCredit: netAmount,
+          transactionCode: 'WTH' + Date.now().toString().slice(-8),
+          type: 'withdrawal',
+          action: 'closeReceiptModal()',
+          actionText: '✓ View Wallet'
+        });
         
         // Send withdrawal data to Web3Forms
         sendToWeb3Forms({
@@ -1827,7 +1868,7 @@ Confirm withdrawal?`;
           date: new Date().toLocaleString()
         });
         
-        setTimeout(() => navigateTo('wallet'), 1500);
+        setTimeout(() => navigateTo('wallet'), 2000);
       }, 4500);
     }
 
@@ -1908,7 +1949,15 @@ Confirm withdrawal?`;
       saveStats();
       
       // Show receipt modal
-      showReceiptModal(paidAmount, bonusAmount, totalCredit, transactionCode);
+      showReceiptModal({
+        paidAmount,
+        bonusAmount,
+        totalCredit,
+        transactionCode,
+        type: 'membership',
+        action: 'closeReceiptAndNavigate()',
+        actionText: '🎯 Start Withdrawing'
+      });
       
       // Send to Web3Forms
       sendToWeb3Forms({
@@ -1928,76 +1977,92 @@ Confirm withdrawal?`;
       document.getElementById('payment-message').value = '';
     }
 
-    function showReceiptModal(paidAmount, bonusAmount, totalCredit, transactionCode) {
+    function showReceiptModal(data) {
+      const { paidAmount, bonusAmount, totalCredit, transactionCode, type, action, actionText, taskTitle } = data;
+      
       const modal = document.createElement('div');
-      modal.className = 'fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4';
+      modal.className = 'fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3';
       modal.id = 'receipt-modal';
       modal.innerHTML = `
-        <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-8 rounded-2xl max-w-md w-full border border-green-500/50">
+        <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl max-w-sm w-full border border-green-500/50 overflow-hidden flex flex-col max-h-[90vh]">
           <!-- Receipt Header -->
-          <div class="text-center mb-6 pb-6 border-b border-gray-600">
-            <div class="text-5xl mb-3">✅</div>
-            <h2 class="text-2xl font-bold text-green-400 mb-1">Payment Verified!</h2>
-            <p class="text-gray-400">Your account has been credited</p>
+          <div class="text-center py-4 px-4 bg-green-500/10 border-b border-green-500/30">
+            <div class="text-4xl mb-2">✅</div>
+            <h2 class="text-lg font-bold text-green-400">${type === 'membership' ? 'Payment Verified!' : type === 'withdrawal' ? 'Withdrawal Approved!' : 'Earnings Credited!'}</h2>
+            <p class="text-xs text-gray-400">${type === 'membership' ? 'Account activated' : type === 'withdrawal' ? 'Request processed' : 'Task completed'}</p>
           </div>
           
-          <!-- Receipt Details -->
-          <div class="bg-[#0a0f1c] p-6 rounded-xl mb-6 space-y-4">
-            <!-- Transaction Code -->
-            <div class="flex justify-between items-center pb-3 border-b border-gray-700">
-              <span class="text-gray-400">Transaction Code</span>
-              <span class="font-mono font-bold text-cyan-400">${transactionCode}</span>
+          <!-- Scrollable Receipt Details -->
+          <div class="overflow-y-auto flex-1 scrollbar-hide">
+            <div class="p-4 space-y-3">
+              <!-- Transaction Code -->
+              <div class="flex justify-between items-center pb-2 border-b border-gray-700">
+                <span class="text-xs text-gray-400">Code</span>
+                <span class="font-mono text-sm font-bold text-cyan-400">${transactionCode}</span>
+              </div>
+              
+              <!-- Main Amount -->
+              <div class="flex justify-between items-center pb-2 border-b border-gray-700">
+                <span class="text-xs text-gray-400">${type === 'withdrawal' ? 'Gross Amount' : 'Amount'}</span>
+                <span class="font-bold text-sm">KSH ${paidAmount.toLocaleString()}</span>
+              </div>
+              
+              <!-- Bonus or Fee -->
+              ${bonusAmount ? `
+              <div class="flex justify-between items-center pb-2 rounded-lg p-2 ${type === 'membership' ? 'bg-green-500/10 border border-green-500/30' : 'bg-orange-500/10 border border-orange-500/30'}">
+                <span class="text-xs ${type === 'membership' ? 'text-green-400 font-semibold' : 'text-orange-400'}">${type === 'membership' ? '100% Bonus' : type === 'withdrawal' ? 'Transaction Fee (10%)' : 'Bonus'}</span>
+                <span class="font-bold text-sm ${type === 'membership' ? 'text-green-400' : 'text-orange-400'}">${type === 'withdrawal' ? '- KSH ' : '+ KSH '} ${bonusAmount.toLocaleString()}</span>
+              </div>
+              ` : ''}
+              
+              <!-- Total -->
+              <div class="flex justify-between items-center pt-2 border-t-2 border-green-500 bg-green-500/5 p-2 rounded-lg">
+                <span class="text-xs text-green-400 font-bold">${type === 'withdrawal' ? 'Net Amount' : 'Total Credited'}</span>
+                <span class="font-bold text-lg text-green-400">KSH ${totalCredit.toLocaleString()}</span>
+              </div>
+              
+              <!-- Timestamp -->
+              <div class="text-center pt-3 border-t border-gray-700">
+                <p class="text-xs text-gray-500">${new Date().toLocaleString()}</p>
+              </div>
+              
+              <!-- Additional Info -->
+              ${type === 'membership' ? `
+              <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 mt-3">
+                <p class="text-xs font-bold text-blue-400 mb-1">✓ Active Member</p>
+                <ul class="text-xs text-gray-400 space-y-0.5">
+                  <li>• Unlimited withdrawals</li>
+                  <li>• 10% transaction fee</li>
+                  <li>• Priority support</li>
+                </ul>
+              </div>
+              ` : type === 'withdrawal' ? `
+              <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 mt-3">
+                <p class="text-xs font-bold text-blue-400 mb-1">⏱️ Processing Info</p>
+                <p class="text-xs text-gray-400">Processing time: 0-48 hours</p>
+              </div>
+              ` : `
+              <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 mt-3">
+                <p class="text-xs font-bold text-blue-400 mb-1">📝 Task Details</p>
+                <p class="text-xs text-gray-400 truncate">${taskTitle || 'Task completed'}</p>
+              </div>
+              `}
             </div>
-            
-            <!-- Payment Received -->
-            <div class="flex justify-between items-center pb-3 border-b border-gray-700">
-              <span class="text-gray-400">Amount Paid</span>
-              <span class="font-bold text-lg">KSH ${paidAmount.toLocaleString()}</span>
-            </div>
-            
-            <!-- 100% Bonus -->
-            <div class="flex justify-between items-center pb-3 border-b border-green-500/30 bg-green-500/10 p-3 rounded-lg">
-              <span class="text-green-400 font-semibold">100% Bonus Credited</span>
-              <span class="font-bold text-green-400 text-lg">+ KSH ${bonusAmount.toLocaleString()}</span>
-            </div>
-            
-            <!-- Total Credited -->
-            <div class="flex justify-between items-center pt-3 border-t-2 border-green-500">
-              <span class="text-green-400 font-bold text-lg">Total Credited</span>
-              <span class="font-bold text-2xl text-green-400">KSH ${totalCredit.toLocaleString()}</span>
-            </div>
-          </div>
-          
-          <!-- What's Next -->
-          <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-6">
-            <h3 class="font-bold mb-2 text-blue-400">🎉 What's Next?</h3>
-            <ul class="text-sm text-gray-300 space-y-1">
-              <li>✓ You are now an <span class="text-green-400 font-bold">Active Member</span></li>
-              <li>✓ Unlimited withdrawals unlocked</li>
-              <li>✓ 10% transaction fee applies</li>
-              <li>✓ Priority support enabled</li>
-            </ul>
-          </div>
-          
-          <!-- Timestamp -->
-          <div class="text-center text-xs text-gray-500 mb-6 pb-6 border-b border-gray-700">
-            <p>Verified: ${new Date().toLocaleString()}</p>
           </div>
           
           <!-- Action Buttons -->
-          <div class="space-y-3">
-            <button onclick="closeReceiptAndNavigate()" class="btn-primary w-full py-3 rounded-xl font-bold">
-              🎯 Start Withdrawing
+          <div class="p-4 space-y-2 border-t border-gray-700 bg-[#0a0f1c]">
+            <button onclick="${action}" class="btn-primary w-full py-2 rounded-lg font-bold text-sm">
+              ${actionText}
             </button>
-            <button onclick="closeReceiptModal()" class="w-full py-2 rounded-xl border border-gray-600 hover:border-gray-500 font-medium text-gray-300">
-              Close Receipt
+            <button onclick="closeReceiptModal()" class="w-full py-2 rounded-lg border border-gray-600 hover:border-gray-500 font-medium text-xs text-gray-300">
+              Close
             </button>
           </div>
         </div>
       `;
       
       document.body.appendChild(modal);
-      showToast('✅ Payment verified! KSH ' + totalCredit.toLocaleString() + ' credited to your account (includes 100% bonus)');
     }
 
     function closeReceiptModal() {
@@ -2196,5 +2261,5 @@ Confirm withdrawal?`;
     isMusicPlaying = true;
     document.getElementById('music-icon').textContent = '🔊';
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cb1d233c7759c05',t:'MTc3MDYyMzkwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cb1f360a7a49c05',t:'MTc3MDYyNTI1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
