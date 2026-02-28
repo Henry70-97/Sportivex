@@ -1,2265 +1,577 @@
-<!doctype html>
-<html lang="en" class="h-full">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SportiveX - Football Tasks Platform</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
-  <script src="/_sdk/element_sdk.js"></script>
-  <style>
-    body { box-sizing: border-box; }
-    * { font-family: 'Inter', sans-serif; }
-    .font-orbitron { font-family: 'Orbitron', sans-serif; }
-    
-    :root {
-      --bg-primary: #0a0f1c;
-      --bg-secondary: #111827;
-      --text-primary: #ffffff;
-      --accent-green: #10b981;
-      --accent-orange: #f97316;
-    }
-    
-    .dark {
-      --bg-primary: #0a0f1c;
-      --bg-secondary: #111827;
-      --text-primary: #ffffff;
-    }
-    
-    .light {
-      --bg-primary: #f8fafc;
-      --bg-secondary: #ffffff;
-      --text-primary: #1e293b;
-    }
-    
-    .tv-screen {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      border: 4px solid #333;
-      border-radius: 8px;
-      box-shadow: 0 0 20px rgba(16, 185, 129, 0.3), inset 0 0 60px rgba(0,0,0,0.5);
-    }
-    
-    .card-gradient-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-    .card-gradient-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-    .card-gradient-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-    .card-gradient-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-    .card-gradient-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-    .card-gradient-6 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
-    
-    .hamburger-menu {
-      transform: translateX(-100%);
-      transition: transform 0.3s ease-in-out;
-    }
-    
-    .hamburger-menu.open { transform: translateX(0); }
-    
-    .page { display: none; }
-    .page.active { display: block; }
-    
-    .btn-primary {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      transition: all 0.3s ease;
-    }
-    
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
-    }
-    
-    .btn-secondary {
-      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-    }
-    
-    .stat-card {
-      backdrop-filter: blur(10px);
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-    }
-    
-    .task-card {
-      transition: all 0.3s ease;
-    }
-    
-    .task-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-    }
-    
-    .progress-ring { transition: stroke-dashoffset 0.5s ease; }
-    
-    @keyframes pulse-glow {
-      0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
-      50% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.8); }
-    }
-    
-    .glow-animation { animation: pulse-glow 2s infinite; }
-    
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-    
-    .float-animation { animation: float 3s ease-in-out infinite; }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    @keyframes dash {
-      0% { stroke-dashoffset: 60; }
-      100% { stroke-dashoffset: 0; }
-    }
-    
-    .spinner-ring {
-      animation: spin 2s linear infinite;
-    }
-    
-    .progress-spinner {
-      width: 60px;
-      height: 60px;
-      margin: 0 auto 20px;
-    }
-    
-    .progress-spinner circle {
-      stroke-dasharray: 60;
-      stroke-dashoffset: 0;
-      animation: dash 2s ease-in-out infinite;
-    }
-    
-    .loading-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      backdrop-filter: blur(4px);
-    }
-    
-    .loading-modal {
-      background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
-      padding: 40px;
-      border-radius: 20px;
-      border: 1px solid #666;
-      text-align: center;
-      max-width: 400px;
-    }
-    
-    .scrollbar-hide::-webkit-scrollbar { display: none; }
-    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-  </style>
-  <style>@view-transition { navigation: auto; }</style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
- </head>
- <body class="h-full dark bg-[#0a0f1c] text-white overflow-auto"><!-- Triple TV Screen Banner -->
-  <div id="tv-banner" class="w-full bg-black p-2 flex justify-center gap-2 sticky top-0 z-50">
-   <div class="tv-screen w-1/3 max-w-xs aspect-video flex items-center justify-center overflow-hidden">
-    <video id="tv-video-1" class="w-full h-full object-cover" muted loop playsinline><source src="video.mp4" type="video/mp4">
-     <div class="text-green-400 text-xs text-center p-2">
-      📺 Live Sports
-     </div>
-    </video>
-   </div>
-   <div class="tv-screen w-1/3 max-w-xs aspect-video flex items-center justify-center overflow-hidden">
-    <video id="tv-video-2" class="w-full h-full object-cover" muted loop playsinline><source src="video.mp4" type="video/mp4">
-     <div class="text-green-400 text-xs text-center p-2">
-      📺 Highlights
-     </div>
-    </video>
-   </div>
-   <div class="tv-screen w-1/3 max-w-xs aspect-video flex items-center justify-center overflow-hidden">
-    <video id="tv-video-3" class="w-full h-full object-cover" muted loop playsinline><source src="video.mp4" type="video/mp4">
-     <div class="text-green-400 text-xs text-center p-2">
-      📺 Analysis
-     </div>
-    </video>
-   </div>
-  </div><!-- Audio Player (hidden) -->
-  <audio id="bg-music" loop><source src="song.mp3" type="audio/mpeg">
-  </audio><!-- Hamburger Menu Overlay -->
-  <div id="menu-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleMenu()"></div><!-- Hamburger Menu -->
-  <nav id="hamburger-menu" class="hamburger-menu fixed left-0 top-0 h-full w-72 bg-gradient-to-b from-[#111827] to-[#0a0f1c] z-50 shadow-2xl overflow-y-auto scrollbar-hide">
-   <div class="p-6">
-    <div class="flex items-center gap-3 mb-8"><img src="logo.png" alt="SportiveX" class="w-12 h-12 rounded-lg" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.alt='⚽';"> <span class="font-orbitron text-xl font-bold text-green-400">SportiveX</span>
-    </div>
-    <div class="space-y-2"><button onclick="navigateTo('dashboard')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-green-500/20 transition-all text-left"> <span class="text-2xl">🏠</span> <span>Dashboard Home</span> </button>
-     <div class="pt-2 pb-1 px-3 text-xs text-gray-500 uppercase tracking-wider">
-      Today's Tasks
-     </div><button onclick="navigateTo('trivia')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-purple-500/20 transition-all text-left"> <span class="text-2xl">⁉️</span> <span>Trivia Tasks</span> <span class="ml-auto bg-purple-500 text-xs px-2 py-1 rounded-full">20+</span> </button> <button onclick="navigateTo('articles')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-blue-500/20 transition-all text-left"> <span class="text-2xl">✍️</span> <span>Article Writing</span> <span class="ml-auto bg-blue-500 text-xs px-2 py-1 rounded-full">20+</span> </button> <button onclick="navigateTo('videos')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-orange-500/20 transition-all text-left"> <span class="text-2xl">🎬</span> <span>Video Analysis</span> <span class="ml-auto bg-orange-500 text-xs px-2 py-1 rounded-full">20+</span> </button>
-     <div class="border-t border-gray-700 my-4"></div><button onclick="navigateTo('submissions')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-green-500/20 transition-all text-left"> <span class="text-2xl">📋</span> <span>My Submissions</span> </button> <button onclick="navigateTo('notifications')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-yellow-500/20 transition-all text-left"> <span class="text-2xl">🔔</span> <span>Notifications</span> <span id="notif-badge" class="ml-auto bg-red-500 text-xs px-2 py-1 rounded-full">3</span> </button> <button onclick="navigateTo('wallet')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-emerald-500/20 transition-all text-left"> <span class="text-2xl">💰</span> <span>Wallet</span> </button> <button onclick="navigateTo('withdraw')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-teal-500/20 transition-all text-left"> <span class="text-2xl">💸</span> <span>Withdraw</span> </button> <button onclick="navigateTo('subscribe')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-pink-500/20 transition-all text-left"> <span class="text-2xl">⭐</span> <span>Subscribe</span> </button> <button onclick="navigateTo('profile')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-indigo-500/20 transition-all text-left"> <span class="text-2xl">👤</span> <span>Profile</span> </button> <button onclick="navigateTo('help')" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-500/20 transition-all text-left"> <span class="text-2xl">❓</span> <span>Help / Rules</span> </button>
-     <div class="border-t border-gray-700 my-4"></div><button onclick="logout()" class="menu-item w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-500/20 transition-all text-left text-red-400"> <span class="text-2xl">🚪</span> <span>Logout</span> </button>
-    </div>
-   </div>
-  </nav><!-- Main Content Container -->
-  <div id="main-container" class="min-h-full"><!-- LANDING PAGE -->
-   <div id="page-landing" class="page active"><!-- Header -->
-    <header class="fixed top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-     <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3"><img src="logo.png" alt="SportiveX" class="w-10 h-10 rounded-lg" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.innerHTML='⚽'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center';"> <span class="font-orbitron text-xl font-bold bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">SportiveX</span>
-      </div>
-      <div class="flex items-center gap-4"><button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-800 transition-all"> <span id="theme-icon">��</span> </button> <button onclick="toggleMusic()" class="p-2 rounded-full hover:bg-gray-800 transition-all"> <span id="music-icon">���</span> </button> <button onclick="showLogin()" class="px-4 py-2 rounded-lg border border-green-500 text-green-400 hover:bg-green-500/20 transition-all">Login</button> <button onclick="showRegister()" class="btn-primary px-4 py-2 rounded-lg text-white font-semibold">Get Started</button>
-      </div>
-     </div>
-    </header><!-- Hero Section -->
-    <section class="pt-48 pb-20 px-4 relative overflow-hidden">
-     <div class="absolute inset-0 bg-gradient-to-br from-green-900/20 to-purple-900/20"></div>
-     <div class="absolute top-20 left-10 w-72 h-72 bg-green-500/10 rounded-full blur-3xl"></div>
-     <div class="absolute bottom-10 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-     <div class="container mx-auto text-center relative z-10">
-      <div class="float-animation inline-block mb-6"><span class="text-8xl">⚽</span>
-      </div>
-      <h1 id="hero-headline" class="font-orbitron text-4xl md:text-6xl font-black mb-6 leading-tight">Test Your Football Knowledge.<br><span class="bg-gradient-to-r from-green-400 via-emerald-500 to-teal-400 bg-clip-text text-transparent">Analyze the Game.</span><br>
-        Earn Recognition.</h1>
-      <p class="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">Complete trivia challenges, write sports articles, and analyze football video clips. Join thousands of football enthusiasts earning rewards for their expertise.</p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center"><button onclick="showRegister()" class="btn-primary px-8 py-4 rounded-xl text-lg font-bold glow-animation"> �� Get Started Free </button> <button onclick="showLogin()" class="btn-secondary px-8 py-4 rounded-xl text-lg font-bold"> 🔑 Login </button>
-      </div>
-      <div class="mt-16 flex justify-center gap-8 flex-wrap">
-       <div class="stat-card px-6 py-4 rounded-xl">
-        <div class="text-3xl font-bold text-green-400">
-         60+
-        </div>
-        <div class="text-gray-400">
-         Daily Tasks
-        </div>
-       </div>
-       <div class="stat-card px-6 py-4 rounded-xl">
-        <div class="text-3xl font-bold text-purple-400">
-         KSH 7,740
-        </div>
-        <div class="text-gray-400">
-         Total Earnings
-        </div>
-       </div>
-       <div class="stat-card px-6 py-4 rounded-xl">
-        <div class="text-3xl font-bold text-orange-400">
-         10K+
-        </div>
-        <div class="text-gray-400">
-         Active Users
-        </div>
-       </div>
-      </div>
-     </div>
-    </section><!-- How It Works -->
-    <section class="py-20 px-4 bg-gradient-to-b from-transparent to-[#111827]/50">
-     <div class="container mx-auto">
-      <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-16"><span class="bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">How It Works</span></h2>
-      <div class="grid md:grid-cols-3 gap-8">
-       <div class="task-card card-gradient-1 p-8 rounded-2xl text-center">
-        <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-         1️⃣
-        </div>
-        <h3 class="text-xl font-bold mb-4">Sign Up Free</h3>
-        <p class="text-white/80">Create your account in seconds. No payment required to start.</p>
-       </div>
-       <div class="task-card card-gradient-2 p-8 rounded-2xl text-center">
-        <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-         2️⃣
-        </div>
-        <h3 class="text-xl font-bold mb-4">Complete Tasks</h3>
-        <p class="text-white/80">Choose from trivia, writing, or video analysis tasks daily.</p>
-       </div>
-       <div class="task-card card-gradient-3 p-8 rounded-2xl text-center">
-        <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-         3️⃣
-        </div>
-        <h3 class="text-xl font-bold mb-4">Earn Rewards</h3>
-        <p class="text-white/80">Get paid KSH 129 per task. Withdraw anytime.</p>
-       </div>
-      </div>
-     </div>
-    </section><!-- Task Categories -->
-    <section class="py-20 px-4">
-     <div class="container mx-auto">
-      <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-16"><span class="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Task Categories</span></h2>
-      <div class="grid md:grid-cols-3 gap-8">
-       <div class="task-card card-gradient-4 p-8 rounded-2xl">
-        <div class="text-5xl mb-6">
-         🧠
-        </div>
-        <h3 class="text-2xl font-bold mb-4 text-gray-900">Football Trivia</h3>
-        <p class="text-gray-800 mb-4">Test your knowledge with 20+ daily trivia questions covering leagues, players, and history.</p>
-        <ul class="text-gray-700 space-y-2">
-         <li>✓ Multiple choice format</li>
-         <li>✓ Timed challenges</li>
-         <li>✓ Instant feedback</li>
-         <li>✓ KSH 129 per completion</li>
-        </ul>
-       </div>
-       <div class="task-card card-gradient-5 p-8 rounded-2xl">
-        <div class="text-5xl mb-6">
-         ✍️
-        </div>
-        <h3 class="text-2xl font-bold mb-4 text-gray-900">Article Writing</h3>
-        <p class="text-gray-800 mb-4">Write match previews, player analyses, and tactical breakdowns.</p>
-        <ul class="text-gray-700 space-y-2">
-         <li>✓ Clear guidelines</li>
-         <li>✓ Word count targets</li>
-         <li>✓ Expert review</li>
-         <li>✓ KSH 129 per article</li>
-        </ul>
-       </div>
-       <div class="task-card card-gradient-6 p-8 rounded-2xl">
-        <div class="text-5xl mb-6">
-         🎬
-        </div>
-        <h3 class="text-2xl font-bold mb-4 text-gray-900">Video Analysis</h3>
-        <p class="text-gray-800 mb-4">Watch and analyze football comedy clips and trailers.</p>
-        <ul class="text-gray-700 space-y-2">
-         <li>✓ Fun content</li>
-         <li>✓ Watch to completion</li>
-         <li>✓ Easy earnings</li>
-         <li>✓ KSH 129 per video</li>
-        </ul>
-       </div>
-      </div>
-     </div>
-    </section><!-- Featured Challenges -->
-    <section class="py-20 px-4 bg-gradient-to-b from-[#111827]/50 to-transparent">
-     <div class="container mx-auto">
-      <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-16"><span class="bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">Featured Challenges</span></h2>
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-       <div class="task-card bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-6 rounded-2xl border border-purple-500/30">
-        <div class="flex justify-between items-start mb-4"><span class="bg-purple-500 text-xs px-3 py-1 rounded-full">TRIVIA</span> <span class="text-green-400 font-bold">KSH 129</span>
-        </div>
-        <h3 class="text-lg font-bold mb-2">Premier League Quiz</h3>
-        <p class="text-gray-400 text-sm mb-4">Test your EPL knowledge</p>
-        <div class="flex justify-between text-sm text-gray-500"><span>���️ 10 mins</span> <span>🎯 Easy</span>
-        </div>
-       </div>
-       <div class="task-card bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-6 rounded-2xl border border-blue-500/30">
-        <div class="flex justify-between items-start mb-4"><span class="bg-blue-500 text-xs px-3 py-1 rounded-full">ARTICLE</span> <span class="text-green-400 font-bold">KSH 129</span>
-        </div>
-        <h3 class="text-lg font-bold mb-2">Match Preview</h3>
-        <p class="text-gray-400 text-sm mb-4">Write UCL preview</p>
-        <div class="flex justify-between text-sm text-gray-500"><span>📝 500 words</span> <span>🎯 Medium</span>
-        </div>
-       </div>
-       <div class="task-card bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-6 rounded-2xl border border-orange-500/30">
-        <div class="flex justify-between items-start mb-4"><span class="bg-orange-500 text-xs px-3 py-1 rounded-full">VIDEO</span> <span class="text-green-400 font-bold">KSH 129</span>
-        </div>
-        <h3 class="text-lg font-bold mb-2">Comedy Highlights</h3>
-        <p class="text-gray-400 text-sm mb-4">Watch funny moments</p>
-        <div class="flex justify-between text-sm text-gray-500"><span>🎥 5 mins</span> <span>🎯 Easy</span>
-        </div>
-       </div>
-       <div class="task-card bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-6 rounded-2xl border border-green-500/30">
-        <div class="flex justify-between items-start mb-4"><span class="bg-green-500 text-xs px-3 py-1 rounded-full">BONUS</span> <span class="text-yellow-400 font-bold">KSH 258</span>
-        </div>
-        <h3 class="text-lg font-bold mb-2">World Cup Special</h3>
-        <p class="text-gray-400 text-sm mb-4">Double rewards quiz</p>
-        <div class="flex justify-between text-sm text-gray-500"><span>⏱️ 15 mins</span> <span>🎯 Hard</span>
-        </div>
-       </div>
-      </div>
-     </div>
-    </section><!-- Testimonials -->
-    <section class="py-20 px-4">
-     <div class="container mx-auto">
-      <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-16"><span class="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">What Users Say</span></h2>
-      <div class="grid md:grid-cols-3 gap-8">
-       <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-8 rounded-2xl border border-gray-700">
-        <div class="flex items-center gap-4 mb-6">
-         <div class="w-14 h-14 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center text-2xl">
-          👨
-         </div>
-         <div>
-          <h4 class="font-bold">Kevin Omondi</h4>
-          <p class="text-gray-400 text-sm">Nairobi, Kenya</p>
-         </div>
-        </div>
-        <p class="text-gray-300">"I've earned over KSH 15,000 in just 2 months! The trivia questions are fun and challenging. Perfect for any football fan."</p>
-        <div class="mt-4 text-yellow-400">
-         ⭐⭐⭐⭐⭐
-        </div>
-       </div>
-       <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-8 rounded-2xl border border-gray-700">
-        <div class="flex items-center gap-4 mb-6">
-         <div class="w-14 h-14 rounded-full bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center text-2xl">
-          👩
-         </div>
-         <div>
-          <h4 class="font-bold">Faith Wanjiku</h4>
-          <p class="text-gray-400 text-sm">Mombasa, Kenya</p>
-         </div>
-        </div>
-        <p class="text-gray-300">"The article writing tasks helped improve my sports journalism skills while earning. Best platform for football content creators!"</p>
-        <div class="mt-4 text-yellow-400">
-         ⭐⭐⭐⭐⭐
-        </div>
-       </div>
-       <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-8 rounded-2xl border border-gray-700">
-        <div class="flex items-center gap-4 mb-6">
-         <div class="w-14 h-14 rounded-full bg-gradient-to-r from-orange-400 to-red-500 flex items-center justify-center text-2xl">
-          👨
-         </div>
-         <div>
-          <h4 class="font-bold">James Kiprop</h4>
-          <p class="text-gray-400 text-sm">Eldoret, Kenya</p>
-         </div>
-        </div>
-        <p class="text-gray-300">"Video analysis tasks are so easy! Just watch funny football clips and get paid. Withdrawals are fast and reliable."</p>
-        <div class="mt-4 text-yellow-400">
-         ⭐⭐⭐⭐⭐
-        </div>
-       </div>
-      </div>
-     </div>
-    </section><!-- Footer -->
-    <footer class="py-16 px-4 bg-[#111827] border-t border-gray-800">
-     <div class="container mx-auto">
-      <div class="grid md:grid-cols-4 gap-8 mb-12">
-       <div>
-        <div class="flex items-center gap-3 mb-6"><img src="logo.png" alt="SportiveX" class="w-10 h-10 rounded-lg" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.innerHTML='⚽';"> <span class="font-orbitron text-xl font-bold text-green-400">SportiveX</span>
-        </div>
-        <p class="text-gray-400">The ultimate platform for football enthusiasts to earn while testing their knowledge.</p>
-       </div>
-       <div>
-        <h4 class="font-bold mb-4">Quick Links</h4>
-        <ul class="space-y-2 text-gray-400">
-         <li><a href="#" class="hover:text-green-400 transition-colors">Home</a></li>
-         <li><a href="#" class="hover:text-green-400 transition-colors">About Us</a></li>
-         <li><a href="#" class="hover:text-green-400 transition-colors">How It Works</a></li>
-         <li><a href="#" class="hover:text-green-400 transition-colors">FAQ</a></li>
-        </ul>
-       </div>
-       <div>
-        <h4 class="font-bold mb-4">Legal</h4>
-        <ul class="space-y-2 text-gray-400">
-         <li><a href="#" class="hover:text-green-400 transition-colors">Terms of Service</a></li>
-         <li><a href="#" class="hover:text-green-400 transition-colors">Privacy Policy</a></li>
-         <li><a href="#" class="hover:text-green-400 transition-colors">Cookie Policy</a></li>
-         <li><a href="#" class="hover:text-green-400 transition-colors">Refund Policy</a></li>
-        </ul>
-       </div>
-       <div>
-        <h4 class="font-bold mb-4">Contact</h4>
-        <ul class="space-y-2 text-gray-400">
-         <li>📧 joblifyafrica@gmail.com/support@sportivex.com</li>
-         <li>📱 +254794757062 </li>
-         <li>📍 Nairobi, Kenya</li>
-        </ul>
-       </div>
-      </div>
-      <div class="border-t border-gray-800 pt-8 text-center text-gray-500">
-       <p>© 2024 SportiveX. All rights reserved.</p>
-      </div>
-     </div>
-    </footer>
-   </div><!-- LOGIN MODAL -->
-   <div id="login-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-8 rounded-2xl max-w-md w-full border border-gray-700">
-     <div class="text-center mb-8"><img src="logo.png" alt="SportiveX" class="w-16 h-16 rounded-xl mx-auto mb-4" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.innerHTML='⚽'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.style.fontSize='2rem';">
-      <h2 class="font-orbitron text-2xl font-bold">Welcome Back!</h2>
-      <p class="text-gray-400">Login to your account</p>
-     </div>
-     <form id="login-form" onsubmit="handleLogin(event)">
-      <div class="space-y-4">
-       <div><label for="login-email" class="block text-sm font-medium mb-2">Email</label> <input type="email" id="login-email" required class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none transition-colors" placeholder="your@email.com">
-       </div>
-       <div><label for="login-password" class="block text-sm font-medium mb-2">Password</label> <input type="password" id="login-password" required class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none transition-colors" placeholder="••••••••">
-       </div>
-      </div><button type="submit" class="btn-primary w-full py-3 rounded-xl font-bold mt-6">Login</button>
-      <p class="text-center mt-4 text-gray-400">Don't have an account? <button type="button" onclick="showRegister()" class="text-green-400 hover:underline">Sign Up</button></p>
-     </form><button onclick="closeModals()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">×</button>
-    </div>
-   </div><!-- REGISTER MODAL -->
-   <div id="register-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-8 rounded-2xl max-w-md w-full border border-gray-700 relative">
-     <div class="text-center mb-8"><img src="logo.png" alt="SportiveX" class="w-16 h-16 rounded-xl mx-auto mb-4" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.innerHTML='⚽'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.style.fontSize='2rem';">
-      <h2 class="font-orbitron text-2xl font-bold">Join SportiveX!</h2>
-      <p class="text-gray-400">Create your free account</p>
-     </div>
-     <form id="register-form" onsubmit="handleRegister(event)">
-      <div class="space-y-4">
-       <div><label for="reg-username" class="block text-sm font-medium mb-2">Username</label> <input type="text" id="reg-username" required class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none transition-colors" placeholder="FootballFan123">
-       </div>
-       <div><label for="reg-email" class="block text-sm font-medium mb-2">Email</label> <input type="email" id="reg-email" required class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none transition-colors" placeholder="your@email.com">
-       </div>
-       <div><label for="reg-password" class="block text-sm font-medium mb-2">Password</label> <input type="password" id="reg-password" required minlength="6" class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none transition-colors" placeholder="••••••••">
-       </div>
-      </div><button type="submit" class="btn-primary w-full py-3 rounded-xl font-bold mt-6">Create Account</button>
-      <p class="text-center mt-4 text-gray-400">Already have an account? <button type="button" onclick="showLogin()" class="text-green-400 hover:underline">Login</button></p>
-     </form><button onclick="closeModals()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">×</button>
-    </div>
-   </div><!-- DASHBOARD PAGE -->
-   <div id="page-dashboard" class="page">
-    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800 transition-all">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-       </svg></button>
-      <div class="flex items-center gap-3"><img src="logo.png" alt="SportiveX" class="w-8 h-8 rounded-lg" onerror="this.style.background='linear-gradient(135deg, #10b981, #059669)'; this.innerHTML='⚽';"> <span class="font-orbitron text-lg font-bold text-green-400 hidden sm:block">SportiveX</span>
-      </div>
-      <div class="flex items-center gap-3"><button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-800"> <span id="theme-icon-dash">🌙</span> </button> <button onclick="navigateTo('notifications')" class="p-2 rounded-full hover:bg-gray-800 relative"> 🔔 <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs flex items-center justify-center">3</span> </button> <button onclick="navigateTo('profile')" class="w-10 h-10 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center font-bold"> <span id="user-avatar">U</span> </button>
-      </div>
-     </div>
-    </header>
-    <main class="container mx-auto px-4 py-8">
-     <div class="mb-8">
-      <h1 class="text-3xl font-bold mb-2">Welcome back, <span id="dash-username" class="text-green-400">User</span>! 👋</h1>
-      <p class="text-gray-400">Ready to earn today? Here's your progress.</p>
-     </div><!-- Stats Cards -->
-     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      <div class="stat-card p-6 rounded-2xl card-gradient-1">
-       <div class="text-4xl mb-2">
-        ✅
-       </div>
-       <div class="text-3xl font-bold" id="tasks-completed">
-        0
-       </div>
-       <div class="text-white/70">
-        Tasks Completed
-       </div>
-      </div>
-      <div class="stat-card p-6 rounded-2xl card-gradient-2">
-       <div class="text-4xl mb-2">
-        ⏳
-       </div>
-       <div class="text-3xl font-bold" id="pending-reviews">
-        0
-       </div>
-       <div class="text-white/70">
-        Pending Reviews
-       </div>
-      </div>
-      <div class="stat-card p-6 rounded-2xl card-gradient-3">
-       <div class="text-4xl mb-2">
-        ⭐
-       </div>
-       <div class="text-3xl font-bold" id="total-points">
-        0
-       </div>
-       <div class="text-white/70">
-        Total Points
-       </div>
-      </div>
-      <div class="stat-card p-6 rounded-2xl card-gradient-4">
-       <div class="text-4xl mb-2">
-        💰
-       </div>
-       <div class="text-3xl font-bold text-gray-900" id="total-earnings">
-        KSH 0
-       </div>
-       <div class="text-gray-700">
-        Total Earnings
-       </div>
-      </div>
-     </div><!-- Quick Actions -->
-     <div class="grid md:grid-cols-3 gap-6 mb-8"><button onclick="navigateTo('trivia')" class="task-card card-gradient-1 p-6 rounded-2xl text-left">
-       <div class="text-4xl mb-4">
-        🧠
-       </div><h3 class="text-xl font-bold mb-2">Start Trivia</h3><p class="text-white/80">20+ questions available</p>
-       <div class="mt-4 text-sm bg-white/20 px-3 py-1 rounded-full inline-block">
-        KSH 129 each
-       </div></button> <button onclick="navigateTo('articles')" class="task-card card-gradient-5 p-6 rounded-2xl text-left">
-       <div class="text-4xl mb-4">
-        ✍️
-       </div><h3 class="text-xl font-bold text-gray-900 mb-2">Write Articles</h3><p class="text-gray-700">20+ topics waiting</p>
-       <div class="mt-4 text-sm bg-white/40 px-3 py-1 rounded-full inline-block text-gray-900">
-        KSH 129 each
-       </div></button> <button onclick="navigateTo('videos')" class="task-card card-gradient-3 p-6 rounded-2xl text-left">
-       <div class="text-4xl mb-4">
-        🎬
-       </div><h3 class="text-xl font-bold mb-2">Watch Videos</h3><p class="text-white/80">20+ clips ready</p>
-       <div class="mt-4 text-sm bg-white/20 px-3 py-1 rounded-full inline-block">
-        KSH 129 each
-       </div></button>
-     </div><!-- Recent Tasks -->
-     <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-gray-700">
-      <h2 class="text-xl font-bold mb-6">Recent Activity</h2>
-      <div id="recent-activity" class="space-y-4">
-       <p class="text-gray-400 text-center py-8">No recent activity. Start completing tasks to see your progress!</p>
-      </div>
-     </div>
-    </main>
-   </div><!-- TRIVIA PAGE -->
-   <div id="page-trivia" class="page">
-    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-       </svg></button>
-      <h1 class="font-orbitron text-lg font-bold">🧠 Trivia Tasks</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-       </svg></button>
-     </div>
-    </header>
-    <main class="container mx-auto px-4 py-8">
-     <div id="trivia-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"><!-- Trivia tasks will be populated here -->
-     </div><!-- Active Quiz Container -->
-     <div id="quiz-container" class="hidden">
-      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-8 border border-purple-500/30 max-w-2xl mx-auto">
-       <div class="flex justify-between items-center mb-6"><span id="quiz-progress" class="text-sm text-gray-400">Question 1/10</span>
-        <div class="flex items-center gap-2"><span class="text-2xl">���️</span> <span id="quiz-timer" class="text-2xl font-bold text-orange-400">30</span>
-        </div>
-       </div>
-       <div id="quiz-difficulty" class="mb-4"><span class="bg-green-500 text-xs px-3 py-1 rounded-full">EASY</span>
-       </div>
-       <h2 id="quiz-question" class="text-xl font-bold mb-6">Loading question...</h2>
-       <div id="quiz-options" class="space-y-3"><!-- Options will be populated here -->
-       </div>
-       <div id="quiz-feedback" class="mt-6 hidden">
-        <div class="p-4 rounded-xl"></div>
-       </div><button id="quiz-next" onclick="nextQuestion()" class="btn-primary w-full py-3 rounded-xl font-bold mt-6 hidden"> Next Question → </button>
-      </div>
-     </div><!-- Quiz Results -->
-     <div id="quiz-results" class="hidden">
-      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-8 border border-green-500/30 max-w-md mx-auto text-center">
-       <div class="text-6xl mb-4">
-        🏆
-       </div>
-       <h2 class="text-2xl font-bold mb-4">Quiz Complete!</h2>
-       <div class="text-5xl font-bold text-green-400 mb-2" id="quiz-score">
-        0/10
-       </div>
-       <p class="text-gray-400 mb-6">Great job! You've earned:</p>
-       <div class="text-3xl font-bold text-yellow-400 mb-6" id="quiz-earnings">
-        KSH 129
-       </div><button onclick="closeQuiz()" class="btn-primary px-8 py-3 rounded-xl font-bold">Back to Tasks</button>
-      </div>
-     </div>
-    </main>
-   </div><!-- ARTICLES PAGE -->
-   <div id="page-articles" class="page">
-    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-       </svg></button>
-      <h1 class="font-orbitron text-lg font-bold">✍️ Article Tasks</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-       </svg></button>
-     </div>
-    </header>
-    <main class="container mx-auto px-4 py-8">
-     <div id="articles-list" class="grid md:grid-cols-2 gap-6"><!-- Article tasks will be populated here -->
-     </div><!-- Article Editor -->
-     <div id="article-editor" class="hidden">
-      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-8 border border-blue-500/30 max-w-4xl mx-auto">
-       <div class="flex justify-between items-start mb-6">
-        <div>
-         <h2 id="article-title" class="text-2xl font-bold mb-2">Article Title</h2>
-         <p id="article-instructions" class="text-gray-400">Instructions will appear here</p>
-        </div><button onclick="closeArticleEditor()" class="text-gray-400 hover:text-white text-2xl">×</button>
-       </div>
-       <div class="mb-4 flex items-center justify-between"><span class="text-sm text-gray-400">Word requirement: <span id="word-requirement" class="text-blue-400">500</span> words</span> <span class="text-sm">Current: <span id="word-count" class="text-green-400">0</span> words</span>
-       </div><textarea id="article-content" class="w-full h-96 p-4 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-blue-500 focus:outline-none resize-none" placeholder="Start writing your article here..." oninput="updateWordCount()"></textarea>
-       <div class="mt-4 flex flex-col sm:flex-row gap-4"><label class="flex-1"> <span class="block text-sm text-gray-400 mb-2">Or upload a file:</span> <input type="file" id="article-file" accept=".txt,.doc,.docx,.pdf" class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 text-sm"> </label>
-       </div><button onclick="submitArticle()" id="submit-article-btn" class="btn-primary w-full py-3 rounded-xl font-bold mt-6"> Submit Article </button>
-      </div>
-     </div>
-    </main>
-   </div><!-- VIDEOS PAGE -->
-   <div id="page-videos" class="page">
-    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-       </svg></button>
-      <h1 class="font-orbitron text-lg font-bold">🎬 Video Tasks</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-       </svg></button>
-     </div>
-    </header>
-    <main class="container mx-auto px-4 py-8">
-     <div id="videos-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"><!-- Video tasks will be populated here -->
-     </div><!-- Video Player -->
-     <div id="video-player" class="hidden">
-      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-orange-500/30 max-w-4xl mx-auto">
-       <div class="flex justify-between items-center mb-4">
-        <h2 id="video-title" class="text-xl font-bold">Video Title</h2><button onclick="closeVideoPlayer()" class="text-gray-400 hover:text-white text-2xl">×</button>
-       </div>
-       <div class="aspect-video bg-black rounded-xl overflow-hidden mb-4"><iframe id="youtube-player" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-       </div>
-       <div class="flex items-center justify-between">
-        <div class="text-sm text-gray-400"><span>Watch completely to earn</span> <span class="text-green-400 font-bold ml-2">KSH 129</span>
-        </div>
-        <div id="video-progress" class="flex items-center gap-2">
-         <div class="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
-          <div id="video-progress-bar" class="h-full bg-green-500 transition-all duration-1000" style="width: 0%"></div>
-         </div><span id="video-progress-text" class="text-sm">0%</span>
-        </div>
-       </div><button id="claim-video-btn" onclick="claimVideoReward()" class="btn-primary w-full py-3 rounded-xl font-bold mt-4 hidden"> 🎉 Claim KSH 129 Reward </button>
-      </div>
-     </div>
-    </main>
-   </div><!-- SUBMISSIONS PAGE -->
-   <div id="page-submissions" class="page">
-    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-       </svg></button>
-      <h1 class="font-orbitron text-lg font-bold">📋 My Submissions</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-       </svg></button>
-     </div>
-    </header>
-    <main class="container mx-auto px-4 py-8">
-     <div id="submissions-list" class="space-y-4">
-      <p class="text-gray-400 text-center py-8">No submissions yet. Start completing tasks!</p>
-     </div>
-    </main>
-   </div><!-- NOTIFICATIONS PAGE -->
-   <div id="page-notifications" class="page">
-    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-       </svg></button>
-      <h1 class="font-orbitron text-lg font-bold">🔔 Notifications</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-       </svg></button>
-     </div>
-    </header>
-    <main class="container mx-auto px-4 py-8">
-     <div class="space-y-4">
-      <div class="bg-gradient-to-r from-green-500/20 to-transparent p-4 rounded-xl border-l-4 border-green-500">
-       <div class="flex items-start gap-4"><span class="text-2xl">🎉</span>
-        <div>
-         <h3 class="font-bold">Welcome to SportiveX!</h3>
-         <p class="text-gray-400 text-sm">Start completing tasks to earn rewards. 60+ tasks available daily!</p><span class="text-xs text-gray-500">Just now</span>
-        </div>
-       </div>
-      </div>
-      <div class="bg-gradient-to-r from-purple-500/20 to-transparent p-4 rounded-xl border-l-4 border-purple-500">
-       <div class="flex items-start gap-4"><span class="text-2xl">🧠</span>
-        <div>
-         <h3 class="font-bold">New Trivia Available</h3>
-         <p class="text-gray-400 text-sm">20+ new football trivia questions are ready for you!</p><span class="text-xs text-gray-500">1 hour ago</span>
-        </div>
-       </div>
-      </div>
-      <div class="bg-gradient-to-r from-orange-500/20 to-transparent p-4 rounded-xl border-l-4 border-orange-500">
-       <div class="flex items-start gap-4"><span class="text-2xl">🎬</span>
-        <div>
-         <h3 class="font-bold">Video Tasks Updated</h3>
-         <p class="text-gray-400 text-sm">Fresh comedy clips and trailers added. Watch to earn!</p><span class="text-xs text-gray-500">2 hours ago</span>
-        </div>
-       </div>
-      </div>
-     </div>
-    </main>
-   </div><!-- WALLET PAGE -->
-   <div id="page-wallet" class="page">
-    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-       </svg></button>
-      <h1 class="font-orbitron text-lg font-bold">💰 Wallet</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-       </svg></button>
-     </div>
-    </header>
-    <main class="container mx-auto px-4 py-8">
-     <div class="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-8 mb-8">
-      <p class="text-emerald-100 mb-2">Available Balance</p>
-      <h2 class="text-4xl font-bold mb-4" id="wallet-balance">KSH 0</h2>
-      <div class="flex gap-4"><button onclick="navigateTo('withdraw')" class="bg-white/20 hover:bg-white/30 px-6 py-2 rounded-xl transition-all"> �� Withdraw </button> <button onclick="navigateTo('subscribe')" class="bg-white/20 hover:bg-white/30 px-6 py-2 rounded-xl transition-all"> ⭐ Subscribe </button>
-      </div>
-     </div>
-     <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-gray-700">
-      <h3 class="font-bold mb-4">Transaction History</h3>
-      <div id="transaction-history" class="space-y-3">
-       <p class="text-gray-400 text-center py-4">No transactions yet</p>
-      </div>
-     </div>
-    </main>
-   </div><!-- WITHDRAW PAGE -->
-   <div id="page-withdraw" class="page">
-    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-       </svg></button>
-      <h1 class="font-orbitron text-lg font-bold">💸 Withdraw</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-       </svg></button>
-     </div>
-    </header>
-    <main class="container mx-auto px-4 py-8">
-     <div class="max-w-md mx-auto">
-      <div id="withdraw-not-member" class="bg-gradient-to-br from-yellow-900/30 to-orange-900/30 rounded-2xl p-8 border border-yellow-500">
-       <div class="text-center mb-6">
-        <div class="text-6xl mb-4">
-         🔒
-        </div>
-        <h2 class="text-2xl font-bold mb-2">Withdrawal Locked</h2>
-        <p class="text-gray-300">Become an active member to unlock withdrawals</p>
-       </div>
-       <div class="bg-yellow-500/20 border border-yellow-500/50 rounded-xl p-4 mb-6">
-        <p class="text-sm text-gray-300">Active members unlock unlimited withdrawals with only 10% transaction fee. Upgrade now for just KSH ~ 357~/ 287 [save ksh 70]!</p>
-       </div><button onclick="navigateTo('subscribe')" class="btn-secondary w-full py-3 rounded-xl font-bold"> ⭐ Become Active Member </button>
-      </div>
-      <div id="withdraw-member-form" class="hidden bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-8 border border-gray-700">
-       <div class="text-center mb-6">
-        <p class="text-gray-400">Available Balance</p>
-        <h2 class="text-4xl font-bold text-green-400" id="withdraw-balance">KSH 0</h2>
-       </div>
-       <form id="withdraw-form" onsubmit="handleWithdraw(event)">
-        <div class="space-y-4">
-         <div><label for="withdraw-amount" class="block text-sm font-medium mb-2">Amount (KSH)</label> <input type="number" id="withdraw-amount" required min="100" class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none" placeholder="Enter amount">
-          <p class="text-xs text-gray-500 mt-1">10% transaction fee will be deducted</p>
-         </div>
-         <div><label for="withdraw-method" class="block text-sm font-medium mb-2">Payment Method</label> <select id="withdraw-method" required class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none"> <option value="">Select method</option> <option value="mpesa">M-Pesa</option> <option value="bank">Bank Transfer</option> <option value="paypal">PayPal</option> </select>
-         </div>
-         <div><label for="withdraw-account" class="block text-sm font-medium mb-2">Account Number / Phone</label> <input type="text" id="withdraw-account" required class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none" placeholder="Enter account details">
-         </div>
-        </div><button type="submit" class="btn-primary w-full py-3 rounded-xl font-bold mt-6"> Confirm Withdrawal </button>
-       </form>
-      </div>
-     </div>
-    </main>
-   </div><!-- SUBSCRIBE PAGE -->
-   <div id="page-subscribe" class="page">
-    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-       </svg></button>
-      <h1 class="font-orbitron text-lg font-bold">⭐ Subscribe</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-       </svg></button>
-     </div>
-    </header>
-    <main class="container mx-auto px-4 py-8">
-     <div class="text-center mb-8">
-      <h2 class="text-2xl font-bold mb-2">Become an Active Member</h2>
-      <p class="text-gray-400">Unlock withdrawal feature and earn higher rewards</p>
-     </div>
-     <div class="max-w-md mx-auto">
-      <div class="bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-2xl p-8 border border-purple-500">
-       <div class="text-center mb-6">
-        <div class="text-5xl mb-4">
-         ⭐
-        </div>
-        <h3 class="text-2xl font-bold">Active Member</h3>
-        <p class="text-gray-300 text-sm mt-2">Get full access to withdraw your earnings</p>
-       </div>
-       <div class="text-4xl font-bold text-purple-400 text-center mb-6">
-        KSH  287 <span class="text-sm text-gray-400 block">One-time payment</span>
-       </div>
-       <ul class="space-y-3 mb-8">
-        <li class="flex items-center gap-3 text-gray-300"><span class="text-green-400">✓</span> <span>Withdraw earnings anytime</span></li>
-        <li class="flex items-center gap-3 text-gray-300"><span class="text-green-400">✓</span> <span>No withdrawal limits</span></li>
-        <li class="flex items-center gap-3 text-gray-300"><span class="text-green-400">✓</span> <span>10% transaction fee on withdrawals</span></li>
-        <li class="flex items-center gap-3 text-gray-300"><span class="text-green-400">✓</span> <span>Priority support</span></li>
-        <li class="flex items-center gap-3 text-gray-300"><span class="text-green-400">✓</span> <span>Bonus task access</span></li>
-       </ul><button onclick="initiatePayment()" class="btn-secondary w-full py-3 rounded-xl font-bold mb-3"> 💰 Initiate STK Payment </button> <button onclick="togglePaymentMessage()" class="w-full py-2 text-sm text-purple-400 hover:text-purple-300 border border-purple-500 rounded-xl"> ✓ Already paid? Verify M-Pesa message </button>
-       <div id="payment-message-box" class="hidden mt-4">
-        <p class="text-xs text-gray-400 mb-2">📋 Expected M-Pesa message format:</p>
-        <div class="bg-[#0a0f1c] p-3 rounded-lg mb-3 text-xs text-gray-400 border border-gray-600">
-         <p>MPESA CONFIRMATION CODE</p>
-         <p>You have sent KSH  287.00 to</p>
-         <p>LIPANA TECHNOLOGIES LIMITED</p>
-         <p>on [TODAY'S DATE]</p>
-        </div><textarea id="payment-message" class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-purple-500 focus:outline-none resize-none" rows="3" placeholder="Paste your M-Pesa payment message here..."></textarea> <button onclick="verifyPayment()" class="btn-primary w-full py-2 rounded-xl font-bold mt-3"> ✓ Verify Payment </button>
-       </div>
-      </div>
-     </div>
-    </main>
-   </div><!-- PROFILE PAGE -->
-   <div id="page-profile" class="page">
-    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-       </svg></button>
-      <h1 class="font-orbitron text-lg font-bold">���� Profile</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-       </svg></button>
-     </div>
-    </header>
-    <main class="container mx-auto px-4 py-8">
-     <div class="max-w-2xl mx-auto">
-      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-8 border border-gray-700 mb-6">
-       <div class="flex items-center gap-6 mb-6">
-        <div class="w-24 h-24 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center text-4xl font-bold"><span id="profile-avatar">U</span>
-        </div>
-        <div>
-         <h2 class="text-2xl font-bold" id="profile-username">Username</h2>
-         <p class="text-gray-400" id="profile-email">user@email.com</p><span class="inline-block mt-2 bg-green-500/20 text-green-400 text-sm px-3 py-1 rounded-full">⭐ Level 1</span>
-        </div>
-       </div>
-       <form id="profile-form" onsubmit="updateProfile(event)">
-        <div class="space-y-4">
-         <div><label for="profile-bio" class="block text-sm font-medium mb-2">Bio</label> <textarea id="profile-bio" rows="3" class="w-full px-4 py-3 rounded-xl bg-[#0a0f1c] border border-gray-600 focus:border-green-500 focus:outline-none resize-none" placeholder="Tell us about yourself..."></textarea>
-         </div>
-        </div><button type="submit" class="btn-primary w-full py-3 rounded-xl font-bold mt-6">Save Profile</button>
-       </form>
-      </div>
-      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-gray-700">
-       <h3 class="font-bold mb-4">Task History</h3>
-       <div class="grid grid-cols-3 gap-4 text-center">
-        <div class="p-4 bg-purple-500/20 rounded-xl">
-         <div class="text-2xl font-bold text-purple-400" id="profile-trivia">
-          0
-         </div>
-         <div class="text-sm text-gray-400">
-          Trivia
-         </div>
-        </div>
-        <div class="p-4 bg-blue-500/20 rounded-xl">
-         <div class="text-2xl font-bold text-blue-400" id="profile-articles">
-          0
-         </div>
-         <div class="text-sm text-gray-400">
-          Articles
-         </div>
-        </div>
-        <div class="p-4 bg-orange-500/20 rounded-xl">
-         <div class="text-2xl font-bold text-orange-400" id="profile-videos">
-          0
-         </div>
-         <div class="text-sm text-gray-400">
-          Videos
-         </div>
-        </div>
-       </div>
-      </div>
-     </div>
-    </main>
-   </div><!-- HELP PAGE -->
-   <div id="page-help" class="page">
-    <header class="sticky top-[88px] left-0 right-0 z-30 bg-[#0a0f1c]/90 backdrop-blur-lg border-b border-gray-800">
-     <div class="container mx-auto px-4 py-4 flex items-center justify-between"><button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-       </svg></button>
-      <h1 class="font-orbitron text-lg font-bold">❓ Help &amp; Rules</h1><button onclick="navigateTo('dashboard')" class="p-2 rounded-lg hover:bg-gray-800">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-       </svg></button>
-     </div>
-    </header>
-    <main class="container mx-auto px-4 py-8">
-     <div class="max-w-3xl mx-auto space-y-6">
-      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-gray-700">
-       <h3 class="text-xl font-bold mb-4 flex items-center gap-2">��� Platform Rules</h3>
-       <ul class="space-y-3 text-gray-300">
-        <li>• Complete tasks honestly and to the best of your ability</li>
-        <li>• One account per user - multiple accounts will be banned</li>
-        <li>• Minimum withdrawal amount is KSH 500</li>
-        <li>• Earnings are paid weekly via your chosen method</li>
-        <li>• Plagiarism in article tasks results in account suspension</li>
-        <li>• Videos must be watched completely to earn rewards</li>
-       </ul>
-      </div>
-      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-gray-700">
-       <h3 class="text-xl font-bold mb-4 flex items-center gap-2">💰 Earnings Structure</h3>
-       <ul class="space-y-3 text-gray-300">
-        <li>• <span class="text-green-400">KSH 129</span> per trivia quiz completed</li>
-        <li>• <span class="text-green-400">KSH 129</span> per article approved</li>
-        <li>• <span class="text-green-400">KSH 129</span> per video watched completely</li>
-        <li>• <span class="text-yellow-400">Bonus rewards</span> for streaks and achievements</li>
-        <li>• Total potential: <span class="text-green-400">KSH 7,740</span> daily (60 tasks × KSH 129)</li>
-       </ul>
-      </div>
-      <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl p-6 border border-gray-700">
-       <h3 class="text-xl font-bold mb-4 flex items-center gap-2">📞 Contact Support</h3>
-       <p class="text-gray-300 mb-4">Need help? Reach out to us:</p>
-       <div class="space-y-2">
-        <p>📧 Email: joblifyafrica@gmail.com/support@sportivex.com</p>
-        <p>��� Response time: Within 24 hours</p>
-       </div>
-      </div>
-     </div>
-    </main>
-   </div>
-  </div><!-- Toast Notification -->
-  <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50"><span id="toast-message">Success!</span>
-  </div><!-- Loading Overlay -->
-  <div id="loading-overlay" class="loading-overlay hidden">
-   <div class="loading-modal">
-    <svg class="progress-spinner spinner-ring" viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="30" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" />
-    </svg>
-    <h3 id="loading-title" class="text-xl font-bold mb-2">Processing...</h3>
-    <p id="loading-message" class="text-gray-400 text-sm">Please wait while we process your request</p>
-    <div id="loading-steps" class="mt-6 text-left space-y-2"><!-- Steps will be populated here -->
-    </div>
-   </div>
-  </div>
-  <script>
-    // Initialize SDK
-    const defaultConfig = {
-      site_title: 'SportiveX',
-      hero_headline: 'Test Your Football Knowledge. Analyze the Game. Earn Recognition.'
-    };
-    
-    let config = { ...defaultConfig };
-    
-    if (window.elementSdk) {
-      window.elementSdk.init({
-        defaultConfig,
-        onConfigChange: async (newConfig) => {
-          config = { ...config, ...newConfig };
-          document.getElementById('hero-headline').innerHTML = config.hero_headline || defaultConfig.hero_headline;
-        },
-        mapToCapabilities: (config) => ({
-          recolorables: [],
-          borderables: [],
-          fontEditable: undefined,
-          fontSizeable: undefined
-        }),
-        mapToEditPanelValues: (config) => new Map([
-          ['site_title', config.site_title || defaultConfig.site_title],
-          ['hero_headline', config.hero_headline || defaultConfig.hero_headline]
-        ])
-      });
-    }
-
-    // State Management
-    let currentUser = JSON.parse(localStorage.getItem('sportivex_user')) || null;
-    let userStats = JSON.parse(localStorage.getItem('sportivex_stats')) || {
-      tasksCompleted: 0,
-      pendingReviews: 0,
-      totalPoints: 0,
-      earnings: 0,
-      triviaCompleted: 0,
-      articlesCompleted: 0,
-      videosCompleted: 0,
-      submissions: [],
-      transactions: [],
-      isActiveMember: false,
-      membershipDate: null
-    };
-    
-    let currentQuiz = null;
-    let quizTimer = null;
-    let currentQuestion = 0;
-    let quizScore = 0;
-    let currentArticleTask = null;
-    let currentVideoTask = null;
-    let videoWatchTimer = null;
-    let isDarkMode = true;
-    let isMusicPlaying = false;
-
-    // Trivia Questions Database (20+) with varying earnings
-    const triviaQuestions = [
-      { q: "Which team won the 2022 FIFA World Cup?", options: ["Argentina", "France", "Brazil", "Germany"], correct: 0, difficulty: "Easy", usd: 1, ksh: 129 },
-      { q: "Who holds the record for most goals in World Cup history?", options: ["Pelé", "Miroslav Klose", "Ronaldo", "Gerd Müller"], correct: 1, difficulty: "Medium", usd: 1.50, ksh: 194 },
-      { q: "Which club has won the most UEFA Champions League titles?", options: ["Barcelona", "AC Milan", "Real Madrid", "Bayern Munich"], correct: 2, difficulty: "Easy", usd: 1, ksh: 129 },
-      { q: "Who won the Ballon d'Or in 2023?", options: ["Lionel Messi", "Erling Haaland", "Kylian Mbappé", "Kevin De Bruyne"], correct: 0, difficulty: "Easy", usd: 0.75, ksh: 97 },
-      { q: "Which country hosted the first World Cup in 1930?", options: ["Brazil", "Italy", "Uruguay", "Argentina"], correct: 2, difficulty: "Medium", usd: 1.50, ksh: 194 },
-      { q: "Who is the all-time top scorer in Premier League history?", options: ["Wayne Rooney", "Alan Shearer", "Thierry Henry", "Harry Kane"], correct: 1, difficulty: "Medium", usd: 1.25, ksh: 161 },
-      { q: "Which team completed 'The Invincibles' season in 2003-04?", options: ["Manchester United", "Chelsea", "Arsenal", "Liverpool"], correct: 2, difficulty: "Easy", usd: 1, ksh: 129 },
-      { q: "How many players are on each team during a standard football match?", options: ["9", "10", "11", "12"], correct: 2, difficulty: "Easy", usd: 0.75, ksh: 97 },
-      { q: "Which country has won the most World Cups?", options: ["Germany", "Argentina", "Italy", "Brazil"], correct: 3, difficulty: "Easy", usd: 1, ksh: 129 },
-      { q: "Who scored the 'Hand of God' goal?", options: ["Pelé", "Diego Maradona", "Johan Cruyff", "Zinedine Zidane"], correct: 1, difficulty: "Medium", usd: 2, ksh: 258 },
-      { q: "In which year did England win the World Cup?", options: ["1962", "1966", "1970", "1974"], correct: 1, difficulty: "Medium", usd: 1.75, ksh: 226 },
-      { q: "Which club is known as 'The Red Devils'?", options: ["Liverpool", "Arsenal", "Manchester United", "AC Milan"], correct: 2, difficulty: "Easy", usd: 1, ksh: 129 },
-      { q: "Who is nicknamed 'CR7'?", options: ["Carlos Tevez", "Cristiano Ronaldo", "Clarence Seedorf", "Cafu"], correct: 1, difficulty: "Easy", usd: 1.25, ksh: 161 },
-      { q: "Which stadium is known as 'The Theatre of Dreams'?", options: ["Anfield", "Camp Nou", "Old Trafford", "Santiago Bernabéu"], correct: 2, difficulty: "Medium", usd: 1.50, ksh: 194 },
-      { q: "How long is a standard football match?", options: ["60 minutes", "80 minutes", "90 minutes", "100 minutes"], correct: 2, difficulty: "Easy", usd: 0.75, ksh: 97 },
-      { q: "Which team won the first Premier League title in 1992-93?", options: ["Arsenal", "Manchester United", "Liverpool", "Leeds United"], correct: 1, difficulty: "Hard", usd: 2.50, ksh: 323 },
-      { q: "Who is the top scorer in El Clásico history?", options: ["Cristiano Ronaldo", "Alfredo Di Stéfano", "Lionel Messi", "Raúl"], correct: 2, difficulty: "Hard", usd: 3, ksh: 387 },
-      { q: "Which African country reached the 1990 World Cup Quarter-finals?", options: ["Nigeria", "Ghana", "Cameroon", "Senegal"], correct: 2, difficulty: "Hard", usd: 2.25, ksh: 290 },
-      { q: "What does VAR stand for in football?", options: ["Video Assistant Referee", "Virtual Analysis Review", "Visual Aid Referee", "Video Analysis Recording"], correct: 0, difficulty: "Easy", usd: 1, ksh: 129 },
-      { q: "Which player has won the most Ballon d'Or awards?", options: ["Cristiano Ronaldo", "Lionel Messi", "Michel Platini", "Johan Cruyff"], correct: 1, difficulty: "Easy", usd: 1.50, ksh: 194 },
-      { q: "Who managed Manchester United from 1986 to 2013?", options: ["José Mourinho", "Sir Alex Ferguson", "Arsène Wenger", "Carlo Ancelotti"], correct: 1, difficulty: "Easy", usd: 1, ksh: 129 },
-      { q: "Which country won Euro 2020?", options: ["England", "Spain", "Italy", "Germany"], correct: 2, difficulty: "Easy", usd: 1.75, ksh: 226 }
-    ];
-
-    // Article Tasks Database (20+) - $5 per 250 words
-    const articleTasks = [
-      { id: 1, title: "Premier League Match Preview", topic: "Write a preview for the upcoming Manchester derby", words: 500, deadline: "24 hours", difficulty: "Medium", usd: 10, ksh: 1290 },
-      { id: 2, title: "Player Analysis: Erling Haaland", topic: "Analyze Haaland's impact on Manchester City this season", words: 600, deadline: "48 hours", difficulty: "Medium", usd: 12, ksh: 1548 },
-      { id: 3, title: "Tactical Breakdown: 4-3-3 Formation", topic: "Explain the modern 4-3-3 formation and its variations", words: 700, deadline: "72 hours", difficulty: "Hard", usd: 14, ksh: 1806 },
-      { id: 4, title: "Champions League Predictions", topic: "Predict the UCL quarter-final outcomes with analysis", words: 500, deadline: "24 hours", difficulty: "Medium", usd: 10, ksh: 1290 },
-      { id: 5, title: "Rising Stars Under 21", topic: "Profile 5 young talents to watch this season", words: 800, deadline: "48 hours", difficulty: "Medium", usd: 16, ksh: 2064 },
-      { id: 6, title: "World Cup History", topic: "Recap the most memorable World Cup moments", words: 600, deadline: "72 hours", difficulty: "Easy", usd: 12, ksh: 1548 },
-      { id: 7, title: "African Football Legends", topic: "Celebrate the greatest African players in history", words: 700, deadline: "48 hours", difficulty: "Medium", usd: 14, ksh: 1806 },
-      { id: 8, title: "Transfer Window Analysis", topic: "Review the biggest transfers and their impact", words: 600, deadline: "24 hours", difficulty: "Medium", usd: 12, ksh: 1548 },
-      { id: 9, title: "Goalkeeping Evolution", topic: "How the goalkeeper role has changed in modern football", words: 500, deadline: "48 hours", difficulty: "Medium", usd: 10, ksh: 1290 },
-      { id: 10, title: "Derby Day Special", topic: "Explore the history and passion of local derbies", words: 600, deadline: "72 hours", difficulty: "Easy", usd: 12, ksh: 1548 },
-      { id: 11, title: "VAR Controversy", topic: "Discuss the pros and cons of VAR in football", words: 500, deadline: "24 hours", difficulty: "Easy", usd: 10, ksh: 1290 },
-      { id: 12, title: "Women's Football Growth", topic: "The rise of women's football globally", words: 600, deadline: "48 hours", difficulty: "Medium", usd: 12, ksh: 1548 },
-      { id: 13, title: "Football Finances", topic: "Explain Financial Fair Play and its impact", words: 700, deadline: "72 hours", difficulty: "Hard", usd: 14, ksh: 1806 },
-      { id: 14, title: "Legendary Managers", topic: "Profile the greatest managers in football history", words: 800, deadline: "48 hours", difficulty: "Medium", usd: 16, ksh: 2064 },
-      { id: 15, title: "Stadium Atmosphere", topic: "The best stadium atmospheres in world football", words: 500, deadline: "24 hours", difficulty: "Easy", usd: 10, ksh: 1290 },
-      { id: 16, title: "Youth Academy Systems", topic: "Compare youth development at top clubs", words: 600, deadline: "48 hours", difficulty: "Medium", usd: 12, ksh: 1548 },
-      { id: 17, title: "Football and Technology", topic: "How technology is changing football", words: 500, deadline: "24 hours", difficulty: "Easy", usd: 10, ksh: 1290 },
-      { id: 18, title: "Set Piece Mastery", topic: "Analyze the importance of set pieces in modern football", words: 600, deadline: "48 hours", difficulty: "Medium", usd: 12, ksh: 1548 },
-      { id: 19, title: "Football Rivalries", topic: "The most intense rivalries in world football", words: 700, deadline: "72 hours", difficulty: "Easy", usd: 14, ksh: 1806 },
-      { id: 20, title: "Season Review", topic: "Comprehensive review of the current season so far", words: 800, deadline: "48 hours", difficulty: "Medium", usd: 16, ksh: 2064 },
-      { id: 21, title: "Penalty Shootout Psychology", topic: "The mental aspects of penalty kicks", words: 500, deadline: "24 hours", difficulty: "Medium", usd: 10, ksh: 1290 }
-    ];
-
-    // Video Tasks Database (20+) - Free public domain & creative commons trailers
-    const videoTasks = [
-      { id: 1, title: "Big Buck Bunny - 4K Animation", videoId: "aqz-KE-bpKQ", duration: 150, usd: 5, ksh: 645 },
-      { id: 2, title: "Sintel - Fantasy Adventure", videoId: "NyP-0EKYs38", duration: 148, usd: 6, ksh: 774 },
-      { id: 3, title: "Tears of Steel - Sci-Fi Drama", videoId: "seRGn8UNuX4", duration: 150, usd: 8, ksh: 1032 },
-      { id: 4, title: "Agent 327 - Action Animation", videoId: "mN0zPOpADL4", duration: 140, usd: 6.50, ksh: 839 },
-      { id: 5, title: "Spring - Fantasy Epic", videoId: "WhWc3b3KhnY", duration: 141, usd: 7.50, ksh: 968 },
-      { id: 6, title: "Sprite Fright - Horror Comedy", videoId: "w6UjV-4w9nI", duration: 135, usd: 5.50, ksh: 710 },
-      { id: 7, title: "Caminandes 1 - Llama Drama", videoId: "Y-rmzH0PI0c", duration: 152, usd: 5, ksh: 645 },
-      { id: 8, title: "Caminandes 2 - Comedy Quest", videoId: "d7iKVqnvI60", duration: 141, usd: 8.50, ksh: 1097 },
-      { id: 9, title: "Caminandes 3 - Friends", videoId: "PvlmqXFLy3U", duration: 149, usd: 9.50, ksh: 1226 },
-      { id: 10, title: "Elephant Dreams - Surreal", videoId: "p6EHnVkSpKs", duration: 138, usd: 9, ksh: 1161 },
-      { id: 11, title: "Cosmos Laundromat - Sci-Fi", videoId: "Y-rmzH0PI0c", duration: 140, usd: 9, ksh: 1161 },
-      { id: 12, title: "Blender Demo - 3D Showcase", videoId: "ynQHKcAy7M8", duration: 145, usd: 5.50, ksh: 710 },
-      { id: 13, title: "Metropolis - Classic Film", videoId: "dHbWDLf9CDs", duration: 156, usd: 10, ksh: 1290 },
-      { id: 14, title: "Nosferatu - Horror Classic", videoId: "xY4s8JdhFRs", duration: 140, usd: 5.25, ksh: 677 },
-      { id: 15, title: "Battleship Potemkin - Epic", videoId: "F6rNPpSxwQ8", duration: 139, usd: 8.50, ksh: 1097 },
-      { id: 16, title: "Cabinet of Dr. Caligari", videoId: "hnJIrIbRnxU", duration: 145, usd: 7.50, ksh: 968 },
-      { id: 17, title: "Sunrise - Silent Drama", videoId: "n0i_hULmKxQ", duration: 142, usd: 6.50, ksh: 839 },
-      { id: 18, title: "Andy Warhol - Art Film", videoId: "xUGJEk8c4dQ", duration: 138, usd: 7, ksh: 903 },
-      { id: 19, title: "A Trip to the Moon - Fantasy", videoId: "cBBpnKY5ZYU", duration: 144, usd: 6.75, ksh: 871 },
-      { id: 20, title: "Intolerance - Epic Silent", videoId: "S8jFvD5b5-0", duration: 140, usd: 8.75, ksh: 1129 },
-      { id: 21, title: "The Lodger - Thriller Classic", videoId: "FvZPdE8BxBc", duration: 155, usd: 7.25, ksh: 935 }
-    ];
-
-    // Initialize App
-    function init() {
-      // Play TV videos
-      ['tv-video-1', 'tv-video-2', 'tv-video-3'].forEach(id => {
-        const video = document.getElementById(id);
-        if (video) {
-          video.play().catch(() => {});
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextGen HUB</title>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: linear-gradient(145deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+        .auth-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 2rem; padding: 2.5rem; width: 100%; max-width: 420px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .logo { text-align: center; margin-bottom: 2rem; }
+        .logo h1 { font-size: 2rem; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .tabs { display: flex; gap: 1rem; margin-bottom: 2rem; }
+        .tab { flex: 1; padding: 1rem; border: none; border-radius: 40px; font-weight: 600; background: #f1f5f9; color: #475569; cursor: pointer; transition: all 0.3s; }
+        .tab.active { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .form { display: block; }
+        .form.hidden { display: none; }
+        .input-group { margin-bottom: 1rem; }
+        .input-group input, .input-group select { width: 100%; padding: 1rem 1.2rem; border-radius: 40px; border: 2px solid #e2e8f0; font-size: 1rem; transition: all 0.3s; }
+        .input-group input:focus { border-color: #667eea; outline: none; }
+        .btn { width: 100%; padding: 1rem; border: none; border-radius: 40px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-google { background: white; color: #333; border: 2px solid #e2e8f0; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+        .btn-google:hover { background: #f8fafc; }
+        .divider { text-align: center; margin: 1.5rem 0; position: relative; }
+        .divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #e2e8f0; }
+        .divider span { background: white; padding: 0 1rem; position: relative; color: #64748b; }
+        .link { text-align: center; margin-top: 1rem; }
+        .link a { color: #667eea; text-decoration: none; font-weight: 600; cursor: pointer; }
+        .info-text { text-align: center; color: #64748b; margin: 1rem 0; font-size: 0.9rem; }
+        
+        /* Referral Banner */
+        .referral-banner {
+            background: linear-gradient(135deg, #667eea20, #764ba220);
+            border-radius: 40px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            border: 2px dashed #667eea;
         }
-      });
-      
-      // Check if user is logged in
-      if (currentUser) {
-        showDashboard();
-      }
-      
-      // Populate task pages
-      populateTriviaTasks();
-      populateArticleTasks();
-      populateVideoTasks();
-    }
+        .referral-banner p {
+            color: #4a5568;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        .referral-banner .highlight {
+            font-weight: 700;
+            color: #667eea;
+        }
+        .referral-code {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            border: 2px solid #e2e8f0;
+        }
+        .referral-code span {
+            font-weight: 700;
+            color: #2d3748;
+        }
+        .referral-code i {
+            color: #667eea;
+            cursor: pointer;
+        }
+        
+        /* Alert Dialog Styles */
+        .alert-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            z-index: 2000;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            display: none;
+        }
 
-    // Navigation Functions
-    function navigateTo(page) {
-      if (!currentUser && page !== 'landing') {
-        showLogin();
-        return;
-      }
-      
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(`page-${page}`).classList.add('active');
-      toggleMenu();
-      
-      // Update page-specific data
-      if (page === 'dashboard') updateDashboard();
-      if (page === 'wallet') updateWallet();
-      if (page === 'withdraw') updateWithdraw();
-      if (page === 'profile') updateProfile();
-      if (page === 'submissions') updateSubmissions();
-    }
+        .alert-dialog.show {
+            display: block;
+        }
 
-    function toggleMenu() {
-      const menu = document.getElementById('hamburger-menu');
-      const overlay = document.getElementById('menu-overlay');
-      menu.classList.toggle('open');
-      overlay.classList.toggle('hidden');
-    }
+        .alert-dialog.error {
+            border-top: 4px solid #dc2626;
+        }
 
-    // Auth Functions
-    function showLogin() {
-      closeModals();
-      document.getElementById('login-modal').classList.remove('hidden');
-    }
+        .alert-dialog.success {
+            border-top: 4px solid #10b981;
+        }
 
-    function showRegister() {
-      closeModals();
-      document.getElementById('register-modal').classList.remove('hidden');
-    }
+        .alert-dialog i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
 
-    function closeModals() {
-      document.getElementById('login-modal').classList.add('hidden');
-      document.getElementById('register-modal').classList.add('hidden');
-    }
+        .alert-dialog.error i {
+            color: #dc2626;
+        }
 
-    function handleLogin(e) {
-      e.preventDefault();
-      const email = document.getElementById('login-email').value;
-      const password = document.getElementById('login-password').value;
-      
-      // Check localStorage for user
-      const storedUser = JSON.parse(localStorage.getItem('sportivex_user'));
-      if (storedUser && storedUser.email === email) {
-        currentUser = storedUser;
-        closeModals();
-        showDashboard();
-        showToast('Welcome back, ' + currentUser.username + '!');
-      } else {
-        showToast('Invalid credentials. Please register first.');
-      }
-    }
+        .alert-dialog.success i {
+            color: #10b981;
+        }
 
-    function handleRegister(e) {
-      e.preventDefault();
-      const username = document.getElementById('reg-username').value;
-      const email = document.getElementById('reg-email').value;
-      const password = document.getElementById('reg-password').value;
-      
-      currentUser = { username, email, password, joinDate: new Date().toISOString() };
-      localStorage.setItem('sportivex_user', JSON.stringify(currentUser));
-      
-      // Send to Web3Forms
-      sendToWeb3Forms({
-        type: 'Registration',
-        username,
-        email,
-        date: new Date().toLocaleString()
-      });
-      
-      closeModals();
-      showDashboard();
-      showToast('Welcome to SportiveX, ' + username + '! 🎉');
-    }
+        .alert-dialog h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
 
-    function logout() {
-      currentUser = null;
-      localStorage.removeItem('sportivex_user');
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById('page-landing').classList.add('active');
-      toggleMenu();
-      showToast('Logged out successfully');
-    }
+        .alert-dialog p {
+            color: #64748b;
+            margin-bottom: 1.5rem;
+        }
 
-    function showDashboard() {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById('page-dashboard').classList.add('active');
-      updateDashboard();
-    }
+        .alert-dialog button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
 
-    // Dashboard Functions
-    function updateDashboard() {
-      if (!currentUser) return;
-      
-      document.getElementById('dash-username').textContent = currentUser.username;
-      document.getElementById('user-avatar').textContent = currentUser.username.charAt(0).toUpperCase();
-      document.getElementById('tasks-completed').textContent = userStats.tasksCompleted;
-      document.getElementById('pending-reviews').textContent = userStats.pendingReviews;
-      document.getElementById('total-points').textContent = userStats.totalPoints;
-      document.getElementById('total-earnings').textContent = 'KSH ' + userStats.earnings.toLocaleString();
-      
-      // Update recent activity
-      const activityContainer = document.getElementById('recent-activity');
-      if (userStats.submissions.length > 0) {
-        activityContainer.innerHTML = userStats.submissions.slice(-5).reverse().map(s => `
-          <div class="flex items-center justify-between p-4 bg-[#0a0f1c] rounded-xl">
-            <div class="flex items-center gap-3">
-              <span class="text-2xl">${s.type === 'trivia' ? '🧠' : s.type === 'article' ? '✍️' : '🎬'}</span>
-              <div>
-                <p class="font-medium">${s.title}</p>
-                <p class="text-sm text-gray-400">${s.date}</p>
-              </div>
+        .alert-dialog button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(102, 126, 234, 0.5);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1999;
+            display: none;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <div class="logo">
+            <h1>🔷 NextGen HUB</h1>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('login')">Login</button>
+            <button class="tab" onclick="switchTab('register')">Register</button>
+        </div>
+        
+        <!-- Login Form -->
+        <div id="loginForm" class="form">
+            <div class="input-group">
+                <input type="email" id="loginEmail" placeholder="Email address">
             </div>
-            <span class="px-3 py-1 rounded-full text-sm ${s.status === 'Approved' ? 'bg-green-500/20 text-green-400' : s.status === 'Under Review' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-blue-500/20 text-blue-400'}">${s.status}</span>
-          </div>
-        `).join('');
-      }
-    }
-
-    // Trivia Functions
-    function populateTriviaTasks() {
-      const container = document.getElementById('trivia-list');
-      const gradients = ['card-gradient-1', 'card-gradient-2', 'card-gradient-3', 'card-gradient-4', 'card-gradient-5', 'card-gradient-6'];
-      
-      container.innerHTML = triviaQuestions.map((q, i) => `
-        <div class="task-card ${gradients[i % 6]} p-6 rounded-2xl cursor-pointer" onclick="startQuiz(${i})">
-          <div class="flex justify-between items-start mb-4">
-            <span class="bg-white/20 text-xs px-3 py-1 rounded-full">${q.difficulty.toUpperCase()}</span>
-            <span class="text-white font-bold">KSH 129</span>
-          </div>
-          <h3 class="text-lg font-bold mb-2 ${i % 2 === 0 ? 'text-white' : 'text-gray-900'}">Trivia #${i + 1}</h3>
-          <p class="text-sm ${i % 2 === 0 ? 'text-white/80' : 'text-gray-700'} mb-4">Test your football knowledge!</p>
-          <div class="flex justify-between text-sm ${i % 2 === 0 ? 'text-white/60' : 'text-gray-600'}">
-            <span>⏱️ 30 sec/question</span>
-            <span>❓ 10 questions</span>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function startQuiz(index) {
-      currentQuiz = {
-        questions: shuffleArray([...triviaQuestions]).slice(0, 10),
-        startIndex: index
-      };
-      currentQuestion = 0;
-      quizScore = 0;
-      
-      document.getElementById('trivia-list').classList.add('hidden');
-      document.getElementById('quiz-container').classList.remove('hidden');
-      document.getElementById('quiz-results').classList.add('hidden');
-      
-      showQuestion();
-    }
-
-    function showQuestion() {
-      const q = currentQuiz.questions[currentQuestion];
-      document.getElementById('quiz-progress').textContent = `Question ${currentQuestion + 1}/10`;
-      document.getElementById('quiz-question').textContent = q.q;
-      document.getElementById('quiz-difficulty').innerHTML = `<span class="bg-${q.difficulty === 'Easy' ? 'green' : q.difficulty === 'Medium' ? 'yellow' : 'red'}-500 text-xs px-3 py-1 rounded-full">${q.difficulty.toUpperCase()}</span>`;
-      
-      const optionsContainer = document.getElementById('quiz-options');
-      optionsContainer.innerHTML = q.options.map((opt, i) => `
-        <button onclick="selectAnswer(${i})" class="w-full p-4 rounded-xl bg-[#0a0f1c] border border-gray-600 hover:border-purple-500 transition-all text-left quiz-option">
-          <span class="inline-block w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 text-center mr-3">${String.fromCharCode(65 + i)}</span>
-          ${opt}
-        </button>
-      `).join('');
-      
-      document.getElementById('quiz-feedback').classList.add('hidden');
-      document.getElementById('quiz-next').classList.add('hidden');
-      
-      // Start timer
-      let timeLeft = 30;
-      document.getElementById('quiz-timer').textContent = timeLeft;
-      
-      if (quizTimer) clearInterval(quizTimer);
-      quizTimer = setInterval(() => {
-        timeLeft--;
-        document.getElementById('quiz-timer').textContent = timeLeft;
-        if (timeLeft <= 0) {
-          clearInterval(quizTimer);
-          selectAnswer(-1);
-        }
-      }, 1000);
-    }
-
-    function selectAnswer(index) {
-      clearInterval(quizTimer);
-      const q = currentQuiz.questions[currentQuestion];
-      const isCorrect = index === q.correct;
-      
-      if (isCorrect) quizScore++;
-      
-      // Disable all options
-      document.querySelectorAll('.quiz-option').forEach((btn, i) => {
-        btn.disabled = true;
-        if (i === q.correct) {
-          btn.classList.add('border-green-500', 'bg-green-500/20');
-        } else if (i === index && !isCorrect) {
-          btn.classList.add('border-red-500', 'bg-red-500/20');
-        }
-      });
-      
-      // Show feedback
-      const feedback = document.getElementById('quiz-feedback');
-      feedback.classList.remove('hidden');
-      feedback.innerHTML = `
-        <div class="p-4 rounded-xl ${isCorrect ? 'bg-green-500/20 border border-green-500' : 'bg-red-500/20 border border-red-500'}">
-          <p class="font-bold">${isCorrect ? '✅ Correct!' : '❌ Incorrect!'}</p>
-          <p class="text-sm text-gray-400">${isCorrect ? 'Great job!' : `The correct answer was: ${q.options[q.correct]}`}</p>
-        </div>
-      `;
-      
-      document.getElementById('quiz-next').classList.remove('hidden');
-      document.getElementById('quiz-next').textContent = currentQuestion < 9 ? 'Next Question →' : 'See Results';
-    }
-
-    function nextQuestion() {
-      currentQuestion++;
-      if (currentQuestion < 10) {
-        showQuestion();
-      } else {
-        showQuizResults();
-      }
-    }
-
-    function showQuizResults() {
-      document.getElementById('quiz-container').classList.add('hidden');
-      document.getElementById('quiz-results').classList.remove('hidden');
-      
-      const percentage = Math.round((quizScore / 10) * 100);
-      document.getElementById('quiz-score').textContent = `${quizScore}/10`;
-      const currentQuizData = triviaQuestions[currentQuiz.startIndex];
-      const baseEarnings = currentQuizData.ksh;
-      const earnings = Math.round((percentage / 100) * baseEarnings);
-      const earningsUSD = (earnings / 129) * 1;
-      
-      // Grade determination
-      let grade = 'F';
-      if (percentage >= 90) grade = 'A';
-      else if (percentage >= 80) grade = 'B';
-      else if (percentage >= 70) grade = 'C';
-      else if (percentage >= 60) grade = 'D';
-      
-      document.getElementById('quiz-earnings').innerHTML = `
-        <div class="text-3xl font-bold mb-2">${percentage}% - Grade ${grade}</div>
-        <div class="text-lg">Earned: $${earningsUSD.toFixed(2)} / KSH ${earnings}</div>
-      `;
-      
-      if (earnings > 0) {
-        userStats.tasksCompleted++;
-        userStats.triviaCompleted++;
-        userStats.totalPoints += quizScore * 10;
-        userStats.earnings += earnings;
-        userStats.submissions.push({
-          type: 'trivia',
-          title: 'Trivia Quiz',
-          date: new Date().toLocaleDateString(),
-          status: 'Approved',
-          earnings,
-          score: quizScore,
-          percentage,
-          grade
-        });
-        userStats.transactions.push({
-          type: 'credit',
-          amount: earnings,
-          description: 'Trivia Quiz - ' + percentage + '% (Grade ' + grade + ')',
-          date: new Date().toLocaleString(),
-          status: 'Paid'
-        });
-        saveStats();
-        
-        // Show receipt modal
-        showReceiptModal({
-          paidAmount: earnings,
-          bonusAmount: 0,
-          totalCredit: earnings,
-          transactionCode: 'TRV' + Date.now().toString().slice(-8),
-          type: 'task',
-          action: 'closeQuiz()',
-          actionText: '🎯 More Tasks',
-          taskTitle: 'Trivia Quiz - ' + percentage + '% (Grade ' + grade + ')'
-        });
-      }
-    }
-
-    function closeQuiz() {
-      document.getElementById('quiz-container').classList.add('hidden');
-      document.getElementById('quiz-results').classList.add('hidden');
-      document.getElementById('trivia-list').classList.remove('hidden');
-    }
-
-    // Article Functions
-    function populateArticleTasks() {
-      const container = document.getElementById('articles-list');
-      const gradients = ['card-gradient-1', 'card-gradient-2', 'card-gradient-3', 'card-gradient-4', 'card-gradient-5', 'card-gradient-6'];
-      
-      container.innerHTML = articleTasks.map((task, i) => `
-        <div class="task-card ${gradients[i % 6]} p-6 rounded-2xl">
-          <div class="flex justify-between items-start mb-4">
-            <span class="bg-white/20 text-xs px-3 py-1 rounded-full">${task.difficulty.toUpperCase()}</span>
-            <div class="text-right">
-              <div class="${i % 2 === 0 ? 'text-white' : 'text-gray-900'} font-bold text-sm">$${task.usd.toFixed(2)}</div>
-              <div class="${i % 2 === 0 ? 'text-white/70' : 'text-gray-600'} text-xs">KSH ${task.ksh}</div>
+            <div class="input-group">
+                <input type="password" id="loginPassword" placeholder="Password">
             </div>
-          </div>
-          <h3 class="text-lg font-bold mb-2 ${i % 2 === 0 ? 'text-white' : 'text-gray-900'}">${task.title}</h3>
-          <p class="text-sm ${i % 2 === 0 ? 'text-white/80' : 'text-gray-700'} mb-4">${task.topic}</p>
-          <div class="flex justify-between text-sm ${i % 2 === 0 ? 'text-white/60' : 'text-gray-600'} mb-4">
-            <span>📝 ${task.words} words</span>
-            <span>⏰ ${task.deadline}</span>
-          </div>
-          <button onclick="acceptArticleTask(${task.id})" class="w-full py-2 rounded-xl bg-white/20 hover:bg-white/30 transition-all font-medium ${i % 2 === 0 ? 'text-white' : 'text-gray-900'}">
-            Accept Task
-          </button>
+            <button class="btn btn-primary" onclick="handleLogin()">Sign In</button>
+            
+            <div class="divider">
+                <span>OR</span>
+            </div>
+            
+            <button class="btn btn-google" onclick="handleGoogleLogin()">
+                <i class="fab fa-google"></i> Continue with Google
+            </button>
         </div>
-      `).join('');
-    }
-
-    function acceptArticleTask(id) {
-      currentArticleTask = articleTasks.find(t => t.id === id);
-      document.getElementById('articles-list').classList.add('hidden');
-      document.getElementById('article-editor').classList.remove('hidden');
-      
-      document.getElementById('article-title').textContent = currentArticleTask.title;
-      document.getElementById('article-instructions').textContent = currentArticleTask.topic;
-      document.getElementById('word-requirement').textContent = currentArticleTask.words;
-      document.getElementById('word-count').textContent = '0';
-      document.getElementById('article-content').value = '';
-    }
-
-    function updateWordCount() {
-      const text = document.getElementById('article-content').value;
-      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-      document.getElementById('word-count').textContent = words;
-      
-      const required = currentArticleTask.words;
-      const countEl = document.getElementById('word-count');
-      countEl.className = words >= required ? 'text-green-400' : words >= required * 0.8 ? 'text-yellow-400' : 'text-red-400';
-    }
-
-    function submitArticle() {
-      const text = document.getElementById('article-content').value;
-      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-      const file = document.getElementById('article-file').files[0];
-      
-      if (words < currentArticleTask.words * 0.8 && !file) {
-        showToast('Please write at least 80% of the required words or upload a file');
-        return;
-      }
-      
-      // Show loading with steps
-      showLoadingSteps('Submitting Article', 'Uploading your article...', [
-        { text: 'Analyzing content quality...', delay: 1000 },
-        { text: 'Checking for plagiarism...', delay: 2500 },
-        { text: 'Validating word count...', delay: 3500 },
-        { text: 'Submitting for review...', delay: 4500 }
-      ]);
-      
-      setTimeout(() => {
-        userStats.pendingReviews++;
-        userStats.articlesCompleted++;
         
-        // Auto-scoring system based on requirements
-        let score = 0;
-        let feedback = [];
+        <!-- Register Form -->
+        <div id="registerForm" class="form hidden">
+            <!-- Referral Info Banner -->
+            <div class="referral-banner" id="referralBanner">
+                <p>🎉 <span class="highlight">Earn $2</span> for each friend who upgrades to premium!</p>
+                <p>Your friends get <span class="highlight">$0.5</span> bonus too!</p>
+            </div>
+            
+            <!-- Referral Code Input (hidden by default, shown if referral exists) -->
+            <div class="input-group" id="referralCodeGroup" style="display: none;">
+                <input type="text" id="referralCode" placeholder="Referral code (if any)" value="">
+            </div>
+            
+            <div class="input-group">
+                <input type="text" id="regName" placeholder="Full name">
+            </div>
+            <div class="input-group">
+                <input type="email" id="regEmail" placeholder="Email address">
+            </div>
+            <div class="input-group">
+                <input type="password" id="regPassword" placeholder="Password (min 6 characters)">
+            </div>
+            <div class="input-group">
+                <input type="tel" id="regPhone" placeholder="Phone number (optional)">
+            </div>
+            <button class="btn btn-primary" onclick="handleRegister()">Create Account</button>
+            <div class="info-text">
+                <i class="fas fa-info-circle"></i> A verification email will be sent
+            </div>
+        </div>
         
-        // Word count check (max 25 points)
-        if (words >= currentArticleTask.words) {
-          score += 25;
-          feedback.push('✓ Meets word count requirement');
-        } else if (words >= currentArticleTask.words * 0.9) {
-          score += 20;
-          feedback.push('~ Word count slightly below target (-5)');
-        } else {
-          score += 15;
-          feedback.push('- Word count below target (-10)');
-        }
+        <!-- Verify Email Message -->
+        <div id="verifyMessage" class="form hidden">
+            <div style="text-align: center;">
+                <i class="fas fa-envelope-circle-check" style="font-size: 3rem; color: #667eea; margin-bottom: 1rem;"></i>
+                <h3 style="margin-bottom: 1rem;">Verify Your Email</h3>
+                <p style="color: #64748b; margin-bottom: 1.5rem;">We've sent a verification link to <span id="verifyEmail"></span></p>
+                <button class="btn btn-primary" onclick="checkVerification()">I've Verified, Continue</button>
+                <div class="link" style="margin-top: 1rem;">
+                    <a onclick="resendVerification()">Resend verification email</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Alert Dialog -->
+    <div class="overlay" id="overlay" onclick="hideAlert()"></div>
+    <div class="alert-dialog" id="alertDialog">
+        <i class="fas" id="alertIcon"></i>
+        <h3 id="alertTitle"></h3>
+        <p id="alertMessage"></p>
+        <button onclick="hideAlert()">OK</button>
+    </div>
+    
+    <script>
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyChk2JA68-I5s1D0S10r9WK71LgTNi4hRQ",
+            authDomain: "nextgen-5fb6f.firebaseapp.com",
+            projectId: "nextgen-5fb6f",
+            storageBucket: "nextgen-5fb6f.firebasestorage.app",
+            messagingSenderId: "100132076455",
+            appId: "1:100132076455:web:c5aea1f6e1a5ebbea99482"
+        };
         
-        // Topic relevance check (max 25 points)
-        const keywords = currentArticleTask.topic.toLowerCase().split(/\s+/).slice(0, 5);
-        const textLower = text.toLowerCase();
-        let relevanceScore = 0;
-        keywords.forEach(keyword => {
-          if (textLower.includes(keyword)) relevanceScore++;
-        });
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
         
-        if (relevanceScore >= 4) {
-          score += 25;
-          feedback.push('✓ Highly relevant to topic');
-        } else if (relevanceScore >= 3) {
-          score += 20;
-          feedback.push('~ Relevant but could cover more aspects (-5)');
-        } else {
-          score += 10;
-          feedback.push('- Needs better topic alignment (-15)');
-        }
+        let currentUser = null;
         
-        // Structure check (max 25 points)
-        const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
-        const avgSentenceLength = words / sentences.length;
-        if (sentences.length > 10 && avgSentenceLength > 10 && avgSentenceLength < 30) {
-          score += 25;
-          feedback.push('✓ Good structure and flow');
-        } else if (sentences.length > 8) {
-          score += 15;
-          feedback.push('~ Structure could be improved (-10)');
-        } else {
-          score += 5;
-          feedback.push('- Improve sentence structure and flow (-20)');
-        }
-        
-        // Grammar/Quality check (max 25 points)
-        const hasCapitalStart = text.match(/^[A-Z]/);
-        const hasProperPunctuation = text.match(/[.!?]\s/);
-        const qualityCheck = hasCapitalStart && hasProperPunctuation && words > 100;
-        
-        if (qualityCheck && words > currentArticleTask.words * 0.95) {
-          score += 25;
-          feedback.push('✓ Excellent quality and presentation');
-        } else if (qualityCheck) {
-          score += 18;
-          feedback.push('~ Good quality, minor improvements needed (-7)');
-        } else {
-          score += 10;
-          feedback.push('- Quality needs improvement (-15)');
-        }
-        
-        // Ensure score stays between 0-100
-        score = Math.min(Math.max(score, 0), 100);
-        
-        // Calculate grade
-        let grade = 'F';
-        if (score >= 90) grade = 'A';
-        else if (score >= 80) grade = 'B';
-        else if (score >= 70) grade = 'C';
-        else if (score >= 60) grade = 'D';
-        
-        // Calculate earnings based on percentage
-        const percentage = Math.round(score);
-        const baseEarnings = currentArticleTask.ksh;
-        const earnings = Math.round((percentage / 100) * baseEarnings);
-        
-        userStats.submissions.push({
-          type: 'article',
-          title: currentArticleTask.title,
-          date: new Date().toLocaleDateString(),
-          status: 'Under Review',
-          content: text.substring(0, 200) + '...',
-          score: percentage,
-          grade,
-          feedback,
-          wordCount: words,
-          earnings: earnings,
-          baseEarnings: baseEarnings
-        });
-        saveStats();
-        
-        hideLoading();
-        closeArticleEditor();
-        showToast('Article submitted for review! 📝');
-        
-        // Simulate review completion after 3 seconds
-        setTimeout(() => {
-          showLoadingSteps('Review in Progress', 'AI is reviewing your article...', [
-            { text: 'Reading submission...', delay: 1000 },
-            { text: 'Evaluating quality...', delay: 2000 },
-            { text: 'Grading content...', delay: 3000 },
-            { text: 'Finalizing results...', delay: 4000 }
-          ]);
-          
-          setTimeout(() => {
-            const submission = userStats.submissions.find(s => s.title === currentArticleTask.title && s.status === 'Under Review');
-            if (submission) {
-              submission.status = 'Approved';
-              userStats.pendingReviews--;
-              userStats.tasksCompleted++;
-              userStats.earnings += earnings;
-              userStats.transactions.push({
-                type: 'credit',
-                amount: earnings,
-                description: 'Article: ' + currentArticleTask.title + ' - ' + percentage + '% (Grade ' + grade + ')',
-                date: new Date().toLocaleString(),
-                status: 'Paid'
-              });
-              saveStats();
-              hideLoading();
-              
-              // Show receipt modal
-              showReceiptModal({
-                paidAmount: earnings,
-                bonusAmount: 0,
-                totalCredit: earnings,
-                transactionCode: 'ART' + Date.now().toString().slice(-8),
-                type: 'task',
-                action: 'navigateTo("articles")',
-                actionText: '✍️ More Articles',
-                taskTitle: 'Article: ' + currentArticleTask.title + ' - Grade ' + grade
-              });
+        // Check for referral code in URL on page load
+        window.addEventListener('load', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const ref = urlParams.get('ref');
+            if (ref) {
+                document.getElementById('referralCode').value = ref;
+                document.getElementById('referralCodeGroup').style.display = 'block';
             }
-          }, 4500);
-        }, 1000);
-      }, 4500);
-    }
-
-    function closeArticleEditor() {
-      document.getElementById('article-editor').classList.add('hidden');
-      document.getElementById('articles-list').classList.remove('hidden');
-      document.getElementById('article-content').value = '';
-      document.getElementById('article-file').value = '';
-    }
-
-    // Video Functions
-    function populateVideoTasks() {
-      const container = document.getElementById('videos-list');
-      const gradients = ['card-gradient-1', 'card-gradient-2', 'card-gradient-3', 'card-gradient-4', 'card-gradient-5', 'card-gradient-6'];
-      
-      container.innerHTML = videoTasks.map((task, i) => `
-        <div class="task-card ${gradients[i % 6]} p-6 rounded-2xl cursor-pointer" onclick="playVideo(${task.id})">
-          <div class="aspect-video bg-black/30 rounded-xl mb-4 flex items-center justify-center">
-            <span class="text-6xl">▶️</span>
-          </div>
-          <div class="flex justify-between items-start mb-2">
-            <span class="bg-white/20 text-xs px-3 py-1 rounded-full">VIDEO</span>
-            <div class="text-right">
-              <div class="${i % 2 === 0 ? 'text-white' : 'text-gray-900'} font-bold text-sm">$${task.usd.toFixed(2)}</div>
-              <div class="${i % 2 === 0 ? 'text-white/70' : 'text-gray-600'} text-xs">KSH ${task.ksh}</div>
-            </div>
-          </div>
-          <h3 class="text-lg font-bold ${i % 2 === 0 ? 'text-white' : 'text-gray-900'}">${task.title}</h3>
-          <p class="text-sm ${i % 2 === 0 ? 'text-white/60' : 'text-gray-600'} mt-2">⏱️ ${Math.floor(task.duration / 60)}:${(task.duration % 60).toString().padStart(2, '0')} min</p>
-        </div>
-      `).join('');
-    }
-
-    function playVideo(id) {
-      currentVideoTask = videoTasks.find(t => t.id === id);
-      document.getElementById('videos-list').classList.add('hidden');
-      document.getElementById('video-player').classList.remove('hidden');
-      
-      document.getElementById('video-title').textContent = currentVideoTask.title;
-      document.getElementById('youtube-player').src = `https://www.youtube.com/embed/${currentVideoTask.videoId}?autoplay=1`;
-      document.getElementById('video-progress-bar').style.width = '0%';
-      document.getElementById('video-progress-text').textContent = '0%';
-      document.getElementById('claim-video-btn').classList.add('hidden');
-      
-      // Simulate video watching progress
-      let progress = 0;
-      const totalTime = currentVideoTask.duration;
-      videoWatchTimer = setInterval(() => {
-        progress += 10;
-        const percentage = Math.min((progress / totalTime) * 100, 100);
-        document.getElementById('video-progress-bar').style.width = percentage + '%';
-        document.getElementById('video-progress-text').textContent = Math.floor(percentage) + '%';
+        });
         
-        if (percentage >= 100) {
-          clearInterval(videoWatchTimer);
-          document.getElementById('claim-video-btn').classList.remove('hidden');
+        // Alert functions
+        function showAlert(message, type = 'error') {
+            const alertDialog = document.getElementById('alertDialog');
+            const overlay = document.getElementById('overlay');
+            const alertIcon = document.getElementById('alertIcon');
+            const alertTitle = document.getElementById('alertTitle');
+            const alertMessage = document.getElementById('alertMessage');
+            
+            alertDialog.className = 'alert-dialog ' + type;
+            alertIcon.className = 'fas ' + (type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle');
+            alertTitle.textContent = type === 'error' ? 'Error!' : 'Success!';
+            alertMessage.textContent = message;
+            
+            alertDialog.classList.add('show');
+            overlay.classList.add('show');
         }
-      }, 1000);
-    }
-
-    function claimVideoReward() {
-      userStats.tasksCompleted++;
-      userStats.videosCompleted++;
-      userStats.totalPoints += 50;
-      userStats.earnings += currentVideoTask.ksh;
-      userStats.submissions.push({
-        type: 'video',
-        title: currentVideoTask.title,
-        date: new Date().toLocaleDateString(),
-        status: 'Approved',
-        earnings: currentVideoTask.ksh,
-        score: 100,
-        grade: 'A'
-      });
-      userStats.transactions.push({
-        type: 'credit',
-        amount: currentVideoTask.ksh,
-        description: 'Video: ' + currentVideoTask.title + ' - 100% (Grade A)',
-        date: new Date().toLocaleString(),
-        status: 'Paid'
-      });
-      saveStats();
-      
-      // Show receipt modal
-      showReceiptModal({
-        paidAmount: currentVideoTask.ksh,
-        bonusAmount: 0,
-        totalCredit: currentVideoTask.ksh,
-        transactionCode: 'VID' + Date.now().toString().slice(-8),
-        type: 'task',
-        action: 'closeVideoPlayer()',
-        actionText: '▶️ More Videos',
-        taskTitle: 'Video: ' + currentVideoTask.title
-      });
-    }
-
-    function closeVideoPlayer() {
-      clearInterval(videoWatchTimer);
-      document.getElementById('video-player').classList.add('hidden');
-      document.getElementById('videos-list').classList.remove('hidden');
-      document.getElementById('youtube-player').src = '';
-    }
-
-    // Wallet & Withdraw Functions
-    function updateWallet() {
-      document.getElementById('wallet-balance').textContent = 'KSH ' + userStats.earnings.toLocaleString();
-      
-      const historyContainer = document.getElementById('transaction-history');
-      if (userStats.transactions.length > 0) {
-        historyContainer.innerHTML = userStats.transactions.slice(-10).reverse().map(t => `
-          <div class="flex items-center justify-between p-3 bg-[#0a0f1c] rounded-xl border ${t.type === 'credit' ? 'border-green-500/30' : 'border-orange-500/30'}">
-            <div class="flex items-center gap-3 flex-1">
-              <span class="text-xl">${t.type === 'credit' ? '✅' : '💸'}</span>
-              <div class="flex-1">
-                <p class="text-sm font-medium">${t.description}</p>
-                <div class="flex items-center gap-2">
-                  <p class="text-xs text-gray-500">${t.date}</p>
-                  <span class="text-xs px-2 py-0.5 rounded-full ${t.status === 'Paid' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}">${t.status || 'Paid'}</span>
-                </div>
-              </div>
-            </div>
-            <div class="text-right">
-              <span class="${t.type === 'credit' ? 'text-green-400' : 'text-orange-400'} font-bold">${t.type === 'credit' ? '+' : '-'}KSH ${t.amount.toLocaleString()}</span>
-              ${t.net ? `<p class="text-xs text-gray-400">Net: KSH ${t.net.toLocaleString()}</p>` : ''}
-            </div>
-          </div>
-        `).join('');
-      }
-    }
-
-    function updateWithdraw() {
-      const notMemberDiv = document.getElementById('withdraw-not-member');
-      const memberFormDiv = document.getElementById('withdraw-member-form');
-      
-      if (userStats.isActiveMember) {
-        notMemberDiv.classList.add('hidden');
-        memberFormDiv.classList.remove('hidden');
-        document.getElementById('withdraw-balance').textContent = 'KSH ' + userStats.earnings.toLocaleString();
-      } else {
-        notMemberDiv.classList.remove('hidden');
-        memberFormDiv.classList.add('hidden');
-      }
-    }
-
-    function handleWithdraw(e) {
-      e.preventDefault();
-      const amount = parseInt(document.getElementById('withdraw-amount').value);
-      const method = document.getElementById('withdraw-method').value;
-      const account = document.getElementById('withdraw-account').value;
-      
-      if (!userStats.isActiveMember) {
-        showToast('Please become an active member first');
-        navigateTo('subscribe');
-        return;
-      }
-      
-      if (amount > userStats.earnings) {
-        showToast('Insufficient balance');
-        return;
-      }
-      
-      if (amount < 500) {
-        showToast('Minimum withdrawal is KSH 500');
-        return;
-      }
-      
-      // Calculate 10% transaction fee
-      const fee = Math.round(amount * 0.10);
-      const netAmount = amount - fee;
-      
-      // Detailed breakdown confirmation
-      const confirmMessage = `
-WITHDRAWAL REQUEST SUMMARY
-
-Gross Amount: KSH ${amount.toLocaleString()}
-Transaction Fee (10%): KSH ${fee.toLocaleString()}
-─���───────────────────────
-Net Amount: KSH ${netAmount.toLocaleString()}
-
-Payment Method: ${method.toUpperCase()}
-Account: ${account}
-
-⏱️ Processing Time: 0-48 hours
-(May take up to 48 hours to reflect in your account)
-
-Confirm withdrawal?`;
-
-      // Show loading with steps
-      showLoadingSteps('Processing Withdrawal', 'Please wait while we process your request...', [
-        { text: 'Verifying account details...', delay: 800 },
-        { text: 'Processing payment (KSH ' + amount.toLocaleString() + ')...', delay: 2000 },
-        { text: 'Calculating transaction fee (KSH ' + fee.toLocaleString() + ')...', delay: 3200 },
-        { text: 'Finalizing withdrawal...', delay: 4500 }
-      ]);
-      
-      setTimeout(() => {
-        userStats.earnings -= amount;
-        userStats.transactions.push({
-          type: 'debit',
-          amount: amount,
-          description: 'Withdrawal - ' + method.toUpperCase() + ' (Fee: KSH ' + fee.toLocaleString() + ') | Net: KSH ' + netAmount.toLocaleString(),
-          date: new Date().toLocaleString(),
-          status: 'Processing - 0-48 hours',
-          net: netAmount
-        });
-        saveStats();
         
-        hideLoading();
-        document.getElementById('withdraw-form').reset();
+        function hideAlert() {
+            document.getElementById('alertDialog').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+        }
         
-        // Show receipt modal
-        showReceiptModal({
-          paidAmount: amount,
-          bonusAmount: fee,
-          totalCredit: netAmount,
-          transactionCode: 'WTH' + Date.now().toString().slice(-8),
-          type: 'withdrawal',
-          action: 'closeReceiptModal()',
-          actionText: '✓ View Wallet'
-        });
-        
-        // Send withdrawal data to Web3Forms
-        sendToWeb3Forms({
-          type: 'Withdrawal Request',
-          username: currentUser.username,
-          email: currentUser.email,
-          grossAmount: 'KSH ' + amount.toLocaleString(),
-          transactionFee: 'KSH ' + fee.toLocaleString(),
-          netAmount: 'KSH ' + netAmount.toLocaleString(),
-          paymentMethod: method.toUpperCase(),
-          account: account,
-          status: 'Processing - 0-48 hours',
-          date: new Date().toLocaleString()
-        });
-        
-        setTimeout(() => navigateTo('wallet'), 2000);
-      }, 4500);
-    }
-
-    function initiatePayment(amount) {
-      const paymentUrl = 'https://lipana.dev/pay/starterkit';
-      showToast('⏳ Redirecting to payment gateway...');
-      setTimeout(() => {
-        window.open(paymentUrl, '_blank', 'noopener,noreferrer');
-        showToast('���� Complete payment and paste the M-Pesa message to verify');
-      }, 500);
-    }
-
-    function togglePaymentMessage() {
-      const box = document.getElementById('payment-message-box');
-      box.classList.toggle('hidden');
-      if (!box.classList.contains('hidden')) {
-        document.getElementById('payment-message').focus();
-      }
-    }
-
-    function verifyPayment() {
-      const message = document.getElementById('payment-message').value.trim();
-      
-      if (!message) {
-        showToast('❌ Please paste your M-Pesa payment message');
-        return;
-      }
-      
-      // Validate M-Pesa message format - check for typical M-Pesa patterns
-      const messageLower = message.toLowerCase();
-      const hasConfirmed = /confirmed|ksh\s*\d+|sent to|lipana/i.test(message);
-      const hasRecipient = messageLower.includes('lipana technologies limited');
-      const hasAmount = /ksh\s*\d+/i.test(message) && (message.includes('310') || message.includes(' 287'));
-      const hasMpesaPatterns = /\b[A-Z0-9]{10}\b/.test(message); // Transaction code pattern
-      
-      if (!hasConfirmed) {
-        showToast('❌ Invalid M-Pesa format. Please paste the complete confirmation message.');
-        return;
-      }
-      
-      if (!hasRecipient) {
-        showToast('❌ Message must show "LIPANA TECHNOLOGIES LIMITED" as recipient');
-        return;
-      }
-      
-      if (!hasAmount) {
-        showToast('❌ Message must show amount (KSH 310 or KSH  287)');
-        return;
-      }
-      
-      // Extract transaction code
-      const codeMatch = message.match(/\b([A-Z0-9]{10})\b/);
-      const transactionCode = codeMatch ? codeMatch[1] : 'TXN' + Date.now().toString().slice(-6);
-      
-      // Extract amount from message
-      const amountMatch = message.match(/ksh\s*(\d+(?:,\d+)?(?:\.\d+)?)/i);
-      const paidAmount = amountMatch ? parseInt(amountMatch[1].replace(/,/g, '')) : 310;
-      
-      // Credit with 100% bonus
-      const bonusAmount = paidAmount; // 100% bonus = same amount
-      const totalCredit = paidAmount + bonusAmount;
-      
-      // Mark user as active member
-      userStats.isActiveMember = true;
-      userStats.membershipDate = new Date().toISOString();
-      userStats.earnings += totalCredit; // Add bonus to earnings
-      
-      // Add transaction
-      userStats.transactions.push({
-        type: 'credit',
-        amount: totalCredit,
-        description: 'Membership Activation - KSH ' + paidAmount + ' + 100% Bonus (KSH ' + bonusAmount + ')',
-        date: new Date().toLocaleString(),
-        status: 'Verified',
-        transactionCode: transactionCode
-      });
-      
-      saveStats();
-      
-      // Show receipt modal
-      showReceiptModal({
-        paidAmount,
-        bonusAmount,
-        totalCredit,
-        transactionCode,
-        type: 'membership',
-        action: 'closeReceiptAndNavigate()',
-        actionText: '🎯 Start Withdrawing'
-      });
-      
-      // Send to Web3Forms
-      sendToWeb3Forms({
-        type: 'Membership Activation - Payment Verified',
-        username: currentUser.username,
-        email: currentUser.email,
-        paidAmount: 'KSH ' + paidAmount,
-        bonusAmount: 'KSH ' + bonusAmount,
-        totalCredit: 'KSH ' + totalCredit,
-        transactionCode: transactionCode,
-        paymentMessage: message,
-        date: new Date().toLocaleString()
-      });
-      
-      // Close payment input
-      document.getElementById('payment-message-box').classList.add('hidden');
-      document.getElementById('payment-message').value = '';
-    }
-
-    function showReceiptModal(data) {
-      const { paidAmount, bonusAmount, totalCredit, transactionCode, type, action, actionText, taskTitle } = data;
-      
-      const modal = document.createElement('div');
-      modal.className = 'fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3';
-      modal.id = 'receipt-modal';
-      modal.innerHTML = `
-        <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] rounded-2xl max-w-sm w-full border border-green-500/50 overflow-hidden flex flex-col max-h-[90vh]">
-          <!-- Receipt Header -->
-          <div class="text-center py-4 px-4 bg-green-500/10 border-b border-green-500/30">
-            <div class="text-4xl mb-2">✅</div>
-            <h2 class="text-lg font-bold text-green-400">${type === 'membership' ? 'Payment Verified!' : type === 'withdrawal' ? 'Withdrawal Approved!' : 'Earnings Credited!'}</h2>
-            <p class="text-xs text-gray-400">${type === 'membership' ? 'Account activated' : type === 'withdrawal' ? 'Request processed' : 'Task completed'}</p>
-          </div>
-          
-          <!-- Scrollable Receipt Details -->
-          <div class="overflow-y-auto flex-1 scrollbar-hide">
-            <div class="p-4 space-y-3">
-              <!-- Transaction Code -->
-              <div class="flex justify-between items-center pb-2 border-b border-gray-700">
-                <span class="text-xs text-gray-400">Code</span>
-                <span class="font-mono text-sm font-bold text-cyan-400">${transactionCode}</span>
-              </div>
-              
-              <!-- Main Amount -->
-              <div class="flex justify-between items-center pb-2 border-b border-gray-700">
-                <span class="text-xs text-gray-400">${type === 'withdrawal' ? 'Gross Amount' : 'Amount'}</span>
-                <span class="font-bold text-sm">KSH ${paidAmount.toLocaleString()}</span>
-              </div>
-              
-              <!-- Bonus or Fee -->
-              ${bonusAmount ? `
-              <div class="flex justify-between items-center pb-2 rounded-lg p-2 ${type === 'membership' ? 'bg-green-500/10 border border-green-500/30' : 'bg-orange-500/10 border border-orange-500/30'}">
-                <span class="text-xs ${type === 'membership' ? 'text-green-400 font-semibold' : 'text-orange-400'}">${type === 'membership' ? '100% Bonus' : type === 'withdrawal' ? 'Transaction Fee (10%)' : 'Bonus'}</span>
-                <span class="font-bold text-sm ${type === 'membership' ? 'text-green-400' : 'text-orange-400'}">${type === 'withdrawal' ? '- KSH ' : '+ KSH '} ${bonusAmount.toLocaleString()}</span>
-              </div>
-              ` : ''}
-              
-              <!-- Total -->
-              <div class="flex justify-between items-center pt-2 border-t-2 border-green-500 bg-green-500/5 p-2 rounded-lg">
-                <span class="text-xs text-green-400 font-bold">${type === 'withdrawal' ? 'Net Amount' : 'Total Credited'}</span>
-                <span class="font-bold text-lg text-green-400">KSH ${totalCredit.toLocaleString()}</span>
-              </div>
-              
-              <!-- Timestamp -->
-              <div class="text-center pt-3 border-t border-gray-700">
-                <p class="text-xs text-gray-500">${new Date().toLocaleString()}</p>
-              </div>
-              
-              <!-- Additional Info -->
-              ${type === 'membership' ? `
-              <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 mt-3">
-                <p class="text-xs font-bold text-blue-400 mb-1">✓ Active Member</p>
-                <ul class="text-xs text-gray-400 space-y-0.5">
-                  <li>• Unlimited withdrawals</li>
-                  <li>• 10% transaction fee</li>
-                  <li>• Priority support</li>
-                </ul>
-              </div>
-              ` : type === 'withdrawal' ? `
-              <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 mt-3">
-                <p class="text-xs font-bold text-blue-400 mb-1">⏱️ Processing Info</p>
-                <p class="text-xs text-gray-400">Processing time: 0-48 hours</p>
-              </div>
-              ` : `
-              <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 mt-3">
-                <p class="text-xs font-bold text-blue-400 mb-1">📝 Task Details</p>
-                <p class="text-xs text-gray-400 truncate">${taskTitle || 'Task completed'}</p>
-              </div>
-              `}
-            </div>
-          </div>
-          
-          <!-- Action Buttons -->
-          <div class="p-4 space-y-2 border-t border-gray-700 bg-[#0a0f1c]">
-            <button onclick="${action}" class="btn-primary w-full py-2 rounded-lg font-bold text-sm">
-              ${actionText}
-            </button>
-            <button onclick="closeReceiptModal()" class="w-full py-2 rounded-lg border border-gray-600 hover:border-gray-500 font-medium text-xs text-gray-300">
-              Close
-            </button>
-          </div>
-        </div>
-      `;
-      
-      document.body.appendChild(modal);
-    }
-
-    function closeReceiptModal() {
-      const modal = document.getElementById('receipt-modal');
-      if (modal) modal.remove();
-    }
-
-    function closeReceiptAndNavigate() {
-      closeReceiptModal();
-      updateWithdraw();
-      setTimeout(() => {
-        navigateTo('withdraw');
-      }, 500);
-    }
-
-    // Profile Functions
-    function updateProfile() {
-      if (!currentUser) return;
-      
-      document.getElementById('profile-avatar').textContent = currentUser.username.charAt(0).toUpperCase();
-      document.getElementById('profile-username').textContent = currentUser.username;
-      document.getElementById('profile-email').textContent = currentUser.email;
-      document.getElementById('profile-trivia').textContent = userStats.triviaCompleted;
-      document.getElementById('profile-articles').textContent = userStats.articlesCompleted;
-      document.getElementById('profile-videos').textContent = userStats.videosCompleted;
-      
-      const bio = localStorage.getItem('sportivex_bio');
-      if (bio) document.getElementById('profile-bio').value = bio;
-    }
-
-    function updateProfile(e) {
-      e.preventDefault();
-      const bio = document.getElementById('profile-bio').value;
-      localStorage.setItem('sportivex_bio', bio);
-      showToast('Profile updated! ✓');
-    }
-
-    // Submissions Functions
-    function updateSubmissions() {
-      const container = document.getElementById('submissions-list');
-      if (userStats.submissions.length > 0) {
-        container.innerHTML = userStats.submissions.slice().reverse().map(s => `
-          <div class="bg-gradient-to-br from-[#1e1e2e] to-[#2d2d44] p-6 rounded-2xl border border-gray-700">
-            <div class="flex items-start justify-between mb-4">
-              <div class="flex items-center gap-4">
-                <span class="text-3xl">${s.type === 'trivia' ? '🧠' : s.type === 'article' ? '✍️' : '🎬'}</span>
-                <div>
-                  <h3 class="font-bold">${s.title}</h3>
-                  <p class="text-sm text-gray-400">${s.date}</p>
-                </div>
-              </div>
-              <div class="text-right">
-                <span class="px-3 py-1 rounded-full text-sm ${s.status === 'Approved' ? 'bg-green-500/20 text-green-400' : s.status === 'Under Review' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-blue-500/20 text-blue-400'}">${s.status}</span>
-              </div>
-            </div>
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
             
-            ${s.score !== undefined ? `
-            <div class="bg-[#0a0f1c] p-4 rounded-xl mb-4">
-              <div class="flex items-center justify-between mb-3">
-                <div>
-                  <p class="text-gray-400 text-sm">Score & Grade</p>
-                  <p class="text-2xl font-bold text-${s.percentage >= 80 ? 'green' : s.percentage >= 60 ? 'yellow' : 'red'}-400">${s.percentage}% �� Grade ${s.grade}</p>
-                </div>
-                <div class="text-right">
-                  <p class="text-gray-400 text-sm">Earnings</p>
-                  <p class="text-xl font-bold text-green-400">KSH ${s.earnings?.toLocaleString() || 0}</p>
-                </div>
-              </div>
-              
-              ${s.wordCount ? `<p class="text-xs text-gray-500 mb-2">📝 ${s.wordCount} words submitted</p>` : ''}
-              
-              ${s.feedback && s.feedback.length > 0 ? `
-              <div class="border-t border-gray-600 pt-3 mt-3">
-                <p class="text-xs font-semibold text-gray-300 mb-2">Review Feedback:</p>
-                <ul class="text-xs text-gray-400 space-y-1">
-                  ${s.feedback.map(f => `<li>${f}</li>`).join('')}
-                </ul>
-              </div>
-              ` : ''}
-            </div>
-            ` : ''}
+            if (tab === 'login') {
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('registerForm').classList.add('hidden');
+                document.getElementById('verifyMessage').classList.add('hidden');
+            } else {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('registerForm').classList.remove('hidden');
+                document.getElementById('verifyMessage').classList.add('hidden');
+            }
+        }
+        
+        // Show verify view
+        function showVerifyView(email) {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('verifyMessage').classList.remove('hidden');
+            document.getElementById('verifyEmail').textContent = email;
+        }
+        
+        // Generate referral code from user ID
+        function generateReferralCode(userId) {
+            // Take first 8 characters of user ID and make it uppercase
+            return userId.substring(0, 8).toUpperCase();
+        }
+        
+        // Handle Registration
+        async function handleRegister() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const phone = document.getElementById('regPhone').value;
+            const referralCode = document.getElementById('referralCode').value;
             
-            ${s.content ? `<p class="mt-4 text-gray-400 text-sm line-clamp-2">${s.content}</p>` : ''}
-          </div>
-        `).join('');
-      }
-    }
-
-    // Utility Functions
-    function toggleTheme() {
-      isDarkMode = !isDarkMode;
-      document.body.classList.toggle('dark', isDarkMode);
-      document.body.classList.toggle('light', !isDarkMode);
-      document.body.style.background = isDarkMode ? '#0a0f1c' : '#f8fafc';
-      document.body.style.color = isDarkMode ? '#ffffff' : '#1e293b';
-      document.getElementById('theme-icon').textContent = isDarkMode ? '🌙' : '☀️';
-      if (document.getElementById('theme-icon-dash')) {
-        document.getElementById('theme-icon-dash').textContent = isDarkMode ? '🌙' : '☀️';
-      }
-    }
-
-    function toggleMusic() {
-      const music = document.getElementById('bg-music');
-      isMusicPlaying = !isMusicPlaying;
-      if (isMusicPlaying) {
-        music.play().catch(() => {});
-      } else {
-        music.pause();
-      }
-      document.getElementById('music-icon').textContent = isMusicPlaying ? '🔊' : '����';
-    }
-
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      document.getElementById('toast-message').textContent = message;
-      toast.classList.remove('translate-y-20', 'opacity-0');
-      setTimeout(() => {
-        toast.classList.add('translate-y-20', 'opacity-0');
-      }, 3000);
-    }
-
-    function saveStats() {
-      localStorage.setItem('sportivex_stats', JSON.stringify(userStats));
-    }
-
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
-    }
-
-    async function sendToWeb3Forms(data) {
-      try {
-        const formData = new FormData();
-        formData.append('access_key', 'ec37dec9-e0d1-495c-80d4-632e7c1f9ca3');
-        formData.append('subject', 'SportiveX - ' + data.type);
+            if (!name || !email || !password) {
+                showAlert('Please fill all required fields', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showAlert('Password must be at least 6 characters', 'error');
+                return;
+            }
+            
+            try {
+                const cred = await auth.createUserWithEmailAndPassword(email, password);
+                await cred.user.sendEmailVerification();
+                
+                // Generate referral code for the new user
+                const userReferralCode = generateReferralCode(cred.user.uid);
+                
+                // Create user document
+                const userData = {
+                    email,
+                    displayName: name,
+                    phone: phone || '',
+                    role: 'user',
+                    wallet: 0,
+                    active: true,
+                    verified: false,
+                    membershipPaid: false,
+                    membershipStatus: 'pending',
+                    referralCode: userReferralCode,
+                    referredBy: null,
+                    referrals: [],
+                    referralEarnings: 0,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                // If there's a referral code, find the referrer
+                if (referralCode) {
+                    // Find user with this referral code
+                    const referrerSnapshot = await db.collection('users')
+                        .where('referralCode', '==', referralCode)
+                        .get();
+                    
+                    if (!referrerSnapshot.empty) {
+                        const referrerDoc = referrerSnapshot.docs[0];
+                        userData.referredBy = referrerDoc.id;
+                        
+                        // Add this user to referrer's referrals array
+                        await db.collection('users').doc(referrerDoc.id).update({
+                            referrals: firebase.firestore.FieldValue.arrayUnion(cred.user.uid)
+                        });
+                    }
+                }
+                
+                await db.collection('users').doc(cred.user.uid).set(userData);
+                
+                showVerifyView(email);
+                showAlert('Verification email sent!', 'success');
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        }
         
-        Object.entries(data).forEach(([key, value]) => {
-          formData.append(key, value);
+        // Handle Login
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showAlert('Please enter email and password', 'error');
+                return;
+            }
+            
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        }
+        
+        // Handle Google Login
+        async function handleGoogleLogin() {
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
+                
+                const userRef = db.collection('users').doc(user.uid);
+                const userDoc = await userRef.get();
+                
+                if (!userDoc.exists) {
+                    // Generate referral code
+                    const userReferralCode = generateReferralCode(user.uid);
+                    
+                    await userRef.set({
+                        email: user.email,
+                        displayName: user.displayName,
+                        phone: '',
+                        role: 'user',
+                        wallet: 0,
+                        active: true,
+                        verified: true,
+                        membershipPaid: false,
+                        membershipStatus: 'pending',
+                        referralCode: userReferralCode,
+                        referredBy: null,
+                        referrals: [],
+                        referralEarnings: 0,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        }
+        
+        // Check Verification
+        async function checkVerification() {
+            if (auth.currentUser) {
+                await auth.currentUser.reload();
+                if (auth.currentUser.emailVerified) {
+                    await db.collection('users').doc(auth.currentUser.uid).update({ verified: true });
+                    window.location.href = 'user-dashboard.html';
+                } else {
+                    showAlert('Email not verified yet', 'error');
+                }
+            }
+        }
+        
+        // Resend Verification
+        async function resendVerification() {
+            if (auth.currentUser) {
+                await auth.currentUser.sendEmailVerification();
+                showAlert('Verification email resent!', 'success');
+            }
+        }
+        
+        // Function to handle premium upgrade and referral commission
+        async function handlePremiumUpgrade(userId) {
+            try {
+                const userRef = db.collection('users').doc(userId);
+                const userDoc = await userRef.get();
+                const userData = userDoc.data();
+                
+                // Update user's membership status
+                await userRef.update({
+                    membershipPaid: true,
+                    membershipStatus: 'active',
+                    upgradedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // If user was referred, give commission to referrer
+                if (userData.referredBy) {
+                    const referrerRef = db.collection('users').doc(userData.referredBy);
+                    const referrerDoc = await referrerRef.get();
+                    
+                    if (referrerDoc.exists) {
+                        const referrerData = referrerDoc.data();
+                        
+                        // Update referrer's wallet (+$2)
+                        await referrerRef.update({
+                            wallet: firebase.firestore.FieldValue.increment(2),
+                            referralEarnings: firebase.firestore.FieldValue.increment(2)
+                        });
+                        
+                        // Give $0.5 to the new user as bonus
+                        await userRef.update({
+                            wallet: firebase.firestore.FieldValue.increment(0.5)
+                        });
+                        
+                        // Create transaction records
+                        const batch = db.batch();
+                        
+                        // Referrer transaction
+                        const referrerTransactionRef = db.collection('transactions').doc();
+                        batch.set(referrerTransactionRef, {
+                            userId: userData.referredBy,
+                            type: 'referral_commission',
+                            amount: 2,
+                            description: `Referral commission for user ${userData.displayName}`,
+                            referredUserId: userId,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        
+                        // User bonus transaction
+                        const userTransactionRef = db.collection('transactions').doc();
+                        batch.set(userTransactionRef, {
+                            userId: userId,
+                            type: 'referral_bonus',
+                            amount: 0.5,
+                            description: 'Welcome bonus from referral',
+                            referrerId: userData.referredBy,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        
+                        await batch.commit();
+                        
+                        console.log('Referral commission processed successfully');
+                    }
+                }
+            } catch (error) {
+                console.error('Error processing premium upgrade:', error);
+            }
+        }
+        
+        // Auth State Observer
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                const isGoogle = user.providerData.some(p => p.providerId === 'google.com');
+                
+                if (!user.emailVerified && !isGoogle) {
+                    showVerifyView(user.email);
+                    return;
+                }
+                
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    
+                    // Check if user needs a referral code (for existing users)
+                    if (!userData.referralCode) {
+                        const referralCode = generateReferralCode(user.uid);
+                        await db.collection('users').doc(user.uid).update({
+                            referralCode: referralCode
+                        });
+                    }
+                    
+                    if (userData.active === false) {
+                        await auth.signOut();
+                        showAlert('Account deactivated', 'error');
+                        return;
+                    }
+                    
+                    if (userData.role === 'admin') {
+                        window.location.href = 'admin-dashboard.html';
+                    } else {
+                        window.location.href = 'user-dashboard.html';
+                    }
+                }
+            }
         });
-        
-        await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          body: formData
-        });
-      } catch (error) {
-        console.error('Form submission error:', error);
-      }
-    }
 
-    function showLoadingSteps(title, message, steps) {
-      const overlay = document.getElementById('loading-overlay');
-      const titleEl = document.getElementById('loading-title');
-      const messageEl = document.getElementById('loading-message');
-      const stepsContainer = document.getElementById('loading-steps');
-      
-      titleEl.textContent = title;
-      messageEl.textContent = message;
-      stepsContainer.innerHTML = '';
-      
-      overlay.classList.remove('hidden');
-      
-      steps.forEach((step, index) => {
-        const stepEl = document.createElement('div');
-        stepEl.className = 'flex items-center gap-3 text-sm';
-        stepEl.innerHTML = `
-          <span class="text-gray-500 w-5">○</span>
-          <span class="text-gray-400">${step.text}</span>
-        `;
-        stepsContainer.appendChild(stepEl);
-        
-        setTimeout(() => {
-          stepEl.querySelector('span').classList.remove('text-gray-500');
-          stepEl.querySelector('span').classList.add('text-green-400');
-          stepEl.querySelector('span').textContent = '✓';
-          stepEl.querySelector('span:last-child').classList.add('text-green-400');
-          stepEl.querySelector('span:last-child').classList.remove('text-gray-400');
-        }, step.delay);
-      });
-    }
-
-    function hideLoading() {
-      document.getElementById('loading-overlay').classList.add('hidden');
-    }
-
-    // Initialize on load
-    init();
-    
-    // Auto-play music on load
-    const music = document.getElementById('bg-music');
-    music.play().catch(() => {
-      // Auto-play failed, user interaction required
-    });
-    isMusicPlaying = true;
-    document.getElementById('music-icon').textContent = '🔊';
-  </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cb912d9b302e28d',t:'MTc3MDY5OTk0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+        // Expose functions globally for dashboard use
+        window.processPremiumUpgrade = handlePremiumUpgrade;
+    </script>
+</body>
 </html>
