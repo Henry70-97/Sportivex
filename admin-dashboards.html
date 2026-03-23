@@ -12,14 +12,14 @@
     .btn-primary:hover { background: #c53030; }
     .input-dark { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: white; }
     .status-badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 12px; font-weight: 600; }
-    .status-pending_approval { background: #78350f; color: #fbbf24; }
     .status-approved { background: #065f46; color: #6ee7b7; }
+    .status-pending_approval { background: #78350f; color: #fbbf24; }
     .modal-overlay { background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
   </style>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
-    import { getFirestore, collection, doc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, writeBatch, addDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, getDoc, getDocs, updateDoc, deleteDoc, addDoc, query, where, orderBy, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBv5uc6d0JItCsZ-cjqAd5-Y-2aDPANqn0",
@@ -50,21 +50,33 @@
       }
       currentAdmin = user;
       document.getElementById('admin-name').innerText = userDoc.data().name;
+      loadAllTasks(); // for admin to see all tasks
       loadPendingTasks();
       loadAllUsers();
       loadWithdrawals();
     });
 
-    // Tabs
     window.showTab = (tab) => {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.getElementById(`tab-${tab}`).classList.remove('hidden');
-      if (tab === 'tasks') loadPendingTasks();
+      if (tab === 'tasks') { loadPendingTasks(); loadAllTasks(); }
       if (tab === 'users') loadAllUsers();
       if (tab === 'withdrawals') loadWithdrawals();
     };
 
-    // Pending tasks (approval)
+    // All tasks (for admin to view)
+    function loadAllTasks() {
+      const q = query(collection(db, "tasks"), orderBy("createdAt", "desc"));
+      onSnapshot(q, (snap) => {
+        const container = document.getElementById('all-tasks');
+        container.innerHTML = snap.docs.map(doc => {
+          const task = doc.data();
+          return `<div class="bg-white/5 p-3 rounded-xl mb-2"><div class="flex justify-between"><span class="font-semibold">${escapeHtml(task.title)}</span><span class="status-badge status-${task.status}">${task.status}</span></div><div class="text-xs text-white/50">By ${task.clientName || 'Admin'} | $${task.budget}</div><button onclick="deleteTask('${doc.id}')" class="text-xs bg-red-600 px-2 py-1 rounded mt-1">Delete</button></div>`;
+        }).join('');
+      });
+    }
+
+    // Pending tasks (for approval)
     function loadPendingTasks() {
       const q = query(collection(db, "tasks"), where("status", "==", "pending_approval"), orderBy("createdAt", "desc"));
       onSnapshot(q, (snap) => {
@@ -73,31 +85,20 @@
         else {
           container.innerHTML = snap.docs.map(doc => {
             const task = doc.data();
-            return `
-              <div class="bg-white/5 p-4 rounded-xl mb-2">
-                <div class="flex justify-between"><h3 class="font-bold">${escapeHtml(task.title)}</h3><span class="status-badge status-pending_approval">Pending</span></div>
-                <p class="text-sm text-white/60">${escapeHtml(task.description)}</p>
-                <div class="flex gap-4 text-xs mt-2">💰 $${task.budget} | 📅 ${task.deadline?.toDate?.().toLocaleDateString()} | 👤 ${escapeHtml(task.clientName)}</div>
-                <div class="flex gap-2 mt-3"><button onclick="approveTask('${doc.id}')" class="text-xs bg-green-600 px-3 py-1 rounded">Approve</button><button onclick="rejectTask('${doc.id}')" class="text-xs bg-red-600 px-3 py-1 rounded">Reject</button></div>
-              </div>`;
+            return `<div class="bg-white/5 p-4 rounded-xl mb-2"><div class="flex justify-between"><h3 class="font-bold">${escapeHtml(task.title)}</h3><span class="status-badge status-pending_approval">Pending</span></div><p class="text-sm text-white/60">${escapeHtml(task.description)}</p><div class="flex gap-4 text-xs mt-2">💰 $${task.budget} | 📅 ${task.deadline?.toDate?.().toLocaleDateString()} | 👤 ${escapeHtml(task.clientName)}</div><div class="flex gap-2 mt-3"><button onclick="approveTask('${doc.id}')" class="text-xs bg-green-600 px-3 py-1 rounded">Approve</button><button onclick="rejectTask('${doc.id}')" class="text-xs bg-red-600 px-3 py-1 rounded">Reject</button></div></div>`;
           }).join('');
         }
       });
     }
 
     window.approveTask = async (taskId) => {
-      await updateDoc(doc(db, "tasks", taskId), {
-        status: "approved",
-        approvedBy: currentAdmin.uid,
-        approvedAt: new Date()
-      });
-      // Optionally send notification to client
+      await updateDoc(doc(db, "tasks", taskId), { status: "approved", approvedBy: currentAdmin.uid, approvedAt: new Date() });
       const taskSnap = await getDoc(doc(db, "tasks", taskId));
       const task = taskSnap.data();
       await addDoc(collection(db, "notifications"), {
         userId: task.clientId,
         title: "Task Approved",
-        body: `Your task "${task.title}" has been approved and is now open for workers.`,
+        body: `Your task "${task.title}" has been approved.`,
         type: "task_approved",
         read: false,
         createdAt: new Date(),
@@ -109,6 +110,37 @@
       await updateDoc(doc(db, "tasks", taskId), { status: "rejected" });
     };
 
+    // Admin creates task directly (approved immediately)
+    window.postTask = async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('task-title').value.trim();
+      const desc = document.getElementById('task-desc').value.trim();
+      const budget = parseFloat(document.getElementById('task-budget').value);
+      const deadline = document.getElementById('task-deadline').value;
+      const category = document.getElementById('task-category').value;
+      if (!title || !desc || isNaN(budget) || !deadline || !category) {
+        alert("All fields required");
+        return;
+      }
+      try {
+        await addDoc(collection(db, "tasks"), {
+          title, description: desc, budget, deadline: new Date(deadline), category,
+          status: "approved",  // admin posts directly approved
+          clientId: currentAdmin.uid,
+          clientName: "Admin",
+          createdAt: new Date(),
+          applications: [],
+          workerId: null,
+          workerName: null
+        });
+        alert("Task posted and approved!");
+        document.getElementById('post-task-form').reset();
+        document.getElementById('post-modal').classList.add('hidden');
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    };
+
     // Users management
     function loadAllUsers() {
       const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
@@ -116,14 +148,7 @@
         const container = document.getElementById('users-list');
         container.innerHTML = snap.docs.map(doc => {
           const user = doc.data();
-          return `
-            <div class="bg-white/5 p-3 rounded-xl mb-2 flex flex-wrap justify-between items-center">
-              <div><div class="font-semibold">${escapeHtml(user.name)} <span class="text-xs bg-white/20 px-2 py-0.5 rounded">${user.role}</span></div><div class="text-xs text-white/50">${user.email} | Balance: $${user.balance?.toFixed(2) || 0}</div></div>
-              <div class="flex gap-2 mt-2 sm:mt-0">
-                ${!user.isBanned ? `<button onclick="banUser('${doc.id}')" class="text-xs bg-yellow-600 px-3 py-1 rounded">Ban</button>` : `<button onclick="unbanUser('${doc.id}')" class="text-xs bg-green-600 px-3 py-1 rounded">Unban</button>`}
-                <button onclick="deleteUser('${doc.id}')" class="text-xs bg-red-600 px-3 py-1 rounded">Delete</button>
-              </div>
-            </div>`;
+          return `<div class="bg-white/5 p-3 rounded-xl mb-2 flex flex-wrap justify-between items-center"><div><div class="font-semibold">${escapeHtml(user.name)} <span class="text-xs bg-white/20 px-2 py-0.5 rounded">${user.role}</span></div><div class="text-xs text-white/50">${user.email} | Balance: $${user.balance?.toFixed(2) || 0}</div></div><div class="flex gap-2 mt-2 sm:mt-0">${!user.isBanned ? `<button onclick="banUser('${doc.id}')" class="text-xs bg-yellow-600 px-3 py-1 rounded">Ban</button>` : `<button onclick="unbanUser('${doc.id}')" class="text-xs bg-green-600 px-3 py-1 rounded">Unban</button>`}<button onclick="deleteUser('${doc.id}')" class="text-xs bg-red-600 px-3 py-1 rounded">Delete</button></div></div>`;
         }).join('');
       });
     }
@@ -141,12 +166,7 @@
         else {
           container.innerHTML = snap.docs.map(doc => {
             const w = doc.data();
-            return `
-              <div class="bg-white/5 p-3 rounded-xl mb-2">
-                <div class="flex justify-between"><span>${escapeHtml(w.workerId)}</span><span>💰 $${w.amount}</span></div>
-                <div class="text-xs text-white/50">Method: ${w.method} | ${w.details?.phone || w.details?.account}</div>
-                <div class="flex gap-2 mt-2"><button onclick="approveWithdrawal('${doc.id}','${w.workerId}',${w.amount})" class="text-xs bg-green-600 px-3 py-1 rounded">Approve</button><button onclick="rejectWithdrawal('${doc.id}')" class="text-xs bg-red-600 px-3 py-1 rounded">Reject</button></div>
-              </div>`;
+            return `<div class="bg-white/5 p-3 rounded-xl mb-2"><div class="flex justify-between"><span>${escapeHtml(w.workerId)}</span><span>💰 $${w.amount}</span></div><div class="text-xs text-white/50">Method: ${w.method} | ${w.details?.info}</div><div class="flex gap-2 mt-2"><button onclick="approveWithdrawal('${doc.id}','${w.workerId}',${w.amount})" class="text-xs bg-green-600 px-3 py-1 rounded">Approve</button><button onclick="rejectWithdrawal('${doc.id}')" class="text-xs bg-red-600 px-3 py-1 rounded">Reject</button></div></div>`;
           }).join('');
         }
       });
@@ -160,7 +180,6 @@
       const workerSnap = await getDoc(workerRef);
       const newBalance = workerSnap.data().balance - amount;
       batch.update(workerRef, { balance: newBalance });
-      // Transaction log
       const txRef = doc(collection(db, "transactions"));
       batch.set(txRef, {
         userId: workerId,
@@ -180,8 +199,12 @@
       await updateDoc(doc(db, "withdrawals", withdrawalId), { status: "rejected", processedAt: new Date(), processedBy: currentAdmin.uid });
     };
 
+    window.deleteTask = async (taskId) => { if(confirm("Delete task?")) await deleteDoc(doc(db, "tasks", taskId)); };
+
     function escapeHtml(str) { return (str || '').replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
+    window.showModal = (id) => document.getElementById(id).classList.remove('hidden');
+    window.hideModal = (id) => document.getElementById(id).classList.add('hidden');
     window.logout = () => signOut(auth).then(() => window.location.href = 'register.html');
   </script>
 </head>
@@ -194,15 +217,24 @@
         <button onclick="logout()" class="text-red-400 text-sm">Logout</button>
       </div>
     </nav>
-    <div class="flex gap-4 border-b border-white/10 mb-6">
-      <button onclick="showTab('tasks')" class="pb-2 text-white/70 font-semibold">Tasks (Approve)</button>
+    <div class="flex gap-4 border-b border-white/10 mb-6 flex-wrap">
+      <button onclick="showTab('tasks')" class="pb-2 text-white/70 font-semibold">Tasks</button>
       <button onclick="showTab('users')" class="pb-2 text-white/70 font-semibold">Users</button>
       <button onclick="showTab('withdrawals')" class="pb-2 text-white/70 font-semibold">Withdrawals</button>
+      <button onclick="showModal('post-modal')" class="pb-2 text-green-400 font-semibold">+ Post Task</button>
     </div>
 
     <div id="tab-tasks" class="tab-content">
-      <h2 class="text-xl font-semibold mb-4">Pending Task Approvals</h2>
-      <div id="pending-tasks"></div>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          <h2 class="text-xl font-semibold mb-4">Pending Approvals</h2>
+          <div id="pending-tasks"></div>
+        </div>
+        <div>
+          <h2 class="text-xl font-semibold mb-4">All Tasks</h2>
+          <div id="all-tasks" class="max-h-[60vh] overflow-auto"></div>
+        </div>
+      </div>
     </div>
     <div id="tab-users" class="tab-content hidden">
       <h2 class="text-xl font-semibold mb-4">All Users</h2>
@@ -211,6 +243,22 @@
     <div id="tab-withdrawals" class="tab-content hidden">
       <h2 class="text-xl font-semibold mb-4">Pending Withdrawals</h2>
       <div id="withdrawals-list"></div>
+    </div>
+  </div>
+
+  <!-- Post Task Modal -->
+  <div id="post-modal" class="fixed inset-0 z-50 modal-overlay flex items-center justify-center hidden">
+    <div class="bg-[#1a1a2e] w-full max-w-md p-6 rounded-2xl">
+      <h3 class="text-xl font-bold mb-4">Post New Task (Admin)</h3>
+      <form id="post-task-form" onsubmit="postTask(event)">
+        <input type="text" id="task-title" placeholder="Title" class="input-dark w-full p-3 rounded-xl mb-3" required>
+        <textarea id="task-desc" rows="3" placeholder="Description" class="input-dark w-full p-3 rounded-xl mb-3" required></textarea>
+        <select id="task-category" class="input-dark w-full p-3 rounded-xl mb-3" required><option value="">Select Category</option><option>Editing</option><option>Voiceover</option><option>Scriptwriting</option><option>Thumbnail</option><option>Full Production</option></select>
+        <input type="number" id="task-budget" placeholder="Budget (USD)" class="input-dark w-full p-3 rounded-xl mb-3" required>
+        <input type="date" id="task-deadline" class="input-dark w-full p-3 rounded-xl mb-4" required>
+        <button type="submit" class="btn-primary w-full py-3 rounded-xl">Post Task</button>
+      </form>
+      <button onclick="hideModal('post-modal')" class="mt-2 text-white/50 w-full text-center">Cancel</button>
     </div>
   </div>
 </body>

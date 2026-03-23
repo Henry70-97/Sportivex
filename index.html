@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VideoWork – Register / Login</title>
-  <!-- Tailwind + Icons -->
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -17,7 +16,6 @@
     .input-dark { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: white; }
     .input-dark:focus { outline: none; border-color: #e53e3e; }
   </style>
-  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
@@ -42,7 +40,6 @@
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const nameInput = document.getElementById('name');
-    const roleRadios = document.querySelectorAll('input[name="role"]');
     const loginEmail = document.getElementById('login-email');
     const loginPassword = document.getElementById('login-password');
     const toggleLogin = document.getElementById('toggle-login-pw');
@@ -60,14 +57,14 @@
     toggleLogin?.addEventListener('click', () => togglePassword(loginPassword, toggleLogin));
     toggleRegister?.addEventListener('click', () => togglePassword(passwordInput, toggleRegister));
 
-    // Helper: create user doc after signup
-    async function createUserDoc(user, name, role) {
+    // Helper: create user doc after signup (always worker)
+    async function createUserDoc(user, name) {
       const userRef = doc(db, "users", user.uid);
       await setDoc(userRef, {
         name: name,
         email: user.email,
-        role: role,
-        balance: role === 'client' ? 5000 : 0,   // initial deposit for client
+        role: "worker",          // only workers
+        balance: 0,
         isBanned: false,
         createdAt: new Date(),
         profileImage: user.photoURL || null,
@@ -76,9 +73,8 @@
 
     // Redirect based on role
     function redirectToDashboard(role) {
-      if (role === 'admin') window.location.href = 'admin-dashboards.html';
-      else if (role === 'client') window.location.href = 'client-dashboard.html';
-      else window.location.href = 'worker-dashboard.html';  // placeholder
+      if (role === 'admin') window.location.href = 'admin-dashboard.html';
+      else window.location.href = 'worker-dashboard.html';
     }
 
     // Email/Password Registration
@@ -87,8 +83,7 @@
       const name = nameInput.value.trim();
       const email = emailInput.value.trim();
       const password = passwordInput.value;
-      const role = document.querySelector('input[name="role"]:checked')?.value;
-      if (!name || !email || !password || !role) {
+      if (!name || !email || !password) {
         errorMsg.innerText = "All fields required";
         errorMsg.classList.remove('hidden');
         return;
@@ -96,9 +91,9 @@
       errorMsg.classList.add('hidden');
       try {
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
-        await createUserDoc(userCred.user, name, role);
+        await createUserDoc(userCred.user, name);
         alert("Registration successful! Redirecting...");
-        redirectToDashboard(role);
+        redirectToDashboard("worker");
       } catch (err) {
         errorMsg.innerText = err.message;
         errorMsg.classList.remove('hidden');
@@ -120,9 +115,8 @@
         const userCred = await signInWithEmailAndPassword(auth, email, password);
         const userDoc = await getDoc(doc(db, "users", userCred.user.uid));
         if (!userDoc.exists()) throw new Error("User data missing");
-        const role = userDoc.data().role;
         if (userDoc.data().isBanned) throw new Error("Account banned");
-        redirectToDashboard(role);
+        redirectToDashboard(userDoc.data().role);
       } catch (err) {
         loginError.innerText = err.message;
         loginError.classList.remove('hidden');
@@ -136,11 +130,10 @@
         const user = result.user;
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (!userDoc.exists()) {
-          // New Google user: ask for role
-          const role = prompt("Select role: client or worker", "client");
-          if (role !== 'client' && role !== 'worker') throw new Error("Invalid role");
-          await createUserDoc(user, user.displayName || user.email.split('@')[0], role);
-          redirectToDashboard(role);
+          // New Google user: auto create as worker
+          const name = user.displayName || user.email.split('@')[0];
+          await createUserDoc(user, name);
+          redirectToDashboard("worker");
         } else {
           if (userDoc.data().isBanned) throw new Error("Account banned");
           redirectToDashboard(userDoc.data().role);
@@ -213,12 +206,8 @@
           <input type="password" id="password" placeholder="Password (min 6)" class="input-dark w-full p-3 rounded-xl pr-10" required minlength="6">
           <span id="toggle-reg-pw" class="toggle-password text-white/50 cursor-pointer">👁️</span>
         </div>
-        <div class="flex gap-4 mb-4">
-          <label class="flex items-center gap-2 text-white/70"><input type="radio" name="role" value="client" checked> <span>Client (Hire)</span></label>
-          <label class="flex items-center gap-2 text-white/70"><input type="radio" name="role" value="worker"> <span>Worker (Find Work)</span></label>
-        </div>
         <div id="error-msg" class="text-red-400 text-sm mb-3 hidden"></div>
-        <button type="submit" class="btn-primary w-full py-3 rounded-xl font-semibold">Sign Up</button>
+        <button type="submit" class="btn-primary w-full py-3 rounded-xl font-semibold">Sign Up as Worker</button>
       </form>
       <button onclick="googleLogin()" class="btn-google w-full mt-3 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2"><svg class="w-5 h-5" viewBox="0 0 24 24">...</svg>Sign up with Google</button>
     </div>
