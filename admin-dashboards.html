@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard – VideoWork</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'DM Sans', sans-serif; background: #0a0a0a; }
+    .btn-primary { background: #e53e3e; transition: 0.2s; }
+    .btn-primary:hover { background: #c53030; }
+    .input-dark { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: white; }
+    .status-badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 12px; font-weight: 600; }
+    .status-pending_approval { background: #78350f; color: #fbbf24; }
+    .status-approved { background: #065f46; color: #6ee7b7; }
+    .modal-overlay { background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
+  </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+    import { getFirestore, collection, doc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, writeBatch, addDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBv5uc6d0JItCsZ-cjqAd5-Y-2aDPANqn0",
+      authDomain: "navana-7ea5a.firebaseapp.com",
+      projectId: "navana-7ea5a",
+      storageBucket: "navana-7ea5a.firebasestorage.app",
+      messagingSenderId: "237075740446",
+      appId: "1:237075740446:web:bfbb2c2c84c77ffc633b0f",
+      measurementId: "G-ZYG9QD7LX0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let currentAdmin = null;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = 'register.html';
+        return;
+      }
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (!userDoc.exists() || userDoc.data().role !== 'admin') {
+        alert("Access denied: You are not an admin.");
+        signOut(auth);
+        window.location.href = 'register.html';
+        return;
+      }
+      currentAdmin = user;
+      document.getElementById('admin-name').innerText = userDoc.data().name;
+      loadPendingTasks();
+      loadAllUsers();
+      loadWithdrawals();
+    });
+
+    // Tabs
+    window.showTab = (tab) => {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`tab-${tab}`).classList.remove('hidden');
+      if (tab === 'tasks') loadPendingTasks();
+      if (tab === 'users') loadAllUsers();
+      if (tab === 'withdrawals') loadWithdrawals();
+    };
+
+    // Pending tasks (approval)
+    function loadPendingTasks() {
+      const q = query(collection(db, "tasks"), where("status", "==", "pending_approval"), orderBy("createdAt", "desc"));
+      onSnapshot(q, (snap) => {
+        const container = document.getElementById('pending-tasks');
+        if (snap.empty) container.innerHTML = '<p class="text-white/50 text-center">No tasks pending approval.</p>';
+        else {
+          container.innerHTML = snap.docs.map(doc => {
+            const task = doc.data();
+            return `
+              <div class="bg-white/5 p-4 rounded-xl mb-2">
+                <div class="flex justify-between"><h3 class="font-bold">${escapeHtml(task.title)}</h3><span class="status-badge status-pending_approval">Pending</span></div>
+                <p class="text-sm text-white/60">${escapeHtml(task.description)}</p>
+                <div class="flex gap-4 text-xs mt-2">💰 $${task.budget} | 📅 ${task.deadline?.toDate?.().toLocaleDateString()} | 👤 ${escapeHtml(task.clientName)}</div>
+                <div class="flex gap-2 mt-3"><button onclick="approveTask('${doc.id}')" class="text-xs bg-green-600 px-3 py-1 rounded">Approve</button><button onclick="rejectTask('${doc.id}')" class="text-xs bg-red-600 px-3 py-1 rounded">Reject</button></div>
+              </div>`;
+          }).join('');
+        }
+      });
+    }
+
+    window.approveTask = async (taskId) => {
+      await updateDoc(doc(db, "tasks", taskId), {
+        status: "approved",
+        approvedBy: currentAdmin.uid,
+        approvedAt: new Date()
+      });
+      // Optionally send notification to client
+      const taskSnap = await getDoc(doc(db, "tasks", taskId));
+      const task = taskSnap.data();
+      await addDoc(collection(db, "notifications"), {
+        userId: task.clientId,
+        title: "Task Approved",
+        body: `Your task "${task.title}" has been approved and is now open for workers.`,
+        type: "task_approved",
+        read: false,
+        createdAt: new Date(),
+        link: "client-dashboard.html"
+      });
+    };
+
+    window.rejectTask = async (taskId) => {
+      await updateDoc(doc(db, "tasks", taskId), { status: "rejected" });
+    };
+
+    // Users management
+    function loadAllUsers() {
+      const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
+      onSnapshot(q, (snap) => {
+        const container = document.getElementById('users-list');
+        container.innerHTML = snap.docs.map(doc => {
+          const user = doc.data();
+          return `
+            <div class="bg-white/5 p-3 rounded-xl mb-2 flex flex-wrap justify-between items-center">
+              <div><div class="font-semibold">${escapeHtml(user.name)} <span class="text-xs bg-white/20 px-2 py-0.5 rounded">${user.role}</span></div><div class="text-xs text-white/50">${user.email} | Balance: $${user.balance?.toFixed(2) || 0}</div></div>
+              <div class="flex gap-2 mt-2 sm:mt-0">
+                ${!user.isBanned ? `<button onclick="banUser('${doc.id}')" class="text-xs bg-yellow-600 px-3 py-1 rounded">Ban</button>` : `<button onclick="unbanUser('${doc.id}')" class="text-xs bg-green-600 px-3 py-1 rounded">Unban</button>`}
+                <button onclick="deleteUser('${doc.id}')" class="text-xs bg-red-600 px-3 py-1 rounded">Delete</button>
+              </div>
+            </div>`;
+        }).join('');
+      });
+    }
+
+    window.banUser = async (uid) => { await updateDoc(doc(db, "users", uid), { isBanned: true }); };
+    window.unbanUser = async (uid) => { await updateDoc(doc(db, "users", uid), { isBanned: false }); };
+    window.deleteUser = async (uid) => { if(confirm("Delete user permanently?")) await deleteDoc(doc(db, "users", uid)); };
+
+    // Withdrawals
+    function loadWithdrawals() {
+      const q = query(collection(db, "withdrawals"), where("status", "==", "pending"), orderBy("requestedAt", "asc"));
+      onSnapshot(q, (snap) => {
+        const container = document.getElementById('withdrawals-list');
+        if (snap.empty) container.innerHTML = '<p class="text-white/50 text-center">No pending withdrawals.</p>';
+        else {
+          container.innerHTML = snap.docs.map(doc => {
+            const w = doc.data();
+            return `
+              <div class="bg-white/5 p-3 rounded-xl mb-2">
+                <div class="flex justify-between"><span>${escapeHtml(w.workerId)}</span><span>💰 $${w.amount}</span></div>
+                <div class="text-xs text-white/50">Method: ${w.method} | ${w.details?.phone || w.details?.account}</div>
+                <div class="flex gap-2 mt-2"><button onclick="approveWithdrawal('${doc.id}','${w.workerId}',${w.amount})" class="text-xs bg-green-600 px-3 py-1 rounded">Approve</button><button onclick="rejectWithdrawal('${doc.id}')" class="text-xs bg-red-600 px-3 py-1 rounded">Reject</button></div>
+              </div>`;
+          }).join('');
+        }
+      });
+    }
+
+    window.approveWithdrawal = async (withdrawalId, workerId, amount) => {
+      const batch = writeBatch(db);
+      const withdrawalRef = doc(db, "withdrawals", withdrawalId);
+      batch.update(withdrawalRef, { status: "completed", processedAt: new Date(), processedBy: currentAdmin.uid });
+      const workerRef = doc(db, "users", workerId);
+      const workerSnap = await getDoc(workerRef);
+      const newBalance = workerSnap.data().balance - amount;
+      batch.update(workerRef, { balance: newBalance });
+      // Transaction log
+      const txRef = doc(collection(db, "transactions"));
+      batch.set(txRef, {
+        userId: workerId,
+        type: "withdrawal",
+        amount: -amount,
+        balanceAfter: newBalance,
+        reference: withdrawalId,
+        description: "Withdrawal approved",
+        createdAt: new Date(),
+        status: "completed"
+      });
+      await batch.commit();
+      alert("Withdrawal approved and balance updated.");
+    };
+
+    window.rejectWithdrawal = async (withdrawalId) => {
+      await updateDoc(doc(db, "withdrawals", withdrawalId), { status: "rejected", processedAt: new Date(), processedBy: currentAdmin.uid });
+    };
+
+    function escapeHtml(str) { return (str || '').replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+    window.logout = () => signOut(auth).then(() => window.location.href = 'register.html');
+  </script>
+</head>
+<body class="p-4">
+  <div class="max-w-6xl mx-auto">
+    <nav class="flex justify-between items-center py-4 border-b border-white/10 mb-6">
+      <h1 class="text-2xl font-bold text-white">Admin Dashboard</h1>
+      <div class="flex gap-4 items-center">
+        <span id="admin-name" class="text-white/80"></span>
+        <button onclick="logout()" class="text-red-400 text-sm">Logout</button>
+      </div>
+    </nav>
+    <div class="flex gap-4 border-b border-white/10 mb-6">
+      <button onclick="showTab('tasks')" class="pb-2 text-white/70 font-semibold">Tasks (Approve)</button>
+      <button onclick="showTab('users')" class="pb-2 text-white/70 font-semibold">Users</button>
+      <button onclick="showTab('withdrawals')" class="pb-2 text-white/70 font-semibold">Withdrawals</button>
+    </div>
+
+    <div id="tab-tasks" class="tab-content">
+      <h2 class="text-xl font-semibold mb-4">Pending Task Approvals</h2>
+      <div id="pending-tasks"></div>
+    </div>
+    <div id="tab-users" class="tab-content hidden">
+      <h2 class="text-xl font-semibold mb-4">All Users</h2>
+      <div id="users-list"></div>
+    </div>
+    <div id="tab-withdrawals" class="tab-content hidden">
+      <h2 class="text-xl font-semibold mb-4">Pending Withdrawals</h2>
+      <div id="withdrawals-list"></div>
+    </div>
+  </div>
+</body>
+</html>

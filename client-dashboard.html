@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Dashboard – VideoWork</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'DM Sans', sans-serif; background: #0a0a0a; }
+    .status-badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 12px; font-weight: 600; }
+    .status-pending_approval { background: #78350f; color: #fbbf24; }
+    .status-approved { background: #065f46; color: #6ee7b7; }
+    .status-in_progress { background: #92400e; color: #fcd34d; }
+    .status-completed { background: #1e40af; color: #93c5fd; }
+    .btn-primary { background: #e53e3e; transition: 0.2s; }
+    .btn-primary:hover { background: #c53030; transform: translateY(-1px); }
+    .input-dark { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: white; }
+    .modal-overlay { background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
+    .chat-message { padding: 8px 12px; border-radius: 12px; margin: 6px 0; max-width: 80%; }
+    .chat-message.sent { background: #e53e3e; color: white; align-self: flex-end; }
+    .chat-message.received { background: #2d3748; color: white; align-self: flex-start; }
+  </style>
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, arrayUnion, writeBatch } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBv5uc6d0JItCsZ-cjqAd5-Y-2aDPANqn0",
+      authDomain: "navana-7ea5a.firebaseapp.com",
+      projectId: "navana-7ea5a",
+      storageBucket: "navana-7ea5a.firebasestorage.app",
+      messagingSenderId: "237075740446",
+      appId: "1:237075740446:web:bfbb2c2c84c77ffc633b0f",
+      measurementId: "G-ZYG9QD7LX0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let currentUser = null;
+    let currentUserData = null;
+
+    // DOM elements
+    const userNameSpan = document.getElementById('user-name');
+    const userBalanceSpan = document.getElementById('user-balance');
+    const tasksContainer = document.getElementById('tasks-container');
+    const applicationsModal = document.getElementById('applications-modal');
+    const chatModal = document.getElementById('chat-modal');
+
+    // Auth guard
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = 'register.html';
+        return;
+      }
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (!userDoc.exists() || userDoc.data().role !== 'client') {
+        alert("Access denied: You are not a client.");
+        signOut(auth);
+        window.location.href = 'register.html';
+        return;
+      }
+      currentUser = user;
+      currentUserData = userDoc.data();
+      userNameSpan.innerText = currentUserData.name;
+      userBalanceSpan.innerText = `$${currentUserData.balance?.toFixed(2) || 0}`;
+      loadTasks();
+      loadNotifications();
+    });
+
+    // Load client's tasks
+    function loadTasks() {
+      const q = query(collection(db, "tasks"), where("clientId", "==", currentUser.uid), orderBy("createdAt", "desc"));
+      onSnapshot(q, (snapshot) => {
+        tasksContainer.innerHTML = '';
+        snapshot.forEach(doc => {
+          const task = { id: doc.id, ...doc.data() };
+          tasksContainer.appendChild(createTaskCard(task));
+        });
+      });
+    }
+
+    function createTaskCard(task) {
+      const div = document.createElement('div');
+      div.className = 'bg-white/5 rounded-xl p-4 border border-white/10';
+      const statusClass = `status-${task.status}`;
+      div.innerHTML = `
+        <div class="flex justify-between items-start">
+          <h3 class="font-bold">${escapeHtml(task.title)}</h3>
+          <span class="status-badge ${statusClass}">${task.status.replace('_', ' ')}</span>
+        </div>
+        <p class="text-sm text-white/60 mt-1">${escapeHtml(task.description)}</p>
+        <div class="flex gap-4 text-xs text-white/40 mt-2">
+          <span>💰 $${task.budget}</span>
+          <span>📅 ${task.deadline?.toDate?.().toLocaleDateString() || 'No deadline'}</span>
+          <span>📂 ${task.category}</span>
+        </div>
+        <div class="flex gap-2 mt-3">
+          ${task.status === 'approved' ? `<button class="text-xs bg-blue-600 px-3 py-1 rounded" onclick="viewApplications('${task.id}')">Applications (${task.applications?.length || 0})</button>` : ''}
+          ${task.status === 'in_progress' ? `<button class="text-xs bg-green-600 px-3 py-1 rounded" onclick="markCompleted('${task.id}')">Mark Completed</button>` : ''}
+          ${task.status === 'in_progress' || task.status === 'completed' ? `<button class="text-xs bg-purple-600 px-3 py-1 rounded" onclick="openChat('${task.id}','${task.workerId}','${task.workerName}')">Chat</button>` : ''}
+        </div>
+      `;
+      return div;
+    }
+
+    window.viewApplications = async (taskId) => {
+      const appsQuery = query(collection(db, "applications"), where("taskId", "==", taskId), orderBy("createdAt", "desc"));
+      const appsSnap = await getDocs(appsQuery);
+      const appsList = appsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const modalContent = document.getElementById('applications-list');
+      if (!appsList.length) modalContent.innerHTML = '<p class="text-center text-white/50">No applications yet.</p>';
+      else {
+        modalContent.innerHTML = appsList.map(app => `
+          <div class="bg-white/10 p-3 rounded-xl mb-2">
+            <div class="flex justify-between"><span class="font-semibold">${escapeHtml(app.workerName)}</span><span class="status-badge status-${app.status}">${app.status}</span></div>
+            <p class="text-sm">💰 $${app.proposedBudget}</p>
+            <p class="text-sm">📝 ${escapeHtml(app.message)}</p>
+            ${app.status === 'pending' ? `<div class="flex gap-2 mt-2"><button class="text-xs bg-green-600 px-3 py-1 rounded" onclick="acceptApplication('${app.id}','${taskId}')">Accept</button><button class="text-xs bg-red-600 px-3 py-1 rounded" onclick="rejectApplication('${app.id}')">Reject</button></div>` : ''}
+          </div>
+        `).join('');
+      }
+      applicationsModal.classList.remove('hidden');
+    };
+
+    window.acceptApplication = async (appId, taskId) => {
+      const appRef = doc(db, "applications", appId);
+      const appSnap = await getDoc(appRef);
+      if (!appSnap.exists()) return;
+      const app = appSnap.data();
+      const batch = writeBatch(db);
+      batch.update(appRef, { status: "accepted" });
+      batch.update(doc(db, "tasks", taskId), {
+        status: "in_progress",
+        workerId: app.workerId,
+        workerName: app.workerName,
+        applications: arrayUnion(app.workerId)
+      });
+      // Reject others
+      const others = await getDocs(query(collection(db, "applications"), where("taskId", "==", taskId), where("status", "==", "pending")));
+      others.forEach(d => { if (d.id !== appId) batch.update(d.ref, { status: "rejected" }); });
+      await batch.commit();
+      alert("Application accepted. Task is now in progress.");
+      applicationsModal.classList.add('hidden');
+    };
+
+    window.rejectApplication = async (appId) => {
+      await updateDoc(doc(db, "applications", appId), { status: "rejected" });
+      alert("Application rejected");
+      viewApplications(document.querySelector('#applications-list')?.dataset.taskId);
+    };
+
+    window.markCompleted = async (taskId) => {
+      const taskRef = doc(db, "tasks", taskId);
+      const taskSnap = await getDoc(taskRef);
+      if (!taskSnap.exists()) return;
+      const task = taskSnap.data();
+      if (task.status !== 'in_progress') return;
+      // Check client balance
+      const clientRef = doc(db, "users", currentUser.uid);
+      const clientDoc = await getDoc(clientRef);
+      const clientBalance = clientDoc.data().balance;
+      if (clientBalance < task.budget) {
+        alert("Insufficient balance to complete payment. Please add funds.");
+        return;
+      }
+      const batch = writeBatch(db);
+      batch.update(taskRef, { status: "completed" });
+      batch.update(clientRef, { balance: clientBalance - task.budget });
+      const workerRef = doc(db, "users", task.workerId);
+      const workerDoc = await getDoc(workerRef);
+      const workerBalance = workerDoc.data().balance;
+      batch.update(workerRef, { balance: workerBalance + task.budget });
+      // Record transaction
+      const transactionRef = doc(collection(db, "transactions"));
+      batch.set(transactionRef, {
+        userId: currentUser.uid,
+        type: "payment",
+        amount: -task.budget,
+        balanceAfter: clientBalance - task.budget,
+        reference: taskId,
+        description: `Payment for task: ${task.title}`,
+        createdAt: new Date(),
+        status: "completed"
+      });
+      const workerTransactionRef = doc(collection(db, "transactions"));
+      batch.set(workerTransactionRef, {
+        userId: task.workerId,
+        type: "payment",
+        amount: task.budget,
+        balanceAfter: workerBalance + task.budget,
+        reference: taskId,
+        description: `Earned from task: ${task.title}`,
+        createdAt: new Date(),
+        status: "completed"
+      });
+      await batch.commit();
+      alert("Task marked completed. Payment transferred to worker.");
+    };
+
+    // Chat
+    window.openChat = async (taskId, workerId, workerName) => {
+      // Find existing chat
+      const chatsQuery = query(collection(db, "chats"), where("participants", "array-contains", currentUser.uid));
+      const chatsSnap = await getDocs(chatsQuery);
+      let chatId = null;
+      chatsSnap.forEach(doc => {
+        const participants = doc.data().participants;
+        if (participants.includes(workerId) && participants.includes(currentUser.uid)) chatId = doc.id;
+      });
+      if (!chatId) {
+        // Create new chat
+        const newChatRef = await addDoc(collection(db, "chats"), {
+          participants: [currentUser.uid, workerId],
+          taskId: taskId,
+          lastMessage: "",
+          lastUpdated: new Date(),
+          isActive: true
+        });
+        chatId = newChatRef.id;
+      }
+      document.getElementById('chat-title').innerText = `Chat with ${workerName}`;
+      document.getElementById('chat-messages').innerHTML = '';
+      document.getElementById('chat-input').value = '';
+      document.getElementById('send-message').onclick = () => sendMessage(chatId, workerId);
+      // Load messages
+      const messagesRef = collection(db, "chats", chatId, "messages");
+      onSnapshot(query(messagesRef, orderBy("timestamp", "asc")), (snap) => {
+        const container = document.getElementById('chat-messages');
+        container.innerHTML = '';
+        snap.forEach(msgDoc => {
+          const msg = msgDoc.data();
+          const div = document.createElement('div');
+          div.className = `chat-message ${msg.senderId === currentUser.uid ? 'sent' : 'received'}`;
+          div.innerText = msg.text;
+          container.appendChild(div);
+        });
+        container.scrollTop = container.scrollHeight;
+      });
+      chatModal.classList.remove('hidden');
+    };
+
+    async function sendMessage(chatId, recipientId) {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      const msgRef = collection(db, "chats", chatId, "messages");
+      await addDoc(msgRef, {
+        senderId: currentUser.uid,
+        text: text,
+        timestamp: new Date(),
+        read: false
+      });
+      await updateDoc(doc(db, "chats", chatId), { lastMessage: text, lastUpdated: new Date() });
+      // TODO: send notification to recipient
+    }
+
+    // Post new task
+    window.postTask = async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('task-title').value.trim();
+      const desc = document.getElementById('task-desc').value.trim();
+      const budget = parseFloat(document.getElementById('task-budget').value);
+      const deadline = document.getElementById('task-deadline').value;
+      const category = document.getElementById('task-category').value;
+      if (!title || !desc || isNaN(budget) || !deadline || !category) {
+        alert("All fields required");
+        return;
+      }
+      const btn = e.target.querySelector('button');
+      btn.disabled = true;
+      btn.innerText = "Posting...";
+      try {
+        await addDoc(collection(db, "tasks"), {
+          title, description: desc, budget, deadline: new Date(deadline), category,
+          status: "pending_approval", clientId: currentUser.uid, clientName: currentUserData.name,
+          createdAt: new Date(), applications: [], workerId: null, workerName: null
+        });
+        alert("Task posted! Awaiting admin approval.");
+        document.getElementById('post-task-form').reset();
+        document.getElementById('post-modal').classList.add('hidden');
+      } catch (err) {
+        alert("Error: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Post Task";
+      }
+    };
+
+    // Notifications
+    function loadNotifications() {
+      const q = query(collection(db, "notifications"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc"));
+      onSnapshot(q, (snap) => {
+        const unreadCount = snap.docs.filter(d => !d.data().read).length;
+        document.getElementById('notif-count').innerText = unreadCount;
+        const container = document.getElementById('notifications-list');
+        container.innerHTML = snap.docs.map(d => {
+          const notif = d.data();
+          return `<div class="p-2 border-b border-white/10 flex justify-between"><span>${notif.title}</span><button onclick="markRead('${d.id}')" class="text-xs text-red-400">Mark read</button></div>`;
+        }).join('');
+      });
+    }
+
+    window.markRead = async (id) => {
+      await updateDoc(doc(db, "notifications", id), { read: true });
+    };
+
+    // Helper
+    function escapeHtml(str) {
+      return (str || '').replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      });
+    }
+
+    // UI controls
+    window.showModal = (id) => document.getElementById(id).classList.remove('hidden');
+    window.hideModal = (id) => document.getElementById(id).classList.add('hidden');
+    window.logout = () => signOut(auth).then(() => window.location.href = 'register.html');
+  </script>
+</head>
+<body class="p-4">
+  <div class="max-w-6xl mx-auto">
+    <nav class="flex justify-between items-center py-4 mb-6 border-b border-white/10">
+      <h1 class="text-2xl font-bold text-white">Client Dashboard</h1>
+      <div class="flex gap-4 items-center">
+        <span class="text-white/80">👤 <span id="user-name"></span></span>
+        <span class="text-green-400 font-mono" id="user-balance"></span>
+        <div class="relative">
+          <button onclick="showModal('notifications-modal')" class="relative">🔔 <span id="notif-count" class="absolute -top-2 -right-2 bg-red-500 text-xs rounded-full px-1"></span></button>
+        </div>
+        <button onclick="logout()" class="text-red-400 text-sm">Logout</button>
+      </div>
+    </nav>
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold">My Tasks</h2>
+      <button onclick="showModal('post-modal')" class="btn-primary px-4 py-2 rounded-lg text-sm">+ New Task</button>
+    </div>
+    <div id="tasks-container" class="grid md:grid-cols-2 gap-4"></div>
+  </div>
+
+  <!-- Post Task Modal -->
+  <div id="post-modal" class="fixed inset-0 z-50 modal-overlay flex items-center justify-center hidden">
+    <div class="bg-[#1a1a2e] w-full max-w-md p-6 rounded-2xl">
+      <h3 class="text-xl font-bold mb-4">Post New Task</h3>
+      <form id="post-task-form" onsubmit="postTask(event)">
+        <input type="text" id="task-title" placeholder="Title" class="input-dark w-full p-3 rounded-xl mb-3" required>
+        <textarea id="task-desc" rows="3" placeholder="Description" class="input-dark w-full p-3 rounded-xl mb-3" required></textarea>
+        <select id="task-category" class="input-dark w-full p-3 rounded-xl mb-3" required>
+          <option value="">Select Category</option>
+          <option>Editing</option><option>Voiceover</option><option>Scriptwriting</option><option>Thumbnail</option><option>Full Production</option>
+        </select>
+        <input type="number" id="task-budget" placeholder="Budget (USD)" class="input-dark w-full p-3 rounded-xl mb-3" required>
+        <input type="date" id="task-deadline" class="input-dark w-full p-3 rounded-xl mb-4" required>
+        <button type="submit" class="btn-primary w-full py-3 rounded-xl">Post Task</button>
+      </form>
+      <button onclick="hideModal('post-modal')" class="mt-2 text-white/50 w-full text-center">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Applications Modal -->
+  <div id="applications-modal" class="fixed inset-0 z-50 modal-overlay flex items-center justify-center hidden">
+    <div class="bg-[#1a1a2e] w-full max-w-2xl p-6 rounded-2xl max-h-[80vh] overflow-auto">
+      <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Applications</h3><button onclick="hideModal('applications-modal')">✕</button></div>
+      <div id="applications-list"></div>
+    </div>
+  </div>
+
+  <!-- Chat Modal -->
+  <div id="chat-modal" class="fixed inset-0 z-50 modal-overlay flex items-center justify-center hidden">
+    <div class="bg-[#1a1a2e] w-full max-w-md p-4 rounded-2xl flex flex-col h-96">
+      <div class="flex justify-between items-center mb-2"><h3 id="chat-title" class="font-bold"></h3><button onclick="hideModal('chat-modal')">✕</button></div>
+      <div id="chat-messages" class="flex-1 overflow-y-auto p-2 bg-black/30 rounded"></div>
+      <div class="flex mt-2 gap-2"><input id="chat-input" type="text" class="input-dark flex-1 p-2 rounded" placeholder="Type a message..."><button id="send-message" class="btn-primary px-3 py-2 rounded">Send</button></div>
+    </div>
+  </div>
+
+  <!-- Notifications Modal -->
+  <div id="notifications-modal" class="fixed inset-0 z-50 modal-overlay flex items-center justify-center hidden">
+    <div class="bg-[#1a1a2e] w-full max-w-md p-4 rounded-2xl">
+      <div class="flex justify-between"><h3 class="font-bold">Notifications</h3><button onclick="hideModal('notifications-modal')">✕</button></div>
+      <div id="notifications-list" class="mt-2 max-h-96 overflow-auto"></div>
+    </div>
+  </div>
+</body>
+</html>
