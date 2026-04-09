@@ -1,265 +1,244 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard – VideoWork</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'DM Sans', sans-serif; background: #0a0a0a; }
-    .btn-primary { background: #e53e3e; transition: 0.2s; }
-    .btn-primary:hover { background: #c53030; }
-    .input-dark { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: white; }
-    .status-badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 12px; font-weight: 600; }
-    .status-approved { background: #065f46; color: #6ee7b7; }
-    .status-pending_approval { background: #78350f; color: #fbbf24; }
-    .modal-overlay { background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
-  </style>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
-    import { getFirestore, collection, doc, getDoc, getDocs, updateDoc, deleteDoc, addDoc, query, where, orderBy, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - BestPay</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, query, where, addDoc, serverTimestamp, increment, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBv5uc6d0JItCsZ-cjqAd5-Y-2aDPANqn0",
-      authDomain: "navana-7ea5a.firebaseapp.com",
-      projectId: "navana-7ea5a",
-      storageBucket: "navana-7ea5a.firebasestorage.app",
-      messagingSenderId: "237075740446",
-      appId: "1:237075740446:web:bfbb2c2c84c77ffc633b0f",
-      measurementId: "G-ZYG9QD7LX0"
-    };
+        const firebaseConfig = { apiKey: "AIzaSyDtGN7KCK0A4fhztLN0CgxsKkGROcO_-vI", authDomain: "bestpay-5b78c.firebaseapp.com", projectId: "bestpay-5b78c", storageBucket: "bestpay-5b78c.firebasestorage.app", messagingSenderId: "583230068716", appId: "1:583230068716:web:3e8d298b4d00b46c8652c9", measurementId: "G-47R37E08V2" };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    let currentAdmin = null;
+        let currentAdmin = null;
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = 'register.html';
-        return;
-      }
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (!userDoc.exists() || userDoc.data().role !== 'admin') {
-        alert("Access denied: You are not an admin.");
-        signOut(auth);
-        window.location.href = 'register.html';
-        return;
-      }
-      currentAdmin = user;
-      document.getElementById('admin-name').innerText = userDoc.data().name;
-      loadAllTasks(); // for admin to see all tasks
-      loadPendingTasks();
-      loadAllUsers();
-      loadWithdrawals();
-    });
-
-    window.showTab = (tab) => {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.getElementById(`tab-${tab}`).classList.remove('hidden');
-      if (tab === 'tasks') { loadPendingTasks(); loadAllTasks(); }
-      if (tab === 'users') loadAllUsers();
-      if (tab === 'withdrawals') loadWithdrawals();
-    };
-
-    // All tasks (for admin to view)
-    function loadAllTasks() {
-      const q = query(collection(db, "tasks"), orderBy("createdAt", "desc"));
-      onSnapshot(q, (snap) => {
-        const container = document.getElementById('all-tasks');
-        container.innerHTML = snap.docs.map(doc => {
-          const task = doc.data();
-          return `<div class="bg-white/5 p-3 rounded-xl mb-2"><div class="flex justify-between"><span class="font-semibold">${escapeHtml(task.title)}</span><span class="status-badge status-${task.status}">${task.status}</span></div><div class="text-xs text-white/50">By ${task.clientName || 'Admin'} | $${task.budget}</div><button onclick="deleteTask('${doc.id}')" class="text-xs bg-red-600 px-2 py-1 rounded mt-1">Delete</button></div>`;
-        }).join('');
-      });
-    }
-
-    // Pending tasks (for approval)
-    function loadPendingTasks() {
-      const q = query(collection(db, "tasks"), where("status", "==", "pending_approval"), orderBy("createdAt", "desc"));
-      onSnapshot(q, (snap) => {
-        const container = document.getElementById('pending-tasks');
-        if (snap.empty) container.innerHTML = '<p class="text-white/50 text-center">No tasks pending approval.</p>';
-        else {
-          container.innerHTML = snap.docs.map(doc => {
-            const task = doc.data();
-            return `<div class="bg-white/5 p-4 rounded-xl mb-2"><div class="flex justify-between"><h3 class="font-bold">${escapeHtml(task.title)}</h3><span class="status-badge status-pending_approval">Pending</span></div><p class="text-sm text-white/60">${escapeHtml(task.description)}</p><div class="flex gap-4 text-xs mt-2">💰 $${task.budget} | 📅 ${task.deadline?.toDate?.().toLocaleDateString()} | 👤 ${escapeHtml(task.clientName)}</div><div class="flex gap-2 mt-3"><button onclick="approveTask('${doc.id}')" class="text-xs bg-green-600 px-3 py-1 rounded">Approve</button><button onclick="rejectTask('${doc.id}')" class="text-xs bg-red-600 px-3 py-1 rounded">Reject</button></div></div>`;
-          }).join('');
+        // Ensure there is at least one admin (if none, set current user as admin)
+        async function ensureAdmin() {
+            const user = auth.currentUser;
+            if (!user) return false;
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists() && userDoc.data().role === 'admin') {
+                currentAdmin = user;
+                return true;
+            } else {
+                // If no admin exists, assign admin role to this user (first time)
+                const adminQuery = await getDocs(query(collection(db, 'users'), where('role', '==', 'admin')));
+                if (adminQuery.empty) {
+                    await setDoc(doc(db, 'users', user.uid), { role: 'admin' }, { merge: true });
+                    currentAdmin = user;
+                    return true;
+                }
+                alert('You are not an admin.');
+                window.location.href = 'registration.html';
+                return false;
+            }
         }
-      });
-    }
 
-    window.approveTask = async (taskId) => {
-      await updateDoc(doc(db, "tasks", taskId), { status: "approved", approvedBy: currentAdmin.uid, approvedAt: new Date() });
-      const taskSnap = await getDoc(doc(db, "tasks", taskId));
-      const task = taskSnap.data();
-      await addDoc(collection(db, "notifications"), {
-        userId: task.clientId,
-        title: "Task Approved",
-        body: `Your task "${task.title}" has been approved.`,
-        type: "task_approved",
-        read: false,
-        createdAt: new Date(),
-        link: "client-dashboard.html"
-      });
-    };
-
-    window.rejectTask = async (taskId) => {
-      await updateDoc(doc(db, "tasks", taskId), { status: "rejected" });
-    };
-
-    // Admin creates task directly (approved immediately)
-    window.postTask = async (e) => {
-      e.preventDefault();
-      const title = document.getElementById('task-title').value.trim();
-      const desc = document.getElementById('task-desc').value.trim();
-      const budget = parseFloat(document.getElementById('task-budget').value);
-      const deadline = document.getElementById('task-deadline').value;
-      const category = document.getElementById('task-category').value;
-      if (!title || !desc || isNaN(budget) || !deadline || !category) {
-        alert("All fields required");
-        return;
-      }
-      try {
-        await addDoc(collection(db, "tasks"), {
-          title, description: desc, budget, deadline: new Date(deadline), category,
-          status: "approved",  // admin posts directly approved
-          clientId: currentAdmin.uid,
-          clientName: "Admin",
-          createdAt: new Date(),
-          applications: [],
-          workerId: null,
-          workerName: null
-        });
-        alert("Task posted and approved!");
-        document.getElementById('post-task-form').reset();
-        document.getElementById('post-modal').classList.add('hidden');
-      } catch (err) {
-        alert("Error: " + err.message);
-      }
-    };
-
-    // Users management
-    function loadAllUsers() {
-      const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
-      onSnapshot(q, (snap) => {
-        const container = document.getElementById('users-list');
-        container.innerHTML = snap.docs.map(doc => {
-          const user = doc.data();
-          return `<div class="bg-white/5 p-3 rounded-xl mb-2 flex flex-wrap justify-between items-center"><div><div class="font-semibold">${escapeHtml(user.name)} <span class="text-xs bg-white/20 px-2 py-0.5 rounded">${user.role}</span></div><div class="text-xs text-white/50">${user.email} | Balance: $${user.balance?.toFixed(2) || 0}</div></div><div class="flex gap-2 mt-2 sm:mt-0">${!user.isBanned ? `<button onclick="banUser('${doc.id}')" class="text-xs bg-yellow-600 px-3 py-1 rounded">Ban</button>` : `<button onclick="unbanUser('${doc.id}')" class="text-xs bg-green-600 px-3 py-1 rounded">Unban</button>`}<button onclick="deleteUser('${doc.id}')" class="text-xs bg-red-600 px-3 py-1 rounded">Delete</button></div></div>`;
-        }).join('');
-      });
-    }
-
-    window.banUser = async (uid) => { await updateDoc(doc(db, "users", uid), { isBanned: true }); };
-    window.unbanUser = async (uid) => { await updateDoc(doc(db, "users", uid), { isBanned: false }); };
-    window.deleteUser = async (uid) => { if(confirm("Delete user permanently?")) await deleteDoc(doc(db, "users", uid)); };
-
-    // Withdrawals
-    function loadWithdrawals() {
-      const q = query(collection(db, "withdrawals"), where("status", "==", "pending"), orderBy("requestedAt", "asc"));
-      onSnapshot(q, (snap) => {
-        const container = document.getElementById('withdrawals-list');
-        if (snap.empty) container.innerHTML = '<p class="text-white/50 text-center">No pending withdrawals.</p>';
-        else {
-          container.innerHTML = snap.docs.map(doc => {
-            const w = doc.data();
-            return `<div class="bg-white/5 p-3 rounded-xl mb-2"><div class="flex justify-between"><span>${escapeHtml(w.workerId)}</span><span>💰 $${w.amount}</span></div><div class="text-xs text-white/50">Method: ${w.method} | ${w.details?.info}</div><div class="flex gap-2 mt-2"><button onclick="approveWithdrawal('${doc.id}','${w.workerId}',${w.amount})" class="text-xs bg-green-600 px-3 py-1 rounded">Approve</button><button onclick="rejectWithdrawal('${doc.id}')" class="text-xs bg-red-600 px-3 py-1 rounded">Reject</button></div></div>`;
-          }).join('');
+        async function loadUsers() {
+            const usersSnap = await getDocs(collection(db, 'users'));
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+            for (const userDoc of usersSnap.docs) {
+                const user = userDoc.data();
+                const uid = userDoc.id;
+                const walletSnap = await getDoc(doc(db, 'wallets', uid));
+                const wallet = walletSnap.exists() ? walletSnap.data() : { bonusBalance: 0, investedBalance: 0 };
+                const totalBalance = (wallet.bonusBalance || 0) + (wallet.investedBalance || 0);
+                tbody.innerHTML += `
+                    <tr class="border-b">
+                        <td class="p-2">${user.email}</td>
+                        <td class="p-2">${user.displayName || ''}</td>
+                        <td class="p-2">${user.kycStatus || 'unverified'}</td>
+                        <td class="p-2">${user.isSuspended ? 'Yes' : 'No'}</td>
+                        <td class="p-2">${user.isFrozen ? 'Yes' : 'No'}</td>
+                        <td class="p-2">$${totalBalance}</td>
+                        <td class="p-2">
+                            <button onclick="adjustWallet('${uid}', ${totalBalance})" class="bg-yellow-500 text-white px-2 py-1 rounded text-sm">Adjust</button>
+                            <button onclick="toggleSuspend('${uid}', ${user.isSuspended})" class="bg-red-500 text-white px-2 py-1 rounded text-sm">${user.isSuspended ? 'Unsuspend' : 'Suspend'}</button>
+                            <button onclick="toggleFreeze('${uid}', ${user.isFrozen})" class="bg-orange-500 text-white px-2 py-1 rounded text-sm">${user.isFrozen ? 'Unfreeze' : 'Freeze'}</button>
+                            <button onclick="toggleVerify('${uid}', '${user.kycStatus}')" class="bg-green-500 text-white px-2 py-1 rounded text-sm">${user.kycStatus === 'verified' ? 'Unverify' : 'Verify'}</button>
+                            <button onclick="deactivateAccount('${uid}')" class="bg-gray-700 text-white px-2 py-1 rounded text-sm">Deactivate</button>
+                        </td>
+                    </tr>
+                `;
+            }
         }
-      });
-    }
 
-    window.approveWithdrawal = async (withdrawalId, workerId, amount) => {
-      const batch = writeBatch(db);
-      const withdrawalRef = doc(db, "withdrawals", withdrawalId);
-      batch.update(withdrawalRef, { status: "completed", processedAt: new Date(), processedBy: currentAdmin.uid });
-      const workerRef = doc(db, "users", workerId);
-      const workerSnap = await getDoc(workerRef);
-      const newBalance = workerSnap.data().balance - amount;
-      batch.update(workerRef, { balance: newBalance });
-      const txRef = doc(collection(db, "transactions"));
-      batch.set(txRef, {
-        userId: workerId,
-        type: "withdrawal",
-        amount: -amount,
-        balanceAfter: newBalance,
-        reference: withdrawalId,
-        description: "Withdrawal approved",
-        createdAt: new Date(),
-        status: "completed"
-      });
-      await batch.commit();
-      alert("Withdrawal approved and balance updated.");
-    };
+        window.adjustWallet = async (uid, currentBalance) => {
+            const newBalance = prompt(`Current total balance: $${currentBalance}. Enter new total balance:`, currentBalance);
+            if (newBalance === null) return;
+            const diff = parseFloat(newBalance) - currentBalance;
+            const walletRef = doc(db, 'wallets', uid);
+            const wallet = (await getDoc(walletRef)).data();
+            // Apply difference to bonusBalance
+            await updateDoc(walletRef, { bonusBalance: (wallet.bonusBalance || 0) + diff });
+            alert('Wallet updated');
+            loadUsers();
+        };
 
-    window.rejectWithdrawal = async (withdrawalId) => {
-      await updateDoc(doc(db, "withdrawals", withdrawalId), { status: "rejected", processedAt: new Date(), processedBy: currentAdmin.uid });
-    };
+        window.toggleSuspend = async (uid, current) => {
+            await updateDoc(doc(db, 'users', uid), { isSuspended: !current });
+            loadUsers();
+        };
+        window.toggleFreeze = async (uid, current) => {
+            await updateDoc(doc(db, 'users', uid), { isFrozen: !current });
+            loadUsers();
+        };
+        window.toggleVerify = async (uid, currentStatus) => {
+            const newStatus = currentStatus === 'verified' ? 'unverified' : 'verified';
+            await updateDoc(doc(db, 'users', uid), { kycStatus: newStatus });
+            loadUsers();
+        };
+        window.deactivateAccount = async (uid) => {
+            if (confirm('Deactivate this account? User will not be able to log in.')) {
+                // Instead of deleting, set a flag 'deactivated'
+                await updateDoc(doc(db, 'users', uid), { isSuspended: true, deactivated: true });
+                alert('Account deactivated');
+                loadUsers();
+            }
+        };
 
-    window.deleteTask = async (taskId) => { if(confirm("Delete task?")) await deleteDoc(doc(db, "tasks", taskId)); };
+        // Support tickets management
+        async function loadTickets() {
+            const ticketsSnap = await getDocs(collection(db, 'support_tickets'));
+            const ticketsDiv = document.getElementById('ticketsList');
+            ticketsDiv.innerHTML = '';
+            for (const ticketDoc of ticketsSnap.docs) {
+                const ticket = ticketDoc.data();
+                const ticketId = ticketDoc.id;
+                ticketsDiv.innerHTML += `
+                    <div class="border p-4 mb-2 rounded shadow">
+                        <div><strong>${ticket.subject}</strong> (${ticket.status}) - ${ticket.userEmail}</div>
+                        <div class="text-sm">${ticket.message}</div>
+                        <div class="mt-2">
+                            <textarea id="reply_${ticketId}" placeholder="Admin reply" class="border p-1 w-full"></textarea>
+                            <button onclick="replyToTicket('${ticketId}', '${ticket.userId}')" class="bg-blue-600 text-white px-3 py-1 rounded mt-1">Reply</button>
+                            <select id="status_${ticketId}" class="ml-2 border p-1">
+                                <option ${ticket.status === 'pending' ? 'selected' : ''}>pending</option>
+                                <option ${ticket.status === 'in_progress' ? 'selected' : ''}>in_progress</option>
+                                <option ${ticket.status === 'resolved' ? 'selected' : ''}>resolved</option>
+                            </select>
+                            <button onclick="updateTicketStatus('${ticketId}')" class="bg-gray-500 text-white px-3 py-1 rounded">Update Status</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
 
-    function escapeHtml(str) { return (str || '').replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+        window.replyToTicket = async (ticketId, userId) => {
+            const replyMsg = document.getElementById(`reply_${ticketId}`).value;
+            if (!replyMsg) return alert('Enter reply');
+            // Add message to subcollection
+            const msgRef = collection(db, `support_tickets/${ticketId}/messages`);
+            await addDoc(msgRef, {
+                senderId: currentAdmin.uid,
+                senderName: 'Admin',
+                senderRole: 'admin',
+                message: replyMsg,
+                timestamp: serverTimestamp(),
+                isRead: false
+            });
+            // Update ticket updatedAt
+            await updateDoc(doc(db, 'support_tickets', ticketId), { updatedAt: serverTimestamp() });
+            // Create notification for user
+            await addDoc(collection(db, 'notifications'), {
+                userId: userId,
+                title: 'Support Reply',
+                body: `Admin replied to your ticket: ${replyMsg.substring(0, 100)}`,
+                type: 'support_reply',
+                isRead: false,
+                createdAt: serverTimestamp()
+            });
+            alert('Reply sent');
+            document.getElementById(`reply_${ticketId}`).value = '';
+            loadTickets();
+        };
 
-    window.showModal = (id) => document.getElementById(id).classList.remove('hidden');
-    window.hideModal = (id) => document.getElementById(id).classList.add('hidden');
-    window.logout = () => signOut(auth).then(() => window.location.href = 'register.html');
-  </script>
+        window.updateTicketStatus = async (ticketId) => {
+            const newStatus = document.getElementById(`status_${ticketId}`).value;
+            await updateDoc(doc(db, 'support_tickets', ticketId), { status: newStatus, updatedAt: serverTimestamp() });
+            alert('Status updated');
+            loadTickets();
+        };
+
+        // Investment plans management (admin can add plans with product image)
+        window.addInvestmentPlan = async () => {
+            const name = prompt('Plan name');
+            const minAmount = parseFloat(prompt('Min amount'));
+            const roiPercent = parseFloat(prompt('ROI %'));
+            const productImageURL = prompt('Product image URL');
+            const productURL = prompt('Product link (affiliate)');
+            const productDesc = prompt('Short description');
+            if (name && minAmount && roiPercent) {
+                await addDoc(collection(db, 'investment_plans'), {
+                    name, minAmount, roiPercent, productImageURL, productURL, productDescription: productDesc,
+                    isActive: true, durationDays: 30
+                });
+                alert('Plan added');
+                loadPlans();
+            }
+        };
+
+        async function loadPlans() {
+            const plansSnap = await getDocs(collection(db, 'investment_plans'));
+            const plansDiv = document.getElementById('plansList');
+            plansDiv.innerHTML = '';
+            plansSnap.forEach(doc => {
+                const p = doc.data();
+                plansDiv.innerHTML += `<div class="border p-2 m-1 inline-block">${p.name} - ${p.roiPercent}% <button onclick="deletePlan('${doc.id}')" class="text-red-600 ml-2">Delete</button></div>`;
+            });
+        }
+
+        window.deletePlan = async (planId) => {
+            if (confirm('Delete plan?')) await deleteDoc(doc(db, 'investment_plans', planId));
+            loadPlans();
+        };
+
+        window.logout = async () => { await signOut(auth); window.location.href = 'registration.html'; };
+
+        async function init() {
+            if (await ensureAdmin()) {
+                loadUsers();
+                loadTickets();
+                loadPlans();
+            }
+        }
+
+        auth.onAuthStateChanged(user => { if (user) init(); else window.location.href = 'registration.html'; });
+    </script>
 </head>
-<body class="p-4">
-  <div class="max-w-6xl mx-auto">
-    <nav class="flex justify-between items-center py-4 border-b border-white/10 mb-6">
-      <h1 class="text-2xl font-bold text-white">Admin Dashboard</h1>
-      <div class="flex gap-4 items-center">
-        <span id="admin-name" class="text-white/80"></span>
-        <button onclick="logout()" class="text-red-400 text-sm">Logout</button>
-      </div>
-    </nav>
-    <div class="flex gap-4 border-b border-white/10 mb-6 flex-wrap">
-      <button onclick="showTab('tasks')" class="pb-2 text-white/70 font-semibold">Tasks</button>
-      <button onclick="showTab('users')" class="pb-2 text-white/70 font-semibold">Users</button>
-      <button onclick="showTab('withdrawals')" class="pb-2 text-white/70 font-semibold">Withdrawals</button>
-      <button onclick="showModal('post-modal')" class="pb-2 text-green-400 font-semibold">+ Post Task</button>
-    </div>
-
-    <div id="tab-tasks" class="tab-content">
-      <div class="grid md:grid-cols-2 gap-6">
-        <div>
-          <h2 class="text-xl font-semibold mb-4">Pending Approvals</h2>
-          <div id="pending-tasks"></div>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold">Admin Dashboard</h1>
+            <button onclick="logout()" class="bg-red-600 text-white px-4 py-2 rounded">Logout</button>
         </div>
-        <div>
-          <h2 class="text-xl font-semibold mb-4">All Tasks</h2>
-          <div id="all-tasks" class="max-h-[60vh] overflow-auto"></div>
-        </div>
-      </div>
-    </div>
-    <div id="tab-users" class="tab-content hidden">
-      <h2 class="text-xl font-semibold mb-4">All Users</h2>
-      <div id="users-list"></div>
-    </div>
-    <div id="tab-withdrawals" class="tab-content hidden">
-      <h2 class="text-xl font-semibold mb-4">Pending Withdrawals</h2>
-      <div id="withdrawals-list"></div>
-    </div>
-  </div>
 
-  <!-- Post Task Modal -->
-  <div id="post-modal" class="fixed inset-0 z-50 modal-overlay flex items-center justify-center hidden">
-    <div class="bg-[#1a1a2e] w-full max-w-md p-6 rounded-2xl">
-      <h3 class="text-xl font-bold mb-4">Post New Task (Admin)</h3>
-      <form id="post-task-form" onsubmit="postTask(event)">
-        <input type="text" id="task-title" placeholder="Title" class="input-dark w-full p-3 rounded-xl mb-3" required>
-        <textarea id="task-desc" rows="3" placeholder="Description" class="input-dark w-full p-3 rounded-xl mb-3" required></textarea>
-        <select id="task-category" class="input-dark w-full p-3 rounded-xl mb-3" required><option value="">Select Category</option><option>Editing</option><option>Voiceover</option><option>Scriptwriting</option><option>Thumbnail</option><option>Full Production</option></select>
-        <input type="number" id="task-budget" placeholder="Budget (USD)" class="input-dark w-full p-3 rounded-xl mb-3" required>
-        <input type="date" id="task-deadline" class="input-dark w-full p-3 rounded-xl mb-4" required>
-        <button type="submit" class="btn-primary w-full py-3 rounded-xl">Post Task</button>
-      </form>
-      <button onclick="hideModal('post-modal')" class="mt-2 text-white/50 w-full text-center">Cancel</button>
+        <div class="bg-white p-4 rounded shadow mb-6">
+            <h2 class="text-2xl font-bold mb-4">Users Management</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead><tr><th>Email</th><th>Name</th><th>KYC</th><th>Suspended</th><th>Frozen</th><th>Balance</th><th>Actions</th></tr></thead>
+                    <tbody id="usersTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="bg-white p-4 rounded shadow mb-6">
+            <h2 class="text-2xl font-bold mb-4">Support Tickets</h2>
+            <div id="ticketsList"></div>
+        </div>
+
+        <div class="bg-white p-4 rounded shadow">
+            <h2 class="text-2xl font-bold mb-4">Investment Plans</h2>
+            <button onclick="addInvestmentPlan()" class="bg-green-600 text-white px-4 py-2 rounded mb-4">Add New Plan</button>
+            <div id="plansList"></div>
+        </div>
     </div>
-  </div>
 </body>
 </html>
