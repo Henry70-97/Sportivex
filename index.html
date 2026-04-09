@@ -110,9 +110,9 @@
                 const userDoc = await getDoc(doc(db, 'users', user.uid));
                 const role = userDoc.data()?.role || 'user';
                 if (role === 'admin') {
-                    window.location.href = 'admin_dashboard.html';
+                    window.location.href = 'admin-dashboard.html';
                 } else {
-                    window.location.href = 'user_dashboard.html';
+                    window.location.href = 'user-dashboard.html';
                 }
             } catch (err) {
                 alert('Login failed: ' + err.message);
@@ -124,8 +124,8 @@
             if (user) {
                 const userDoc = await getDoc(doc(db, 'users', user.uid));
                 const role = userDoc.data()?.role || 'user';
-                if (role === 'admin') window.location.href = 'admin_dashboard.html';
-                else window.location.href = 'user_dashboard.html';
+                if (role === 'admin') window.location.href = 'admin-dashboard.html';
+                else window.location.href = 'user-dashboard.html';
             }
         });
     </script>
