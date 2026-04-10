@@ -2,158 +2,676 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BestPay - Register / Login</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDtGN7KCK0A4fhztLN0CgxsKkGROcO_-vI",
-            authDomain: "bestpay-5b78c.firebaseapp.com",
-            projectId: "bestpay-5b78c",
-            storageBucket: "bestpay-5b78c.firebasestorage.app",
-            messagingSenderId: "583230068716",
-            appId: "1:583230068716:web:3e8d298b4d00b46c8652c9",
-            measurementId: "G-47R37E08V2"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        window.showTab = (tab) => {
-            document.getElementById('loginTab').classList.toggle('hidden', tab !== 'login');
-            document.getElementById('registerTab').classList.toggle('hidden', tab !== 'register');
-        };
-
-        // Generate random referral code
-        function generateReferralCode() {
-            return Math.random().toString(36).substring(2, 8).toUpperCase();
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>NextGen Hub | Modern Authentication</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
         }
 
-        // Register
-        window.register = async () => {
-            const email = document.getElementById('regEmail').value;
-            const password = document.getElementById('regPassword').value;
-            const username = document.getElementById('regUsername').value;
-            const referralCode = document.getElementById('regReferral').value;
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 35%, #43e97b 70%, #f9a826 100%);
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+            overflow-x: hidden;
+        }
 
-            try {
-                const userCred = await createUserWithEmailAndPassword(auth, email, password);
-                const uid = userCred.user.uid;
-                const newReferralCode = generateReferralCode();
+        /* Animated gradient blobs for depth */
+        .blob {
+            position: fixed;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            filter: blur(70px);
+            z-index: 0;
+            pointer-events: none;
+            animation: floatBlob 18s infinite alternate ease-in-out;
+        }
 
-                // Find who invited (if referral code matches existing user)
-                let referredBy = null;
-                if (referralCode) {
-                    const usersRef = collection(db, 'users');
-                    const q = query(usersRef, where('referralCode', '==', referralCode));
-                    const snap = await getDocs(q);
-                    if (!snap.empty) referredBy = snap.docs[0].id;
-                }
+        .blob-1 { top: -15vh; left: -10vw; background: radial-gradient(circle, rgba(255,140,200,0.4), rgba(0,255,200,0.1)); }
+        .blob-2 { bottom: -10vh; right: -5vw; width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(255,220,100,0.3), rgba(0,150,255,0.1)); animation-duration: 22s; }
+        .blob-3 { top: 40vh; left: 60vw; width: 35vw; height: 35vw; background: radial-gradient(circle, rgba(100,255,180,0.3), rgba(255,90,200,0.1)); animation-duration: 14s; }
 
-                // Create user document
-                await setDoc(doc(db, 'users', uid), {
-                    email,
-                    displayName: username,
-                    createdAt: new Date(),
-                    referralCode: newReferralCode,
-                    referredBy: referredBy,
-                    kycStatus: 'unverified',
-                    isSuspended: false,
-                    isFrozen: false,
-                    role: 'user',
-                    totalEarned: 0,
-                    withdrawableBalance: 0,
-                    totalWithdrawn: 0
-                });
+        @keyframes floatBlob {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(5%, 5%) scale(1.1); }
+        }
 
-                // Create wallet document
-                await setDoc(doc(db, 'wallets', uid), {
-                    investedBalance: 0,
-                    bonusBalance: 0,
-                    totalDeposited: 0,
-                    lastUpdated: new Date()
-                });
+        /* Splash Overlay */
+        .splash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(15px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: opacity 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            opacity: 1;
+        }
 
-                // If referred, add referral record
-                if (referredBy) {
-                    await setDoc(doc(db, 'referrals', `${referredBy}_${uid}`), {
-                        referrerId: referredBy,
-                        referredId: uid,
-                        commissionEarned: 0,
-                        status: 'pending',
-                        commissionRate: 0.1,
-                        createdAt: new Date()
-                    });
-                }
+        .splash-logo {
+            text-align: center;
+            animation: floatLogo 2s infinite alternate ease-in-out;
+        }
 
-                alert('Registration successful! Please login.');
-                window.showTab('login');
-            } catch (err) {
-                alert('Error: ' + err.message);
+        .splash-logo img {
+            width: 180px;  /* Increased size for logo.jpg */
+            height: 180px;
+            object-fit: contain;
+            filter: drop-shadow(0 20px 25px rgba(0,0,0,0.2));
+        }
+
+        .splash-logo h2 {
+            color: white;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-top: 1rem;
+            background: linear-gradient(135deg, #fff, #ffec99);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        @keyframes floatLogo {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-12px); }
+        }
+
+        /* Main Auth Container */
+        .auth-container {
+            width: 100%;
+            max-width: 520px;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(20, 20, 35, 0.45);
+            backdrop-filter: blur(14px);
+            border-radius: 42px;
+            padding: 2rem 2rem 2.2rem;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255,255,255,0.15);
+            transition: all 0.3s ease;
+        }
+
+        @media (prefers-color-scheme: light) {
+            .glass-card {
+                background: rgba(245, 245, 255, 0.6);
+                backdrop-filter: blur(16px);
+                box-shadow: 0 20px 35px rgba(0,0,0,0.1);
             }
-        };
-
-        // Login
-        window.login = async () => {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                // Redirect based on role
-                const user = auth.currentUser;
-                const userDoc = await getDoc(doc(db, 'users', user.uid));
-                const role = userDoc.data()?.role || 'user';
-                if (role === 'admin') {
-                    window.location.href = 'admin-dashboard.html';
-                } else {
-                    window.location.href = 'user-dashboard.html';
-                }
-            } catch (err) {
-                alert('Login failed: ' + err.message);
+            .glass-card input, .glass-card .input-wrapper input, .glass-card select {
+                background: rgba(255,255,255,0.85);
+                color: #1e1e2f;
             }
-        };
-
-        // Check if already logged in
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                const userDoc = await getDoc(doc(db, 'users', user.uid));
-                const role = userDoc.data()?.role || 'user';
-                if (role === 'admin') window.location.href = 'admin-dashboard.html';
-                else window.location.href = 'user-dashboard.html';
+            .glass-card label {
+                color: #1e1e2f;
             }
-        });
-    </script>
+            .greeting-title, .subtitle {
+                color: #1e1e2a;
+            }
+            .chip {
+                background: rgba(0,0,0,0.08);
+                color: #1e1e2a;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .glass-card input, .glass-card .input-wrapper input, .glass-card select {
+                background: rgba(30,30,45,0.8);
+                color: #f0f0f0;
+            }
+            .chip {
+                background: rgba(255,255,255,0.12);
+                color: #eee;
+            }
+        }
+
+        .greeting-title {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFFFFF, #f0b7ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            opacity: 0.85;
+            margin-bottom: 1rem;
+        }
+
+        .earning-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 1rem 0 1.5rem 0;
+        }
+
+        .chip {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(4px);
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .input-group label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            background: rgba(30,30,45,0.7);
+            border-radius: 28px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.2s;
+        }
+        .input-wrapper:focus-within {
+            border-color: #f9a826;
+            box-shadow: 0 0 0 3px rgba(249,168,38,0.3);
+        }
+        .input-wrapper i {
+            padding: 0 14px;
+            color: #ccc;
+            font-size: 1rem;
+        }
+        .input-wrapper input, .input-wrapper select {
+            width: 100%;
+            background: transparent;
+            border: none;
+            padding: 14px 14px 14px 0;
+            font-size: 0.95rem;
+            outline: none;
+        }
+        .dob-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .dob-group .input-wrapper {
+            flex: 1;
+        }
+        .toggle-password {
+            cursor: pointer;
+            padding-right: 16px;
+        }
+
+        .forgot-link {
+            text-align: right;
+            margin-bottom: 1.5rem;
+        }
+        .forgot-link a, .switch-link {
+            font-size: 0.75rem;
+            color: #ffdb8e;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .forgot-link a:hover, .switch-link:hover {
+            text-decoration: underline;
+        }
+
+        .gradient-btn {
+            width: 100%;
+            background: linear-gradient(95deg, #a855f7, #f97316);
+            border: none;
+            padding: 14px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 1.2rem;
+        }
+        .gradient-btn:hover {
+            transform: scale(1.01);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .social-btn {
+            width: 100%;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 12px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            color: white;
+        }
+        .social-btn:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .switch-text {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+        }
+
+        .error-message {
+            background: rgba(255,70,70,0.2);
+            border-left: 4px solid #ff4d4d;
+            padding: 10px;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            margin-bottom: 1rem;
+            color: #ffb3b3;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 550px) {
+            .glass-card { padding: 1.6rem; }
+            .greeting-title { font-size: 1.6rem; }
+            .dob-group { flex-direction: column; gap: 8px; }
+            .splash-logo img { width: 140px; height: 140px; }
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
-    <div class="max-w-md mx-auto mt-20 bg-white p-8 rounded shadow">
-        <div class="flex gap-4 mb-6">
-            <button onclick="showTab('login')" class="flex-1 py-2 bg-blue-600 text-white rounded">Login</button>
-            <button onclick="showTab('register')" class="flex-1 py-2 bg-gray-200 rounded">Register</button>
-        </div>
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
 
-        <!-- Login Tab -->
-        <div id="loginTab">
-            <h2 class="text-2xl font-bold mb-4">Login</h2>
-            <input type="email" id="loginEmail" placeholder="Email" class="w-full p-2 border rounded mb-3">
-            <input type="password" id="loginPassword" placeholder="Password" class="w-full p-2 border rounded mb-3">
-            <button onclick="login()" class="w-full bg-blue-600 text-white py-2 rounded">Login</button>
-        </div>
-
-        <!-- Register Tab -->
-        <div id="registerTab" class="hidden">
-            <h2 class="text-2xl font-bold mb-4">Register</h2>
-            <input type="text" id="regUsername" placeholder="Username" class="w-full p-2 border rounded mb-3">
-            <input type="email" id="regEmail" placeholder="Email" class="w-full p-2 border rounded mb-3">
-            <input type="password" id="regPassword" placeholder="Password" class="w-full p-2 border rounded mb-3">
-            <input type="text" id="regReferral" placeholder="Referral Code (optional)" class="w-full p-2 border rounded mb-3">
-            <button onclick="register()" class="w-full bg-green-600 text-white py-2 rounded">Sign Up</button>
+    <!-- Splash Screen -->
+    <div id="splash" class="splash-overlay">
+        <div class="splash-logo">
+            <!-- logo.jpg from same folder, increased size -->
+            <img src="logo.jpg" alt="NextGen Hub Logo">
+            <h2>NextGen Hub</h2>
         </div>
     </div>
+
+    <!-- Main Auth Panel -->
+    <div id="authContainer" class="auth-container" style="opacity:0;">
+        <div class="glass-card">
+            <div>
+                <h1 class="greeting-title">Hello, Welcome To NextGen</h1>
+                <div class="earning-chips">
+                    <span class="chip">📝 Transcription</span>
+                    <span class="chip">📊 Trading</span>
+                    <span class="chip">💳 Gropay</span>
+                    <span class="chip">✍️ Academic writing</span>
+                    <span class="chip">📈 Data annotations</span>
+                    <span class="chip">📁 Projects</span>
+                    <span class="chip">📰 Article writing</span>
+                    <span class="chip">🎨 Design</span>
+                    <span class="chip">🤖 AI Engineering</span>
+                    <span class="chip">✨ + more</span>
+                </div>
+                <p class="subtitle" id="formSubtitle">Sign in to continue to NextGen Hub</p>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginForm">
+                <div id="loginError" class="error-message" style="display:none;"></div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <div class="input-wrapper"><i class="fas fa-envelope"></i><input type="email" id="loginEmail" placeholder="hello@nextgen.com"></div>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <div class="input-wrapper"><i class="fas fa-lock"></i><input type="password" id="loginPassword" placeholder="••••••"><i class="fas fa-eye-slash toggle-password" data-target="loginPassword"></i></div>
+                </div>
+                <div class="forgot-link"><a id="forgotPasswordBtn">Forgot password?</a></div>
+                <button id="loginBtn" class="gradient-btn">Sign In →</button>
+                <button id="googleLoginBtn" class="social-btn"><i class="fab fa-google"></i> Continue with Google</button>
+                <div class="switch-text">Don't have an account? <span class="switch-link" id="showRegisterLink">Sign up</span></div>
+            </div>
+
+            <!-- Registration Form -->
+            <div id="registerForm" style="display:none;">
+                <div id="registerError" class="error-message" style="display:none;"></div>
+                <div class="input-group"><label>Full Name</label><div class="input-wrapper"><i class="fas fa-user"></i><input type="text" id="regFullName" placeholder="John Doe"></div></div>
+                <div class="input-group"><label>Nationality</label><div class="input-wrapper"><i class="fas fa-globe"></i><input type="text" id="regNationality" placeholder="e.g., American"></div></div>
+                
+                <!-- Date of Birth: scrollable selects with year >= 18 years old -->
+                <div class="input-group">
+                    <label>Date of birth (must be 18+)</label>
+                    <div class="dob-group">
+                        <div class="input-wrapper"><i class="fas fa-calendar-day"></i><select id="regDobDay"><option value="">Day</option></select></div>
+                        <div class="input-wrapper"><i class="fas fa-calendar-alt"></i><select id="regDobMonth"><option value="">Month</option></select></div>
+                        <div class="input-wrapper"><i class="fas fa-calendar-week"></i><select id="regDobYear"><option value="">Year</option></select></div>
+                    </div>
+                </div>
+
+                <div class="input-group"><label>Email</label><div class="input-wrapper"><i class="fas fa-envelope"></i><input type="email" id="regEmail" placeholder="user@nextgen.com"></div></div>
+                <div class="input-group"><label>Password</label><div class="input-wrapper"><i class="fas fa-lock"></i><input type="password" id="regPassword" placeholder="create password"><i class="fas fa-eye-slash toggle-password" data-target="regPassword"></i></div></div>
+                <div class="input-group"><label>Phone Number</label><div class="input-wrapper"><i class="fas fa-phone-alt"></i><input type="tel" id="regPhone" placeholder="+123456789"></div></div>
+                <div id="refMessage" style="font-size:0.75rem; background:rgba(255,215,0,0.2); padding:8px; border-radius:20px; margin-bottom:12px; display:none;"></div>
+                <button id="registerBtn" class="gradient-btn">Create Account →</button>
+                <button id="googleRegisterBtn" class="social-btn"><i class="fab fa-google"></i> Continue with Google</button>
+                <div class="switch-text">Already have an account? <span class="switch-link" id="showLoginLink">Sign in</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); z-index:3000; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; color:white;">
+        <div class="spinner" style="width:40px; height:40px;"></div>
+        <p>Securing access...</p>
+    </div>
+
+    <script>
+        // Firebase Config (exact)
+        const firebaseConfig = {
+            apiKey: "AIzaSyChk2JA68-I5s1D0S10r9WK71LgTNi4hRQ",
+            authDomain: "nextgen-5fb6f.firebaseapp.com",
+            projectId: "nextgen-5fb6f",
+            storageBucket: "nextgen-5fb6f.firebasestorage.app",
+            messagingSenderId: "100132076455",
+            appId: "1:100132076455:web:c5aea1f6e1a5ebbea99482"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentReferralCode = null;
+        const urlParams = new URLSearchParams(window.location.search);
+        if(urlParams.has('ref')) currentReferralCode = urlParams.get('ref');
+
+        function generateReferralCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
+            let code = '';
+            for(let i=0; i<8; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+            return code;
+        }
+
+        // Populate DOB selects: years from (currentYear - 18) down to (currentYear - 100) to enforce age >=18
+        function populateDOB() {
+            const daySelect = document.getElementById('regDobDay');
+            for(let i=1; i<=31; i++) {
+                const opt = document.createElement('option');
+                opt.value = i; opt.textContent = i;
+                daySelect.appendChild(opt);
+            }
+            const monthSelect = document.getElementById('regDobMonth');
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            months.forEach((m, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx+1; opt.textContent = m;
+                monthSelect.appendChild(opt);
+            });
+            const yearSelect = document.getElementById('regDobYear');
+            const currentYear = new Date().getFullYear();
+            const maxYear = currentYear - 18;  // oldest allowed birth year for being at least 18
+            const minYear = currentYear - 100; // reasonable lower bound
+            for(let y = maxYear; y >= minYear; y--) {
+                const opt = document.createElement('option');
+                opt.value = y; opt.textContent = y;
+                yearSelect.appendChild(opt);
+            }
+        }
+        populateDOB();
+
+        function getFormattedDOB() {
+            const day = document.getElementById('regDobDay').value;
+            const month = document.getElementById('regDobMonth').value;
+            const year = document.getElementById('regDobYear').value;
+            if(!day || !month || !year) return '';
+            return `${year}-${month.padStart(2,'0')}-${day.padStart(2,'0')}`;
+        }
+
+        // Toggle password visibility
+        document.querySelectorAll('.toggle-password').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                if(input.type === 'password') {
+                    input.type = 'text';
+                    this.classList.remove('fa-eye-slash');
+                    this.classList.add('fa-eye');
+                } else {
+                    input.type = 'password';
+                    this.classList.remove('fa-eye');
+                    this.classList.add('fa-eye-slash');
+                }
+            });
+        });
+
+        function showLogin() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('formSubtitle').innerText = 'Sign in to continue to NextGen Hub';
+        }
+        function showRegister() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            document.getElementById('formSubtitle').innerText = 'Join the NextGen community';
+            const refMsg = document.getElementById('refMessage');
+            if(currentReferralCode) {
+                refMsg.innerHTML = `🎁 Referred by: ${currentReferralCode} — you'll get bonus!`;
+                refMsg.style.display = 'block';
+            } else refMsg.style.display = 'none';
+        }
+        document.getElementById('showRegisterLink').addEventListener('click', showRegister);
+        document.getElementById('showLoginLink').addEventListener('click', showLogin);
+
+        function setError(formType, message) {
+            const errDiv = formType === 'login' ? document.getElementById('loginError') : document.getElementById('registerError');
+            errDiv.innerText = message;
+            errDiv.style.display = 'block';
+            setTimeout(() => errDiv.style.display = 'none', 4000);
+        }
+
+        async function createUserDocument(user, additionalData) {
+            const userRef = db.collection('users').doc(user.uid);
+            const existing = await userRef.get();
+            if(existing.exists) return;
+            let referralCodeFinal = generateReferralCode();
+            let referredByUid = null;
+            if(currentReferralCode) {
+                const referrerQuery = await db.collection('users').where('referralCode', '==', currentReferralCode).limit(1).get();
+                if(!referrerQuery.empty) referredByUid = referrerQuery.docs[0].id;
+            }
+            await userRef.set({
+                displayName: additionalData.fullName || user.displayName || '',
+                email: user.email,
+                phone: additionalData.phone || '',
+                role: 'user',
+                wallet: 0,
+                referralCode: referralCodeFinal,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                nationality: additionalData.nationality || '',
+                dateOfBirth: additionalData.dateOfBirth || '',
+                referredBy: referredByUid || null
+            });
+        }
+
+        async function handleRedirectAfterLogin(user) {
+            const doc = await db.collection('users').doc(user.uid).get();
+            let role = 'user';
+            if(doc.exists && doc.data().role) role = doc.data().role;
+            if(role === 'admin') window.location.replace('admin-dashboard.html');
+            else window.location.replace('user-dashboard.html');
+        }
+
+        // Login
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            if(!email || !password) { setError('login', 'Please fill all fields'); return; }
+            try {
+                const cred = await auth.signInWithEmailAndPassword(email, password);
+                await handleRedirectAfterLogin(cred.user);
+            } catch(err) { setError('login', err.message); }
+        });
+
+        // Register
+        document.getElementById('registerBtn').addEventListener('click', async () => {
+            const fullName = document.getElementById('regFullName').value.trim();
+            const nationality = document.getElementById('regNationality').value.trim();
+            const dob = getFormattedDOB();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const phone = document.getElementById('regPhone').value.trim();
+            
+            // Validate age >= 18 by checking year
+            const currentYear = new Date().getFullYear();
+            const yearSelected = parseInt(document.getElementById('regDobYear').value);
+            if(yearSelected && (currentYear - yearSelected < 18)) {
+                setError('register', 'You must be at least 18 years old to register.');
+                return;
+            }
+            
+            if(!fullName || !nationality || !dob || !email || !password || !phone) {
+                setError('register', 'All fields required');
+                return;
+            }
+            if(password.length < 6) { setError('register', 'Password min 6 characters'); return; }
+            try {
+                const userCred = await auth.createUserWithEmailAndPassword(email, password);
+                await userCred.user.updateProfile({ displayName: fullName });
+                await createUserDocument(userCred.user, { fullName, nationality, dateOfBirth: dob, phone });
+                await handleRedirectAfterLogin(userCred.user);
+            } catch(err) { setError('register', err.message); }
+        });
+
+        // Google Auth
+        async function handleGoogleSignIn() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if(!userDoc.exists) {
+                    let referredByUid = null;
+                    if(currentReferralCode) {
+                        const refQuery = await db.collection('users').where('referralCode', '==', currentReferralCode).limit(1).get();
+                        if(!refQuery.empty) referredByUid = refQuery.docs[0].id;
+                    }
+                    await db.collection('users').doc(user.uid).set({
+                        displayName: user.displayName || '',
+                        email: user.email,
+                        phone: '',
+                        role: 'user',
+                        wallet: 0,
+                        referralCode: generateReferralCode(),
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        nationality: '',
+                        dateOfBirth: '',
+                        referredBy: referredByUid || null
+                    });
+                }
+                await handleRedirectAfterLogin(user);
+            } catch(err) { setError('login', err.message); }
+        }
+        document.getElementById('googleLoginBtn').addEventListener('click', handleGoogleSignIn);
+        document.getElementById('googleRegisterBtn').addEventListener('click', handleGoogleSignIn);
+
+        // Forgot password
+        document.getElementById('forgotPasswordBtn').addEventListener('click', async () => {
+            const email = prompt('Enter your email address to reset password:');
+            if(email && email.includes('@')) {
+                try {
+                    await auth.sendPasswordResetEmail(email);
+                    alert('Password reset email sent! Check your inbox.');
+                } catch(e) { alert('Error: ' + e.message); }
+            } else if(email) alert('Invalid email');
+        });
+
+        // Single auth state observer (no redirect loop)
+        let observerFired = false;
+        auth.onAuthStateChanged(async (user) => {
+            if(observerFired) return;
+            observerFired = true;
+            if(user) {
+                try {
+                    const docSnap = await db.collection('users').doc(user.uid).get();
+                    let role = 'user';
+                    if(docSnap.exists && docSnap.data().role) role = docSnap.data().role;
+                    if(role === 'admin') window.location.replace('admin-dashboard.html');
+                    else window.location.replace('user-dashboard.html');
+                } catch(e) { window.location.replace('user-dashboard.html'); }
+                return;
+            }
+            // Not logged in: hide loading, show splash then auth card
+            document.getElementById('loadingOverlay').style.display = 'none';
+            setTimeout(() => {
+                const splash = document.getElementById('splash');
+                if(splash) {
+                    splash.style.opacity = '0';
+                    setTimeout(() => {
+                        splash.style.display = 'none';
+                        document.getElementById('authContainer').style.opacity = '1';
+                    }, 800);
+                } else {
+                    document.getElementById('authContainer').style.opacity = '1';
+                }
+            }, 2500);
+        });
+
+        // Fallback: ensure loading disappears and splash fades
+        setTimeout(() => {
+            const loading = document.getElementById('loadingOverlay');
+            if(loading.style.display !== 'none') loading.style.display = 'none';
+            const splash = document.getElementById('splash');
+            if(splash && splash.style.display !== 'none') {
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    document.getElementById('authContainer').style.opacity = '1';
+                }, 500);
+            }
+        }, 4000);
+
+        showLogin();
+    </script>
 </body>
 </html>
